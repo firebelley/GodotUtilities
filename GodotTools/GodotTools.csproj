@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extension\NodeExtensions.cs" />
+    <Compile Include="src\Extension\NodeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Logic\StateMachine.cs" />
+    <Compile Include="src\Util\Logger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\GodotSharp.dll" />
