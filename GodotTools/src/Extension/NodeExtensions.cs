@@ -16,7 +16,7 @@ namespace GodotTools.Extension
         /// <param name="n"></param>
         public static void SetNodesByDeclaredNodePaths(this Node n)
         {
-            var flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance;
+            var flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
             var type = n.GetType();
             var fields = type.GetFields(flags);
             foreach (var field in fields)

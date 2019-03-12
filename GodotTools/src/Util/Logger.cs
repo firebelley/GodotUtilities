@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Cryptographer.Util
+namespace GodotTools.Util
 {
     public static class Logger
     {
