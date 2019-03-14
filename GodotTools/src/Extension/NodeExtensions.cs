@@ -14,10 +14,10 @@ namespace GodotTools.Extension
         /// For example, a NodePath field with name "_labelPath" will automatically try to set the non-public field "_label" to the node present at the NodePath location.
         /// </summary>
         /// <param name="n"></param>
-        public static void SetNodesByDeclaredNodePaths(this Node n)
+        public static void SetNodesByDeclaredNodePaths(this Node node)
         {
             var flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-            var type = n.GetType();
+            var type = node.GetType();
             var fields = type.GetFields(flags);
             foreach (var field in fields)
             {
@@ -25,20 +25,39 @@ namespace GodotTools.Extension
                 {
                     var name = field.Name;
                     var target = name.Substr(0, name.Length - 4);
-                    var node = n.GetNode(field.GetValue(n) as NodePath);
+                    var pathNode = node.GetNode(field.GetValue(node) as NodePath);
                     var targetField = type.GetField(target, flags);
                     if (targetField == null)
                     {
                         throw new Exception($"Target field with name \"{target}\" was not found.");
                     }
-                    targetField.SetValue(n, node);
+                    targetField.SetValue(node, pathNode);
                 }
             }
         }
 
-        public static T GetSibling<T>(this Node n, int idx) where T : Node
+        public static void DisconnectAllSignals(this Node target, Node source)
         {
-            return (T) n.GetParent().GetChild(idx);
+            var signalList = source.GetSignalList();
+            foreach (var signal in signalList)
+            {
+                var dict = (Godot.Collections.Dictionary) signal;
+                var signalName = (string) dict["name"];
+                var connectedSignalList = source.GetSignalConnectionList(signalName);
+                foreach (var connectedSignal in connectedSignalList)
+                {
+                    var connectedDict = (Godot.Collections.Dictionary) connectedSignal;
+                    if (connectedDict["target"] == target)
+                    {
+                        source.Disconnect((string) connectedDict["signal"], target, (string) connectedDict["method"]);
+                    }
+                }
+            }
+        }
+
+        public static T GetSibling<T>(this Node node, int idx) where T : Node
+        {
+            return (T) node.GetParent().GetChild(idx);
         }
 
         public static List<T> GetChildren<T>(this Node node) where T : class

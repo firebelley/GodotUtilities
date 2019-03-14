@@ -49,7 +49,6 @@
     <Compile Include="src\Logic\LootTable.cs" />
     <Compile Include="src\Logic\StateMachine.cs" />
     <Compile Include="src\Util\Logger.cs" />
-    <Compile Include="src\Util\NodeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\GodotSharp.dll" />
