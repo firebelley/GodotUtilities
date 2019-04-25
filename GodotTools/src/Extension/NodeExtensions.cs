@@ -65,5 +65,13 @@ namespace GodotTools.Extension
             return node.GetChildren().Select(x => x as T).ToList();
         }
 
+        public static void QueueFree(this IEnumerable<Node> nodes)
+        {
+            foreach(var n in nodes)
+            {
+                n.QueueFree();
+            }
+        }
+
     }
 }
