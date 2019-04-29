@@ -60,6 +60,11 @@ namespace GodotTools.Extension
             return (T) node.GetParent().GetChild(idx);
         }
 
+        public static T GetNode<T>(this Node node) where T : Node
+        {
+            return node.GetNode<T>(typeof(T).Name);
+        }
+
         public static List<T> GetChildren<T>(this Node node) where T : class
         {
             return node.GetChildren().Select(x => x as T).ToList();

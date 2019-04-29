@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Firebelley.GodotTools</id>
-    <version>1.0.7</version>
+    <version>1.0.9</version>
     <title>Firebelley's GodotTools</title>
     <authors>Firebelley</authors>
     <owners>Firebelley</owners>
@@ -14,5 +14,6 @@
   </metadata>
   <files>
     <file src="bin\Release\GodotTools.dll" target="lib\net45" />
+    <file src="bin\Release\GodotTools.xml" target="lib\net45" />
   </files>
 </package>
