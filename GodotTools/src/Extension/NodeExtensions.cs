@@ -72,11 +72,10 @@ namespace GodotTools.Extension
 
         public static void QueueFree(this IEnumerable<Node> nodes)
         {
-            foreach(var n in nodes)
+            foreach (var n in nodes)
             {
                 n.QueueFree();
             }
         }
-
     }
 }
