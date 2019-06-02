@@ -49,6 +49,7 @@
     <Compile Include="src\Extension\NodeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Extension\Physics2DDirectSpaceStateExtensions.cs" />
+    <Compile Include="src\Extension\ResourcePreloaderExtension.cs" />
     <Compile Include="src\Logic\LootTable.cs" />
     <Compile Include="src\Logic\StateMachine.cs" />
     <Compile Include="src\Util\Logger.cs" />
