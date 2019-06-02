@@ -29,5 +29,10 @@ namespace GodotTools.Extension
 
             return resource.Instance() as T;
         }
+
+        public static T InstanceScene<T>(this ResourcePreloader preloader) where T : Node
+        {
+            return preloader.InstanceScene<T>(typeof(T).Name);
+        }
     }
 }
