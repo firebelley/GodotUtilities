@@ -77,5 +77,17 @@ namespace GodotTools.Extension
                 n.QueueFree();
             }
         }
+
+        public static T GetFirstNodeOfType<T>(this Node node) where T : Node
+        {
+            foreach (var child in node.GetChildren())
+            {
+                if (child is T t)
+                {
+                    return t;
+                }
+            }
+            return null;
+        }
     }
 }
