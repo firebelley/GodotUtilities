@@ -58,6 +58,8 @@
   <ItemGroup>
     <Content Include="lib\GodotSharp.dll" />
     <Compile Include="src\Extension\SceneTreeExtension.cs" />
+    <Compile Include="src\Logic\Interface\IStateExecutor.cs" />
+    <Compile Include="src\Logic\StateExecutorMachine.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
