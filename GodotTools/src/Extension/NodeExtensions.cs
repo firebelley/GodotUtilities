@@ -89,5 +89,10 @@ namespace GodotTools.Extension
             }
             return null;
         }
+
+        public static void AddChildDeferred(this Node node, Node child)
+        {
+            node.CallDeferred("add_child", child);
+        }
     }
 }
