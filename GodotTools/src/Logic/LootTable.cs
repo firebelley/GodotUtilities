@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 namespace GodotTools.Logic
 {
@@ -8,7 +8,7 @@ namespace GodotTools.Logic
     {
         public int WeightSum { get; protected set; }
         private List<TableData> _table = new List<TableData>();
-        private Random _random = new Random();
+        private RandomNumberGenerator _random = new RandomNumberGenerator();
 
         public class TableData
         {
@@ -24,10 +24,10 @@ namespace GodotTools.Logic
 
         public void SetSeed(int seed)
         {
-            _random = new Random(seed);
+            _random.Seed = seed;
         }
 
-        public void SetRandom(Random random)
+        public void SetRandom(RandomNumberGenerator random)
         {
             _random = random;
         }
@@ -79,11 +79,11 @@ namespace GodotTools.Logic
         private T PickItem(List<TableData> table, int weightSum)
         {
             int sum = 0;
-            int val = _random.Next(0, weightSum);
+            int val = _random.RandiRange(1, weightSum);
             foreach (var data in table)
             {
                 sum += data.Weight;
-                if (val < sum)
+                if (val <= sum)
                 {
                     return data.Obj;
                 }
