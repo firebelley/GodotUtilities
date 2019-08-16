@@ -6,8 +6,13 @@ namespace GodotTools.Util
     {
         public static void Error(params object[] what)
         {
+            GD.PrintErr("[ERROR]", what);
             GD.PrintStack();
-            GD.PrintErr(what);
+        }
+
+        public static void Info(params object[] what)
+        {
+            GD.PrintRaw("[INFO]", what);
         }
     }
 }
