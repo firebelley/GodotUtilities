@@ -16,7 +16,7 @@ namespace GodotTools.Extension
         /// <param name="collideWithBodies"></param>
         /// <param name="collideWithAreas"></param>
         /// <returns></returns>
-        public static RaycastResult Raycast(this Physics2DDirectSpaceState state, Vector2 from, Vector2 to, Godot.Collections.Array exclude = null, int collisionLayer = int.MaxValue, bool collideWithBodies = true, bool collideWithAreas = false)
+        public static RaycastResult Raycast(this Physics2DDirectSpaceState state, Vector2 from, Vector2 to, Godot.Collections.Array exclude = null, uint collisionLayer = uint.MaxValue, bool collideWithBodies = true, bool collideWithAreas = false)
         {
             var raycastDict = state.IntersectRay(from, to, exclude, collisionLayer, collideWithBodies, collideWithAreas);
             if (raycastDict != null && raycastDict.Count > 0)

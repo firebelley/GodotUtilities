@@ -22,7 +22,7 @@ namespace GodotTools.Logic
             }
         }
 
-        public void SetSeed(int seed)
+        public void SetSeed(ulong seed)
         {
             _random.Seed = seed;
         }

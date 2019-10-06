@@ -67,7 +67,8 @@ namespace GodotTools.Extension
 
         public static List<T> GetChildren<T>(this Node node) where T : class
         {
-            return node.GetChildren().Select(x => x as T).ToList();
+            var children = node.GetChildren() as IEnumerable<Node>;
+            return children.Select(x => x as T).ToList();
         }
 
         public static void QueueFree(this IEnumerable<Node> nodes)
