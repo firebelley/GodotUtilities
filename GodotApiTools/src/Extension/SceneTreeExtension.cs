@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotTools.Extension
+namespace GodotApiTools.Extension
 {
     public static class SceneTreeExtension
     {

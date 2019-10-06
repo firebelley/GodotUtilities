@@ -1,4 +1,4 @@
-namespace GodotTools.Logic.Interface
+namespace GodotApiTools.Logic.Interface
 {
     public interface IStateExector
     {

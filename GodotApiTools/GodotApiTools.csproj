@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -6,8 +6,8 @@
     <ProjectGuid>{5FAB4206-0248-4CD4-BC01-CF0171FC110A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GodotTools</RootNamespace>
-    <AssemblyName>GodotTools</AssemblyName>
+    <RootNamespace>GodotApiTools</RootNamespace>
+    <AssemblyName>GodotApiTools</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -27,7 +27,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\GodotTools.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\GodotApiTools.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GodotSharp, Version=1.0.7005.40750, Culture=neutral, processorArchitecture=MSIL">
@@ -63,6 +63,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>nuget pack $(SolutionDir)GodotTools\GodotTools.nuspec</PostBuildEvent>
+    <PostBuildEvent>nuget pack $(SolutionDir)GodotApiTools\GodotApiTools.nuspec</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace GodotTools.Util
+namespace GodotApiTools.Util
 {
     public static class Logger
     {

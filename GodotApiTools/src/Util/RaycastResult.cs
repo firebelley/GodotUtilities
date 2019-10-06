@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-namespace GodotTools.Util
+namespace GodotApiTools.Util
 {
     public class RaycastResult
     {

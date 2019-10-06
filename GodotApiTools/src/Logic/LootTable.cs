@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
-namespace GodotTools.Logic
+namespace GodotApiTools.Logic
 {
     public class LootTable<T>
     {

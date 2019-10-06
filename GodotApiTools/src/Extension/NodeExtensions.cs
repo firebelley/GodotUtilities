@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Godot;
 
-namespace GodotTools.Extension
+namespace GodotApiTools.Extension
 {
     public static class NodeExtensions
     {
@@ -81,7 +81,7 @@ namespace GodotTools.Extension
 
         public static T GetFirstNodeOfType<T>(this Node node) where T : Node
         {
-            foreach (var child in node.GetChildren())
+            foreach (var child in node.GetChildren() as IEnumerable<Node>)
             {
                 if (child is T t)
                 {
