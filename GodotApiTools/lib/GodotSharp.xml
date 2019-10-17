@@ -8660,6 +8660,16 @@
             <para>This node is intended to be a simple helper to get things going quickly and it may happen that more functionality is desired to change how the camera works. To make your own custom camera node, simply inherit from <see cref="T:Godot.Node2D"/> and change the transform of the canvas by calling get_viewport().set_canvas_transform(m) in <see cref="T:Godot.Viewport"/>.</para>
             </summary>
         </member>
+        <member name="F:Godot.Camera2D.Camera2DProcessMode.Physics">
+            <summary>
+            <para>The camera updates with the <c>_physics_process</c> callback.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.Camera2D.Camera2DProcessMode.Idle">
+            <summary>
+            <para>The camera updates with the <c>_process</c> callback.</para>
+            </summary>
+        </member>
         <member name="F:Godot.Camera2D.AnchorModeEnum.FixedTopLeft">
             <summary>
             <para>The camera's position is fixed so that the top-left corner is always at the origin.</para>
@@ -8698,6 +8708,11 @@
         <member name="P:Godot.Camera2D.CustomViewport">
             <summary>
             <para>The custom <see cref="T:Godot.Viewport"/> node attached to the <see cref="T:Godot.Camera2D"/>. If <c>null</c> or not a <see cref="T:Godot.Viewport"/>, uses the default viewport instead.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.Camera2D.ProcessMode">
+            <summary>
+            <para>The camera's process callback. See <see cref="T:Godot.Camera2D.Camera2DProcessMode"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.Camera2D.LimitLeft">
@@ -8802,6 +8817,26 @@
             <para>Removes any <see cref="T:Godot.Camera2D"/> from the ancestor <see cref="T:Godot.Viewport"/>'s internal currently-assigned camera.</para>
             </summary>
         </member>
+        <member name="M:Godot.Camera2D.SetLimit(Godot.Margin,System.Int32)">
+            <summary>
+            <para>Sets the specified camera limit. See also <see cref="P:Godot.Camera2D.LimitBottom"/>, <see cref="P:Godot.Camera2D.LimitTop"/>, <see cref="P:Godot.Camera2D.LimitLeft"/>, and <see cref="P:Godot.Camera2D.LimitRight"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Camera2D.GetLimit(Godot.Margin)">
+            <summary>
+            <para>Returns the specified camera limit. See also <see cref="P:Godot.Camera2D.LimitBottom"/>, <see cref="P:Godot.Camera2D.LimitTop"/>, <see cref="P:Godot.Camera2D.LimitLeft"/>, and <see cref="P:Godot.Camera2D.LimitRight"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Camera2D.SetDragMargin(Godot.Margin,System.Single)">
+            <summary>
+            <para>Sets the specified margin. See also <see cref="P:Godot.Camera2D.DragMarginBottom"/>, <see cref="P:Godot.Camera2D.DragMarginTop"/>, <see cref="P:Godot.Camera2D.DragMarginLeft"/>, and <see cref="P:Godot.Camera2D.DragMarginRight"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Camera2D.GetDragMargin(Godot.Margin)">
+            <summary>
+            <para>Returns the specified margin. See also <see cref="P:Godot.Camera2D.DragMarginBottom"/>, <see cref="P:Godot.Camera2D.DragMarginTop"/>, <see cref="P:Godot.Camera2D.DragMarginLeft"/>, and <see cref="P:Godot.Camera2D.DragMarginRight"/>.</para>
+            </summary>
+        </member>
         <member name="M:Godot.Camera2D.GetCameraPosition">
             <summary>
             <para>Returns the camera position.</para>
@@ -8869,19 +8904,29 @@
             <para>Camera is mounted at the back of the device.</para>
             </summary>
         </member>
+        <member name="P:Godot.CameraFeed.FeedIsActive">
+            <summary>
+            <para>If <c>true</c>, the feed is active.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.CameraFeed.FeedTransform">
+            <summary>
+            <para>The transform applied to the camera's image.</para>
+            </summary>
+        </member>
         <member name="M:Godot.CameraFeed.GetId">
             <summary>
-            <para>Gets the unique ID for this feed.</para>
+            <para>Returns the unique ID for this feed.</para>
             </summary>
         </member>
         <member name="M:Godot.CameraFeed.GetName">
             <summary>
-            <para>Gets the camera's name.</para>
+            <para>Returns the camera's name.</para>
             </summary>
         </member>
         <member name="M:Godot.CameraFeed.GetPosition">
             <summary>
-            <para>Position of camera on the device.</para>
+            <para>Returns the position of camera on the device.</para>
             </summary>
         </member>
         <member name="F:Godot.CameraServer.FeedImage.RgbaImage">
@@ -9572,6 +9617,88 @@
             <para>Returns whether this <c>class</c> is enabled or not.</para>
             </summary>
         </member>
+        <member name="T:Godot.ClippedCamera">
+            <summary>
+            <para>This node extends <see cref="T:Godot.Camera"/> to add collisions with <see cref="T:Godot.Area"/> and/or <see cref="T:Godot.PhysicsBody"/> nodes. The camera cannot move through colliding objects.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.ClippedCamera.ProcessModeEnum.Physics">
+            <summary>
+            <para>The camera updates with the <c>_physics_process</c> callback.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.ClippedCamera.ProcessModeEnum.Idle">
+            <summary>
+            <para>The camera updates with the <c>_process</c> callback.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ClippedCamera.Margin">
+            <summary>
+            <para>The camera's collision margin. The camera can't get closer than this distance to a colliding object.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ClippedCamera.ProcessMode">
+            <summary>
+            <para>The camera's process callback. See <see cref="T:Godot.ClippedCamera.ProcessModeEnum"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ClippedCamera.CollisionMask">
+            <summary>
+            <para>The camera's collision mask. Only objects in at least one collision layer matching the mask will be detected.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ClippedCamera.ClipToAreas">
+            <summary>
+            <para>If <c>true</c>, the camera stops on contact with <see cref="T:Godot.Area"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ClippedCamera.ClipToBodies">
+            <summary>
+            <para>If <c>true</c>, the camera stops on contact with <see cref="T:Godot.PhysicsBody"/>s.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.SetCollisionMaskBit(System.Int32,System.Boolean)">
+            <summary>
+            <para>Sets the specified bit index to the <c>value</c>.</para>
+            <para>Note: Bit indices range from 0-19.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.GetCollisionMaskBit(System.Int32)">
+            <summary>
+            <para>Returns <c>true</c> if the specified bit index is on.</para>
+            <para>Note: Bit indices range from 0-19.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.AddExceptionRid(Godot.RID)">
+            <summary>
+            <para>Adds a collision exception so the camera does not collide with the specified <see cref="T:Godot.RID"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.AddException(Godot.Object)">
+            <summary>
+            <para>Adds a collision exception so the camera does not collide with the specified node.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.RemoveExceptionRid(Godot.RID)">
+            <summary>
+            <para>Removes a collision exception with the specified <see cref="T:Godot.RID"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.RemoveException(Godot.Object)">
+            <summary>
+            <para>Removes a collision exception with the specified node.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.GetClipOffset">
+            <summary>
+            <para>Returns the distance the camera has been offset due to a collision.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ClippedCamera.ClearExceptions">
+            <summary>
+            <para>Removes all collision exceptions.</para>
+            </summary>
+        </member>
         <member name="T:Godot.CollisionObject">
             <summary>
             <para>CollisionObject is the base class for physics objects. It can hold any number of collision <see cref="T:Godot.Shape"/>s. Each shape must be assigned to a shape owner. The CollisionObject can have any number of shape owners. Shape owners are not nodes and do not appear in the editor, but are accessible through code using the <c>shape_owner_*</c> methods.</para>
@@ -9908,6 +10035,16 @@
         <member name="P:Godot.ColorPicker.DeferredMode">
             <summary>
             <para>If <c>true</c>, the color will apply only after the user releases the mouse button, otherwise it will apply immediately even in mouse motion event (which can cause performance issues).</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ColorPicker.PresetsEnabled">
+            <summary>
+            <para>If <c>true</c>, the "add preset" button is enabled.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ColorPicker.PresetsVisible">
+            <summary>
+            <para>If <c>true</c>, saved color presets are visible.</para>
             </summary>
         </member>
         <member name="M:Godot.ColorPicker.AddPreset(Godot.Color)">
@@ -14381,6 +14518,50 @@
             <para>Returns whether the object still exists and has the function assigned.</para>
             </summary>
         </member>
+        <member name="T:Godot.GDNativeLibrary">
+            <summary>
+            <para>A GDNative library can implement <see cref="T:Godot.NativeScript"/>s, global functions to call with the <see cref="T:Godot.GDNative"/> class, or low-level engine extensions through interfaces such as <see cref="T:Godot.ARVRInterfaceGDNative"/>. The library must be compiled for each platform and architecture that the project will run on.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GDNativeLibrary.ConfigFile">
+            <summary>
+            <para>This resource in INI-style <see cref="T:Godot.ConfigFile"/> format, as in <c>.gdnlib</c> files.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GDNativeLibrary.LoadOnce">
+            <summary>
+            <para>If <c>true</c>, Godot loads only one copy of the library and each script that references the library will share static data like static or global variables.</para>
+            <para>If <c>false</c>, Godot loads a separate copy of the library into memory for each script that references it.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GDNativeLibrary.Singleton">
+            <summary>
+            <para>If <c>true</c>, Godot loads the library at startup rather than the first time a script uses the library, calling <c>{prefix}gdnative_singleton</c> after initializing the library (where <c>{prefix}</c> is the value of <see cref="P:Godot.GDNativeLibrary.SymbolPrefix"/>). The library remains loaded as long as Godot is running.</para>
+            <para>Note: A singleton library cannot be <see cref="P:Godot.GDNativeLibrary.Reloadable"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GDNativeLibrary.SymbolPrefix">
+            <summary>
+            <para>The prefix this library's entry point functions begin with. For example, a GDNativeLibrary would declare its <c>gdnative_init</c> function as <c>godot_gdnative_init</c> by default.</para>
+            <para>On platforms that require statically linking libraries (currently only iOS), each library must have a different <c>symbol_prefix</c>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GDNativeLibrary.Reloadable">
+            <summary>
+            <para>If <c>true</c>, the editor will temporarily unload the library whenever the user switches away from the editor window, allowing the user to recompile the library without restarting Godot.</para>
+            <para>Note: If the library defines tool scripts that run inside the editor, <c>reloadable</c> must be <c>false</c>. Otherwise, the editor will attempt to unload the tool scripts while they're in use and crash.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.GDNativeLibrary.GetCurrentLibraryPath">
+            <summary>
+            <para>Returns the path to the dynamic library file for the current platform and architecture.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.GDNativeLibrary.GetCurrentDependencies">
+            <summary>
+            <para>Returns paths to all dependency libraries for the current platform and architecture.</para>
+            </summary>
+        </member>
         <member name="T:Godot.GDScript">
             <summary>
             <para>A script implemented in the GDScript programming language. The script exends the functionality of all objects that instance it.</para>
@@ -17302,6 +17483,11 @@
             <para>Sets the default cursor shape to be used in the viewport instead of .</para>
             <para>Note: If you want to change the default cursor shape for <see cref="T:Godot.Control"/>'s nodes, use <see cref="P:Godot.Control.MouseDefaultCursorShape"/> instead.</para>
             <para>Note: This method generates an <see cref="T:Godot.InputEventMouseMotion"/> to update cursor immediately.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Input.GetCurrentCursorShape">
+            <summary>
+            <para>Returns the currently assigned cursor shape (see <see cref="T:Godot.Input.CursorShape"/>).</para>
             </summary>
         </member>
         <member name="M:Godot.Input.SetCustomMouseCursor(Godot.Resource,Godot.Input.CursorShape,System.Nullable{Godot.Vector2})">
@@ -21563,17 +21749,17 @@
         </member>
         <member name="M:Godot.OS.GetScreenPosition(System.Int32)">
             <summary>
-            <para>Returns the position of the specified screen by index. If no screen index is provided, the current screen will be used.</para>
+            <para>Returns the position of the specified screen by index. If <c>screen</c> is [/code]-1[/code] (the default value), the current screen will be used.</para>
             </summary>
         </member>
         <member name="M:Godot.OS.GetScreenSize(System.Int32)">
             <summary>
-            <para>Returns the dimensions in pixels of the specified screen.</para>
+            <para>Returns the dimensions in pixels of the specified screen. If <c>screen</c> is [/code]-1[/code] (the default value), the current screen will be used.</para>
             </summary>
         </member>
         <member name="M:Godot.OS.GetScreenDpi(System.Int32)">
             <summary>
-            <para>Returns the dots per inch density of the specified screen.</para>
+            <para>Returns the dots per inch density of the specified screen. If <c>screen</c> is [/code]-1[/code] (the default value), the current screen will be used.</para>
             <para>On Android devices, the actual screen densities are grouped into six generalized densities:</para>
             <para><code>
                ldpi - 120 dpi
@@ -25897,23 +26083,16 @@
             <para>If <c>true</c>, allows to navigate <see cref="T:Godot.PopupMenu"/> with letter keys.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddIconItem(Godot.Texture,System.String,System.Int32,System.UInt32)">
-            <summary>
-            <para>Adds a new item with text <c>label</c> and icon <c>texture</c>.</para>
-            <para>An <c>id</c> can optionally be provided, as well as an accelerator (<c>accel</c>). If no <c>id</c> is provided, one will be created from the index. If no <c>accel</c> is provided then the default <c>0</c> will be assigned to it. See <see cref="M:Godot.PopupMenu.GetItemAccelerator(System.Int32)"/> for more info on accelerators.</para>
-            </summary>
-        </member>
         <member name="M:Godot.PopupMenu.AddItem(System.String,System.Int32,System.UInt32)">
             <summary>
             <para>Adds a new item with text <c>label</c>.</para>
             <para>An <c>id</c> can optionally be provided, as well as an accelerator (<c>accel</c>). If no <c>id</c> is provided, one will be created from the index. If no <c>accel</c> is provided then the default <c>0</c> will be assigned to it. See <see cref="M:Godot.PopupMenu.GetItemAccelerator(System.Int32)"/> for more info on accelerators.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddIconCheckItem(Godot.Texture,System.String,System.Int32,System.UInt32)">
+        <member name="M:Godot.PopupMenu.AddIconItem(Godot.Texture,System.String,System.Int32,System.UInt32)">
             <summary>
-            <para>Adds a new checkable item with text <c>label</c> and icon <c>texture</c>.</para>
+            <para>Adds a new item with text <c>label</c> and icon <c>texture</c>.</para>
             <para>An <c>id</c> can optionally be provided, as well as an accelerator (<c>accel</c>). If no <c>id</c> is provided, one will be created from the index. If no <c>accel</c> is provided then the default <c>0</c> will be assigned to it. See <see cref="M:Godot.PopupMenu.GetItemAccelerator(System.Int32)"/> for more info on accelerators.</para>
-            <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.AddCheckItem(System.String,System.Int32,System.UInt32)">
@@ -25923,16 +26102,35 @@
             <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddRadioCheckItem(System.String,System.Int32,System.UInt32)">
+        <member name="M:Godot.PopupMenu.AddIconCheckItem(Godot.Texture,System.String,System.Int32,System.UInt32)">
             <summary>
-            <para>Adds a new radio button with text <c>label</c>.</para>
+            <para>Adds a new checkable item with text <c>label</c> and icon <c>texture</c>.</para>
             <para>An <c>id</c> can optionally be provided, as well as an accelerator (<c>accel</c>). If no <c>id</c> is provided, one will be created from the index. If no <c>accel</c> is provided then the default <c>0</c> will be assigned to it. See <see cref="M:Godot.PopupMenu.GetItemAccelerator(System.Int32)"/> for more info on accelerators.</para>
             <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddSubmenuItem(System.String,System.String,System.Int32)">
+        <member name="M:Godot.PopupMenu.AddRadioCheckItem(System.String,System.Int32,System.UInt32)">
             <summary>
-            <para>Adds an item that will act as a submenu of the parent <see cref="T:Godot.PopupMenu"/> node when clicked. The <c>submenu</c> argument is the name of the child <see cref="T:Godot.PopupMenu"/> node that will be shown when the item is clicked.</para>
+            <para>Adds a new radio check button with text <c>label</c>.</para>
+            <para>An <c>id</c> can optionally be provided, as well as an accelerator (<c>accel</c>). If no <c>id</c> is provided, one will be created from the index. If no <c>accel</c> is provided then the default <c>0</c> will be assigned to it. See <see cref="M:Godot.PopupMenu.GetItemAccelerator(System.Int32)"/> for more info on accelerators.</para>
+            <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PopupMenu.AddIconRadioCheckItem(Godot.Texture,System.String,System.Int32,System.UInt32)">
+            <summary>
+            <para>Same as <see cref="M:Godot.PopupMenu.AddIconCheckItem(Godot.Texture,System.String,System.Int32,System.UInt32)"/>, but uses a radio check button.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PopupMenu.AddMultistateItem(System.String,System.Int32,System.Int32,System.Int32,System.UInt32)">
+            <summary>
+            <para>Adds a new multistate item with text <c>label</c>.</para>
+            <para>Contrarily to normal binary items, multistate items can have more than two states, as defined by <c>max_states</c>. Each press or activate of the item will increase the state by one. The default value is defined by <c>default_state</c>.</para>
+            <para>An <c>id</c> can optionally be provided, as well as an accelerator (<c>accel</c>). If no <c>id</c> is provided, one will be created from the index. If no <c>accel</c> is provided then the default <c>0</c> will be assigned to it. See <see cref="M:Godot.PopupMenu.GetItemAccelerator(System.Int32)"/> for more info on accelerators.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PopupMenu.AddShortcut(Godot.ShortCut,System.Int32,System.Boolean)">
+            <summary>
+            <para>Adds a <see cref="T:Godot.ShortCut"/>.</para>
             <para>An <c>id</c> can optionally be provided. If no <c>id</c> is provided, one will be created from the index.</para>
             </summary>
         </member>
@@ -25942,10 +26140,11 @@
             <para>An <c>id</c> can optionally be provided. If no <c>id</c> is provided, one will be created from the index.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddShortcut(Godot.ShortCut,System.Int32,System.Boolean)">
+        <member name="M:Godot.PopupMenu.AddCheckShortcut(Godot.ShortCut,System.Int32,System.Boolean)">
             <summary>
-            <para>Adds a <see cref="T:Godot.ShortCut"/>.</para>
+            <para>Adds a new checkable item and assigns the specified <see cref="T:Godot.ShortCut"/> to it. Sets the label of the checkbox to the <see cref="T:Godot.ShortCut"/>'s name.</para>
             <para>An <c>id</c> can optionally be provided. If no <c>id</c> is provided, one will be created from the index.</para>
+            <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.AddIconCheckShortcut(Godot.Texture,Godot.ShortCut,System.Int32,System.Boolean)">
@@ -25955,18 +26154,22 @@
             <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddCheckShortcut(Godot.ShortCut,System.Int32,System.Boolean)">
-            <summary>
-            <para>Adds a new checkable item and assigns the specified <see cref="T:Godot.ShortCut"/> to it. Sets the label of the checkbox to the <see cref="T:Godot.ShortCut"/>'s name.</para>
-            <para>An <c>id</c> can optionally be provided. If no <c>id</c> is provided, one will be created from the index.</para>
-            <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
-            </summary>
-        </member>
         <member name="M:Godot.PopupMenu.AddRadioCheckShortcut(Godot.ShortCut,System.Int32,System.Boolean)">
             <summary>
             <para>Adds a new radio check button and assigns a <see cref="T:Godot.ShortCut"/> to it. Sets the label of the checkbox to the <see cref="T:Godot.ShortCut"/>'s name.</para>
             <para>An <c>id</c> can optionally be provided. If no <c>id</c> is provided, one will be created from the index.</para>
             <para>Note: Checkable items just display a checkmark, but don't have any built-in checking behavior and must be checked/unchecked manually. See <see cref="M:Godot.PopupMenu.SetItemChecked(System.Int32,System.Boolean)"/> for more info on how to control it.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PopupMenu.AddIconRadioCheckShortcut(Godot.Texture,Godot.ShortCut,System.Int32,System.Boolean)">
+            <summary>
+            <para>Same as <see cref="M:Godot.PopupMenu.AddIconCheckShortcut(Godot.Texture,Godot.ShortCut,System.Int32,System.Boolean)"/>, but uses a radio check button.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PopupMenu.AddSubmenuItem(System.String,System.String,System.Int32)">
+            <summary>
+            <para>Adds an item that will act as a submenu of the parent <see cref="T:Godot.PopupMenu"/> node when clicked. The <c>submenu</c> argument is the name of the child <see cref="T:Godot.PopupMenu"/> node that will be shown when the item is clicked.</para>
+            <para>An <c>id</c> can optionally be provided. If no <c>id</c> is provided, one will be created from the index.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.SetItemText(System.Int32,System.String)">
@@ -26838,6 +27041,26 @@
             <para>If set to <c>true</c>, the <see cref="T:Godot.ReferenceRect"/> will only be visible while in editor. Otherwise, <see cref="T:Godot.ReferenceRect"/> will be visible in game.</para>
             </summary>
         </member>
+        <member name="T:Godot.ReflectionProbe">
+            <summary>
+            <para>Capture its surroundings as a dual parabolid image, and stores versions of it with increasing levels of blur to simulate different material roughnesses.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ReflectionProbe.Intensity">
+            <summary>
+            <para>Defines the reflection intensity.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ReflectionProbe.BoxProjection">
+            <summary>
+            <para>If <c>true</c>, enables box projection. This makes reflections look more correct in rectangle-shaped rooms by offsetting the reflection center depending on the camera's location.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.ReflectionProbe.EnableShadows">
+            <summary>
+            <para>If <c>true</c>, computes shadows in the reflection probe. This makes the reflection probe slower to render; you may want to disable this if using the  <see cref="P:Godot.ReflectionProbe.UpdateMode"/>.</para>
+            </summary>
+        </member>
         <member name="T:Godot.RegEx">
             <summary>
             <para>A regular expression (or regex) is a compact language that can be used to recognise strings that follow a specific pattern, such as URLs, email addresses, complete sentences, etc. For instance, a regex of <c>ab[0-9]</c> would find any string that is <c>ab</c> followed by any number from <c>0</c> to <c>9</c>. For a more in-depth look, you can easily find various tutorials and detailed explanations on the Internet.</para>
@@ -27518,6 +27741,12 @@
             <para>Deprecated, use <see cref="P:Godot.PhysicsMaterial.Bounce"/> instead via <see cref="P:Godot.RigidBody.PhysicsMaterialOverride"/>.</para>
             </summary>
         </member>
+        <member name="P:Godot.RigidBody.PhysicsMaterialOverride">
+            <summary>
+            <para>The physics material override for the body.</para>
+            <para>If a material is assigned to this property, it will be used instead of any other physics material, such as an inherited one.</para>
+            </summary>
+        </member>
         <member name="P:Godot.RigidBody.GravityScale">
             <summary>
             <para>This is multiplied by the global 3D gravity setting found in Project &gt; Project Settings &gt; Physics &gt; 3d to produce RigidBody's gravity. For example, a value of 1 will be normal gravity, 2 will apply double gravity, and 0.5 will apply half gravity to this object.</para>
@@ -27646,6 +27875,16 @@
             <para>Applies a torque impulse which will be affected by the body mass and shape. This will rotate the body around the <c>impulse</c> vector passed.</para>
             </summary>
         </member>
+        <member name="M:Godot.RigidBody.SetAxisLock(Godot.PhysicsServer.BodyAxis,System.Boolean)">
+            <summary>
+            <para>Locks the specified linear or rotational axis.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.RigidBody.GetAxisLock(Godot.PhysicsServer.BodyAxis)">
+            <summary>
+            <para>Returns <c>true</c> if the specified linear or rotational axis is locked.</para>
+            </summary>
+        </member>
         <member name="M:Godot.RigidBody.GetCollidingBodies">
             <summary>
             <para>Returns a list of the bodies colliding with this one. By default, number of max contacts reported is at 0, see the <see cref="P:Godot.RigidBody.ContactsReported"/> property to increase it.</para>
@@ -27726,6 +27965,12 @@
             <summary>
             <para>The body's bounciness. Values range from <c>0</c> (no bounce) to <c>1</c> (full bounciness).</para>
             <para>Deprecated, use <see cref="P:Godot.PhysicsMaterial.Bounce"/> instead via <see cref="P:Godot.RigidBody2D.PhysicsMaterialOverride"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.RigidBody2D.PhysicsMaterialOverride">
+            <summary>
+            <para>The physics material override for the body.</para>
+            <para>If a material is assigned to this property, it will be used instead of any other physics material, such as an inherited one.</para>
             </summary>
         </member>
         <member name="P:Godot.RigidBody2D.GravityScale">
@@ -28553,6 +28798,11 @@
         <member name="M:Godot.Skeleton.PhysicalBonesStartSimulation(Godot.Collections.Array)">
             <summary>
             <param name="bones">If the parameter is null, then the default value is new Godot.Collections.Array {}</param>
+            </summary>
+        </member>
+        <member name="M:Godot.Skeleton2D.GetBoneCount">
+            <summary>
+            <para>Returns the amount of bones in the skeleton.</para>
             </summary>
         </member>
         <member name="T:Godot.Sky">
@@ -29937,6 +30187,12 @@
             <para>Deprecated, use <see cref="P:Godot.PhysicsMaterial.Bounce"/> instead via <see cref="P:Godot.StaticBody.PhysicsMaterialOverride"/>.</para>
             </summary>
         </member>
+        <member name="P:Godot.StaticBody.PhysicsMaterialOverride">
+            <summary>
+            <para>The physics material override for the body.</para>
+            <para>If a material is assigned to this property, it will be used instead of any other physics material, such as an inherited one.</para>
+            </summary>
+        </member>
         <member name="P:Godot.StaticBody.ConstantLinearVelocity">
             <summary>
             <para>The body's constant linear velocity. This does not move the body, but affects other bodies that touch it, as if it was in a state of movement.</para>
@@ -29973,6 +30229,12 @@
             <summary>
             <para>The body's bounciness. Values range from <c>0</c> (no bounce) to <c>1</c> (full bounciness).</para>
             <para>Deprecated, use <see cref="P:Godot.PhysicsMaterial.Bounce"/> instead via <see cref="P:Godot.StaticBody2D.PhysicsMaterialOverride"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.StaticBody2D.PhysicsMaterialOverride">
+            <summary>
+            <para>The physics material override for the body.</para>
+            <para>If a material is assigned to this property, it will be used instead of any other physics material, such as an inherited one.</para>
             </summary>
         </member>
         <member name="T:Godot.StreamPeer">
@@ -33048,6 +33310,11 @@
             <para>Resets the color for the given column to default.</para>
             </summary>
         </member>
+        <member name="M:Godot.TreeItem.GetCustomColor(System.Int32)">
+            <summary>
+            <para>Returns the custom color of column <c>column</c>.</para>
+            </summary>
+        </member>
         <member name="M:Godot.TreeItem.SetCustomBgColor(System.Int32,Godot.Color,System.Boolean)">
             <summary>
             <para>Sets the given column's custom background color and whether to just use it as an outline.</para>
@@ -33980,6 +34247,11 @@
         <member name="P:Godot.VideoPlayer.AudioTrack">
             <summary>
             <para>The embedded audio track to play.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.VideoPlayer.Stream">
+            <summary>
+            <para>The assigned video stream. See description for supported formats.</para>
             </summary>
         </member>
         <member name="P:Godot.VideoPlayer.VolumeDb">
@@ -37514,7 +37786,7 @@
             <summary>
             <para>This class implements a WebSocket client compatible with any RFC 6455-compliant WebSocket server.</para>
             <para>This client can be optionally used as a network peer for the <see cref="T:Godot.MultiplayerAPI"/>.</para>
-            <para>After starting the client (<see cref="M:Godot.WebSocketClient.ConnectToUrl(System.String,System.String[],System.Boolean)"/>), you will need to <see cref="M:Godot.NetworkedMultiplayerPeer.Poll"/> it at regular intervals (e.g. inside <see cref="M:Godot.Node._Process(System.Single)"/>).</para>
+            <para>After starting the client (<see cref="M:Godot.WebSocketClient.ConnectToUrl(System.String,System.String[],System.Boolean,System.String[])"/>), you will need to <see cref="M:Godot.NetworkedMultiplayerPeer.Poll"/> it at regular intervals (e.g. inside <see cref="M:Godot.Node._Process(System.Single)"/>).</para>
             <para>You will receive appropriate signals when connecting, disconnecting, or when new data is available.</para>
             </summary>
         </member>
@@ -37524,17 +37796,34 @@
             <para>Note: You must specify the certificates to be used in the Project Settings for it to work when exported.</para>
             </summary>
         </member>
-        <member name="M:Godot.WebSocketClient.ConnectToUrl(System.String,System.String[],System.Boolean)">
+        <member name="P:Godot.WebSocketClient.TrustedSslCertificate">
+            <summary>
+            <para>If specified, this <see cref="T:Godot.X509Certificate"/> will be the only one accepted when connecting to an SSL host. Any other certificate provided by the server will be regarded as invalid.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.WebSocketClient.ConnectToUrl(System.String,System.String[],System.Boolean,System.String[])">
             <summary>
             <para>Connects to the given URL requesting one of the given <c>protocols</c> as sub-protocol. If the list empty (default), no sub-protocol will be requested.</para>
             <para>If <c>true</c> is passed as <c>gd_mp_api</c>, the client will behave like a network peer for the <see cref="T:Godot.MultiplayerAPI"/>, connections to non-Godot servers will not work, and <c>data_received</c> will not be emitted.</para>
             <para>If <c>false</c> is passed instead (default), you must call <see cref="T:Godot.PacketPeer"/> functions (<c>put_packet</c>, <c>get_packet</c>, etc.) on the <see cref="T:Godot.WebSocketPeer"/> returned via <c>get_peer(1)</c> and not on this object directly (e.g. <c>get_peer(1).put_packet(data)</c>).</para>
+            <para>You can optionally pass a list of <c>custom_headers</c> to be added to the handshake HTTP request (not supported in HTML5 platform).</para>
             <param name="protocols">If the parameter is null, then the default value is new string[] {}</param>
+            <param name="customHeaders">If the parameter is null, then the default value is new string[] {}</param>
             </summary>
         </member>
         <member name="M:Godot.WebSocketClient.DisconnectFromHost(System.Int32,System.String)">
             <summary>
             <para>Disconnects this client from the connected host. See <see cref="M:Godot.WebSocketPeer.Close(System.Int32,System.String)"/> for more information.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.WebSocketClient.GetConnectedHost">
+            <summary>
+            <para>Return the IP address of the currently connected host.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.WebSocketClient.GetConnectedPort">
+            <summary>
+            <para>Return the IP port of the currently connected host.</para>
             </summary>
         </member>
         <member name="T:Godot.WebSocketMultiplayerPeer">
@@ -37615,6 +37904,21 @@
             <para>This class implements a WebSocket server that can also support the high-level multiplayer API.</para>
             <para>After starting the server (<see cref="M:Godot.WebSocketServer.Listen(System.Int32,System.String[],System.Boolean)"/>), you will need to <see cref="M:Godot.NetworkedMultiplayerPeer.Poll"/> it at regular intervals (e.g. inside <see cref="M:Godot.Node._Process(System.Single)"/>). When clients connect, disconnect, or send data, you will receive the appropriate signal.</para>
             <para>Note: This class will not work in HTML5 exports due to browser restrictions.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebSocketServer.PrivateKey">
+            <summary>
+            <para>When set to a valid <see cref="T:Godot.CryptoKey"/> (along with <see cref="P:Godot.WebSocketServer.SslCertificate"/>) will cause the server to require SSL instead of regular TCP (i.e. the <c>wss://</c> protocol).</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebSocketServer.SslCertificate">
+            <summary>
+            <para>When set to a valid <see cref="T:Godot.X509Certificate"/> (along with <see cref="P:Godot.WebSocketServer.PrivateKey"/>) will cause the server to require SSL instead of regular TCP (i.e. the <c>wss://</c> protocol).</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebSocketServer.CaChain">
+            <summary>
+            <para>When using SSL (see <see cref="P:Godot.WebSocketServer.PrivateKey"/> and <see cref="P:Godot.WebSocketServer.SslCertificate"/>), you can set this to a valid <see cref="T:Godot.X509Certificate"/> to be provided as additional CA chain information during the SSL handshake.</para>
             </summary>
         </member>
         <member name="M:Godot.WebSocketServer.IsListening">
