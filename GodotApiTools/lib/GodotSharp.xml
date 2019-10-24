@@ -343,8 +343,9 @@
         </member>
         <member name="M:Godot.Node._GetConfigurationWarning">
             <summary>
-            <para>The string returned from this method is displayed as a warning in the "Scene Dock" if the script that overrides it is a <c>tool</c> script.</para>
+            <para>The string returned from this method is displayed as a warning in the Scene Dock if the script that overrides it is a <c>tool</c> script.</para>
             <para>Returning an empty string produces no warning.</para>
+            <para>Call <see cref="M:Godot.Node.UpdateConfigurationWarning"/> when the warning needs to be updated for this node.</para>
             </summary>
         </member>
         <member name="M:Godot.Node._Input(Godot.InputEvent)">
@@ -822,6 +823,12 @@
         <member name="M:Godot.Node.RsetUnreliableId(System.Int32,System.String,System.Object)">
             <summary>
             <para>Remotely changes property's value on a specific peer identified by <c>peer_id</c> using an unreliable protocol (see <see cref="M:Godot.NetworkedMultiplayerPeer.SetTargetPeer(System.Int32)"/>).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Node.UpdateConfigurationWarning">
+            <summary>
+            <para>Updates the warning displayed for this node in the Scene Dock.</para>
+            <para>Use <see cref="M:Godot.Node._GetConfigurationWarning"/> to setup the warning message to display.</para>
             </summary>
         </member>
         <member name="T:Godot.Object">
@@ -16442,6 +16449,7 @@
         <member name="M:Godot.HTTPClient.GetResponseBodyLength">
             <summary>
             <para>Returns the response's body length.</para>
+            <para>Note: Some Web servers may not send a body length. In this case, the value returned will be <c>-1</c>. If using chunked transfer encoding, the body length will also be <c>-1</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.HTTPClient.ReadResponseBodyChunk">
@@ -16451,7 +16459,7 @@
         </member>
         <member name="M:Godot.HTTPClient.SetReadChunkSize(System.Int32)">
             <summary>
-            <para>Sets the size of the buffer used and maximum bytes to read per iteration. see <see cref="M:Godot.HTTPClient.ReadResponseBodyChunk"/></para>
+            <para>Sets the size of the buffer used and maximum bytes to read per iteration. See <see cref="M:Godot.HTTPClient.ReadResponseBodyChunk"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.HTTPClient.GetStatus">
@@ -16586,6 +16594,7 @@
         <member name="M:Godot.HTTPRequest.GetBodySize">
             <summary>
             <para>Returns the response body length.</para>
+            <para>Note: Some Web servers may not send a body length. In this case, the value returned will be <c>-1</c>. If using chunked transfer encoding, the body length will also be <c>-1</c>.</para>
             </summary>
         </member>
         <member name="T:Godot.Image">
@@ -22219,6 +22228,16 @@
             <para>At the moment this function is only used by <c>AudioDriverOpenSL</c> to request permission for <c>RECORD_AUDIO</c> on Android.</para>
             </summary>
         </member>
+        <member name="M:Godot.OS.RequestPermissions">
+            <summary>
+            <para>With this function you can request dangerous permissions since normal permissions are automatically granted at install time in Android application.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.OS.GetGrantedPermissions">
+            <summary>
+            <para>With this function you can get the list of dangerous permissions that have been granted to the Android application.</para>
+            </summary>
+        </member>
         <member name="T:Godot.PackedScene">
             <summary>
             <para>A simplified interface to a scene file. Provides access to operations and checks that can be performed on the scene resource itself.</para>
@@ -27564,9 +27583,10 @@
             <para>Adds raw non-BBCode-parsed text to the tag stack.</para>
             </summary>
         </member>
-        <member name="M:Godot.RichTextLabel.AddImage(Godot.Texture)">
+        <member name="M:Godot.RichTextLabel.AddImage(Godot.Texture,System.Int32,System.Int32)">
             <summary>
-            <para>Adds an image's opening and closing tags to the tag stack.</para>
+            <para>Adds an image's opening and closing tags to the tag stack, optionally providing a <c>width</c> and <c>height</c> to resize the image.</para>
+            <para>If <c>width</c> or <c>height</c> is set to 0, the image size will be adjusted in order to keep the original aspect ratio.</para>
             </summary>
         </member>
         <member name="M:Godot.RichTextLabel.Newline">
@@ -31537,7 +31557,7 @@
         </member>
         <member name="M:Godot.TextEdit.ClearColors">
             <summary>
-            <para>Clears all the syntax coloring information.</para>
+            <para>Clears all custom syntax coloring information previously added with <see cref="M:Godot.TextEdit.AddColorRegion(System.String,System.String,Godot.Color,System.Boolean)"/> or <see cref="M:Godot.TextEdit.AddKeywordColor(System.String,Godot.Color)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.TextEdit.MenuOption(System.Int32)">
