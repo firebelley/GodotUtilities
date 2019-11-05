@@ -81,7 +81,7 @@ namespace GodotApiTools.Extension
 
         public static T GetFirstNodeOfType<T>(this Node node) where T : Node
         {
-            foreach (var child in node.GetChildren() as IEnumerable<Node>)
+            foreach (var child in node.GetChildren())
             {
                 if (child is T t)
                 {
