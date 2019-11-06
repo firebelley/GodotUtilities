@@ -4548,7 +4548,7 @@
         </member>
         <member name="P:Godot.AnimationNodeBlendSpace2D.AutoTriangles">
             <summary>
-            <para>If true, the blend space is triangulated automatically. The mesh updates every time you add or remove points with <see cref="M:Godot.AnimationNodeBlendSpace2D.AddBlendPoint(Godot.AnimationRootNode,Godot.Vector2,System.Int32)"/> and <see cref="M:Godot.AnimationNodeBlendSpace2D.RemoveBlendPoint(System.Int32)"/>.</para>
+            <para>If <c>true</c>, the blend space is triangulated automatically. The mesh updates every time you add or remove points with <see cref="M:Godot.AnimationNodeBlendSpace2D.AddBlendPoint(Godot.AnimationRootNode,Godot.Vector2,System.Int32)"/> and <see cref="M:Godot.AnimationNodeBlendSpace2D.RemoveBlendPoint(System.Int32)"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.AnimationNodeBlendSpace2D.MinSpace">
@@ -4848,6 +4848,7 @@
         <member name="T:Godot.AnimationPlayer">
             <summary>
             <para>An animation player is used for general-purpose playback of <see cref="T:Godot.Animation"/> resources. It contains a dictionary of animations (referenced by name) and custom blend times between their transitions. Additionally, animations can be played and blended in different channels.</para>
+            <para>Updating the target properties of animations occurs at process time.</para>
             </summary>
         </member>
         <member name="F:Godot.AnimationPlayer.AnimationProcessMode.Physics">
@@ -4984,12 +4985,14 @@
             <summary>
             <para>Plays the animation with key <c>name</c>. Custom speed and blend times can be set. If <c>custom_speed</c> is negative and <c>from_end</c> is <c>true</c>, the animation will play backwards.</para>
             <para>If the animation has been paused by <see cref="M:Godot.AnimationPlayer.Stop(System.Boolean)"/>, it will be resumed. Calling <see cref="M:Godot.AnimationPlayer.Play(System.String,System.Single,System.Single,System.Boolean)"/> without arguments will also resume the animation.</para>
+            <para>Note: The animation will be updated the next time the AnimationPlayer is processed. If other variables are updated at the same time this is called, they may be updated too early. To perform the update immediately, call <c>advance(0)</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.AnimationPlayer.PlayBackwards(System.String,System.Single)">
             <summary>
             <para>Plays the animation with key <c>name</c> in reverse.</para>
             <para>If the animation has been paused by <c>stop(true)</c>, it will be resumed backwards. Calling <c>play_backwards()</c> without arguments will also resume the animation backwards.</para>
+            <para>Note: This is the same as <c>play</c> in regards to process/update behavior.</para>
             </summary>
         </member>
         <member name="M:Godot.AnimationPlayer.Stop(System.Boolean)">
@@ -5041,7 +5044,7 @@
         </member>
         <member name="M:Godot.AnimationPlayer.Advance(System.Single)">
             <summary>
-            <para>Shifts position in the animation timeline. Delta is the time in seconds to shift. Events between the current frame and <c>delta</c> are handled.</para>
+            <para>Shifts position in the animation timeline and immediately updates the animation. <c>delta</c> is the time in seconds to shift. Events between the current frame and <c>delta</c> are handled.</para>
             </summary>
         </member>
         <member name="T:Godot.AnimationTreePlayer">
@@ -8006,7 +8009,7 @@
         </member>
         <member name="T:Godot.BackBufferCopy">
             <summary>
-            <para>Node for back-buffering the currently-displayed screen. The region defined in the BackBufferCopy node is bufferized with the content of the screen it covers, or the entire screen according to the copy mode set. Use <c>SCREEN_TEXTURE</c> in the <c>texture()</c> function to access the buffer.</para>
+            <para>Node for back-buffering the currently-displayed screen. The region defined in the BackBufferCopy node is bufferized with the content of the screen it covers, or the entire screen according to the copy mode set. Use the <c>texture(SCREEN_TEXTURE, ...)</c> function in your shader scripts to access the buffer.</para>
             </summary>
         </member>
         <member name="F:Godot.BackBufferCopy.CopyModeEnum.Disabled">
@@ -9312,6 +9315,11 @@
         <member name="M:Godot.CanvasItem.IsTransformNotificationEnabled">
             <summary>
             <para>Returns <c>true</c> if global transform notifications are communicated to children.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.CanvasItem.ForceUpdateTransform">
+            <summary>
+            <para>Forces the transform to update. Transform changes in physics are not instant for performance reasons. Transforms are accumulated and then set. Use this if you need an up-to-date transform when doing physics operations.</para>
             </summary>
         </member>
         <member name="M:Godot.CanvasItem.MakeCanvasPositionLocal(Godot.Vector2)">
@@ -10829,7 +10837,7 @@
         <member name="M:Godot.Control._MakeCustomTooltip(System.String)">
             <summary>
             <para>Virtual method to be implemented by the user. Returns a <see cref="T:Godot.Control"/> node that should be used as a tooltip instead of the default one. Use <c>for_text</c> parameter to determine what text the tooltip should contain (likely the contents of <see cref="P:Godot.Control.HintTooltip"/>).</para>
-            <para>The returned node must be of type <see cref="T:Godot.Control"/> or Control-derieved. It can have child nodes of any type. It is freed when the tooltip disappears, so make sure you always provide a new instance, not e.g. a node from scene. When null or non-Control node is returned, the default tooltip will be used instead.</para>
+            <para>The returned node must be of type <see cref="T:Godot.Control"/> or Control-derieved. It can have child nodes of any type. It is freed when the tooltip disappears, so make sure you always provide a new instance, not e.g. a node from scene. When <c>null</c> or non-Control node is returned, the default tooltip will be used instead.</para>
             <para>Note: The tooltip is shrunk to minimal size. If you want to ensure it's fully visible, you might want to set its <see cref="P:Godot.Control.RectMinSize"/> to some non-zero value.</para>
             <para>Example of usage with custom-constructed node:</para>
             <para><code>
@@ -16948,7 +16956,7 @@
         </member>
         <member name="M:Godot.Image.SaveExr(System.String,System.Boolean)">
             <summary>
-            <para>Saves the image as an EXR file to <c>path</c>. If grayscale is true and the image has only one channel, it will be saved explicitly as monochrome rather than one red channel. This function will return   if Godot was compiled without the TinyEXR module.</para>
+            <para>Saves the image as an EXR file to <c>path</c>. If grayscale is <c>true</c> and the image has only one channel, it will be saved explicitly as monochrome rather than one red channel. This function will return  if Godot was compiled without the TinyEXR module.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.DetectAlpha">
@@ -17054,6 +17062,19 @@
         <member name="M:Godot.Image.GetPixel(System.Int32,System.Int32)">
             <summary>
             <para>Returns the color of the pixel at <c>(x, y)</c> if the image is locked. If the image is unlocked, it always returns a <see cref="T:Godot.Color"/> with the value <c>(0, 0, 0, 1.0)</c>. This is the same as <see cref="M:Godot.Image.GetPixelv(Godot.Vector2)"/>, but two integer arguments instead of a Vector2 argument.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Image.SetPixelv(Godot.Vector2,Godot.Color)">
+            <summary>
+            <para>Sets the <see cref="T:Godot.Color"/> of the pixel at <c>(dst.x, dst.y)</c> if the image is locked. Note that the <c>dst</c> values must be integers. Example:</para>
+            <para><code>
+            var img = Image.new()
+            img.create(img_width, img_height, false, Image.FORMAT_RGBA8)
+            img.lock()
+            img.set_pixelv(Vector2(x, y), color) # Works
+            img.unlock()
+            img.set_pixelv(Vector2(x, y), color) # Does not have an effect
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.Image.SetPixel(System.Int32,System.Int32,Godot.Color)">
@@ -17725,7 +17746,17 @@
         </member>
         <member name="T:Godot.InputEventMouseMotion">
             <summary>
-            <para>Contains mouse motion information. Supports relative, absolute positions and speed. See <see cref="M:Godot.Node._Input(Godot.InputEvent)"/>.</para>
+            <para>Contains mouse and pen motion information. Supports relative, absolute positions and speed. See <see cref="M:Godot.Node._Input(Godot.InputEvent)"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.InputEventMouseMotion.Tilt">
+            <summary>
+            <para>Represents the angles of tilt of the pen. Positive X-coordinate value indicates a tilt to the right. Positive Y-coordinate value indicates a tilt toward the user. Ranges from <c>-1.0</c> to <c>1.0</c> for both axes.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.InputEventMouseMotion.Pressure">
+            <summary>
+            <para>Represents the pressure the user puts on the pen. Ranges from <c>0.0</c> to <c>1.0</c>.</para>
             </summary>
         </member>
         <member name="P:Godot.InputEventMouseMotion.Relative">
@@ -21751,6 +21782,17 @@
             <para>Returns the audio driver name for the given index.</para>
             </summary>
         </member>
+        <member name="M:Godot.OS.GetConnectedMidiInputs">
+            <summary>
+            <para>Returns an array of MIDI device names.</para>
+            <para>The returned array will be empty if the system MIDI driver has not previously been initialised with <see cref="M:Godot.OS.OpenMidiInputs"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.OS.OpenMidiInputs">
+            <summary>
+            <para>Initialises the singleton for the system MIDI driver.</para>
+            </summary>
+        </member>
         <member name="M:Godot.OS.GetScreenCount">
             <summary>
             <para>Returns the number of displays attached to the host machine.</para>
@@ -22611,6 +22653,16 @@
         <member name="P:Godot.Particles.DrawPass4">
             <summary>
             <para><see cref="T:Godot.Mesh"/> that is drawn for the fourth draw pass.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Particles.SetDrawPassMesh(System.Int32,Godot.Mesh)">
+            <summary>
+            <para>Sets the <see cref="T:Godot.Mesh"/> that is drawn at index <c>pass</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Particles.GetDrawPassMesh(System.Int32)">
+            <summary>
+            <para>Returns the <see cref="T:Godot.Mesh"/> that is drawn at index <c>pass</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.Particles.Restart">
@@ -26244,7 +26296,7 @@
         </member>
         <member name="M:Godot.PopupMenu.SetItemAsRadioCheckable(System.Int32,System.Boolean)">
             <summary>
-            <para>Sets the type of the item at the specified index <c>idx</c> to radio button. If false, sets the type of the item to plain text.</para>
+            <para>Sets the type of the item at the specified index <c>idx</c> to radio button. If <c>false</c>, sets the type of the item to plain text.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.SetItemTooltip(System.Int32,System.String)">
@@ -26551,11 +26603,21 @@
             <summary>
             <para>Contains global variables accessible from everywhere. Use <see cref="M:Godot.ProjectSettings.GetSetting(System.String)"/>, <see cref="M:Godot.ProjectSettings.SetSetting(System.String,System.Object)"/> or <see cref="M:Godot.ProjectSettings.HasSetting(System.String)"/> to access them. Variables stored in <c>project.godot</c> are also loaded into ProjectSettings, making this object very useful for reading custom game configuration options.</para>
             <para>When naming a Project Settings property, use the full path to the setting including the category. For example, <c>"application/config/name"</c> for the project name. Category and property names can be viewed in the Project Settings dialog.</para>
+            <para>Overriding: Any project setting can be overridden by creating a file named <c>override.cfg</c> in the project's root directory. This can also be used in exported projects by placing this file in the same directory as the project binary.</para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.HasSetting(System.String)">
             <summary>
             <para>Returns <c>true</c> if a configuration value is present.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ProjectSettings.SetSetting(System.String,System.Object)">
+            <summary>
+            <para>Sets the value of a setting.</para>
+            <para>Example:</para>
+            <para><code>
+            ProjectSettings.set_setting("application/config/name", "Example")
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.GetSetting(System.String)">
@@ -26575,6 +26637,11 @@
         <member name="M:Godot.ProjectSettings.GetOrder(System.String)">
             <summary>
             <para>Returns the order of a configuration value (influences when saved to the config file).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ProjectSettings.SetInitialValue(System.String,System.Object)">
+            <summary>
+            <para>Sets the specified property's initial value. This is the value the property reverts to.</para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.AddPropertyInfo(Godot.Collections.Dictionary)">
@@ -29141,19 +29208,34 @@
         </member>
         <member name="P:Godot.SoftBody.CollisionLayer">
             <summary>
-            <para>The physics layers this area is in.</para>
+            <para>The physics layers this SoftBody is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the collision_mask property.</para>
             <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A.</para>
             </summary>
         </member>
         <member name="P:Godot.SoftBody.CollisionMask">
             <summary>
-            <para>The physics layers this area scans for collisions.</para>
+            <para>The physics layers this SoftBody scans for collisions.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SoftBody.ParentCollisionIgnore">
+            <summary>
+            <para><see cref="T:Godot.NodePath"/> to a <see cref="T:Godot.CollisionObject"/> this SoftBody should avoid clipping.</para>
             </summary>
         </member>
         <member name="P:Godot.SoftBody.SimulationPrecision">
             <summary>
             <para>Increasing this value will improve the resulting simulation, but can affect performance. Use with care.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SoftBody.TotalMass">
+            <summary>
+            <para>The SoftBody's mass.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SoftBody.RayPickable">
+            <summary>
+            <para>If <c>true</c>, the <see cref="T:Godot.SoftBody"/> will respond to <see cref="T:Godot.RayCast"/>s.</para>
             </summary>
         </member>
         <member name="M:Godot.SoftBody.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -29279,9 +29361,24 @@
             <para>Returns whether this node is set as Toplevel, that is whether it ignores its parent nodes transformations.</para>
             </summary>
         </member>
+        <member name="M:Godot.Spatial.SetDisableScale(System.Boolean)">
+            <summary>
+            <para>Sets whether the node uses a scale of <c>(1, 1, 1)</c> or its local transformation scale. Changes to the local transformation scale are preserved.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Spatial.IsScaleDisabled">
+            <summary>
+            <para>Returns whether this node uses a scale of <c>(1, 1, 1)</c> or its local transformation scale.</para>
+            </summary>
+        </member>
         <member name="M:Godot.Spatial.GetWorld">
             <summary>
             <para>Returns the current <see cref="T:Godot.World"/> resource this <see cref="T:Godot.Spatial"/> node is registered to.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Spatial.ForceUpdateTransform">
+            <summary>
+            <para>Forces the transform to update. Transform changes in physics are not instant for performance reasons. Transforms are accumulated and then set. Use this if you need an up-to-date transform when doing physics operations.</para>
             </summary>
         </member>
         <member name="M:Godot.Spatial.UpdateGizmo">
@@ -29332,6 +29429,11 @@
         <member name="M:Godot.Spatial.GlobalRotate(Godot.Vector3,System.Single)">
             <summary>
             <para>Rotates the global (world) transformation around axis, a unit <see cref="T:Godot.Vector3"/>, by specified angle in radians. The rotation axis is in global coordinate system.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Spatial.GlobalScale(Godot.Vector3)">
+            <summary>
+            <para>Scales the global (world) transformation by the given <see cref="T:Godot.Vector3"/> scale factors.</para>
             </summary>
         </member>
         <member name="M:Godot.Spatial.GlobalTranslate(Godot.Vector3)">
@@ -31230,6 +31332,16 @@
             <para>Search from end to beginning.</para>
             </summary>
         </member>
+        <member name="F:Godot.TextEdit.SearchResult.Column">
+            <summary>
+            <para>Used to access the result column from .</para>
+            </summary>
+        </member>
+        <member name="F:Godot.TextEdit.SearchResult.Line">
+            <summary>
+            <para>Used to access the result line from .</para>
+            </summary>
+        </member>
         <member name="F:Godot.TextEdit.MenuItems.Cut">
             <summary>
             <para>Cuts (Copies and clears) the selected text.</para>
@@ -31385,14 +31497,14 @@
         <member name="M:Godot.TextEdit.CursorSetColumn(System.Int32,System.Boolean)">
             <summary>
             <para>Moves the cursor at the specified <c>column</c> index.</para>
-            <para>If <c>adjust_viewport</c> is set to true, the viewport will center at the cursor position after the move occurs.</para>
+            <para>If <c>adjust_viewport</c> is set to <c>true</c>, the viewport will center at the cursor position after the move occurs.</para>
             </summary>
         </member>
         <member name="M:Godot.TextEdit.CursorSetLine(System.Int32,System.Boolean,System.Boolean,System.Int32)">
             <summary>
             <para>Moves the cursor at the specified <c>line</c> index.</para>
-            <para>If <c>adjust_viewport</c> is set to true, the viewport will center at the cursor position after the move occurs.</para>
-            <para>If <c>can_be_hidden</c> is set to true, the specified <c>line</c> can be hidden using <see cref="M:Godot.TextEdit.SetLineAsHidden(System.Int32,System.Boolean)"/>.</para>
+            <para>If <c>adjust_viewport</c> is set to <c>true</c>, the viewport will center at the cursor position after the move occurs.</para>
+            <para>If <c>can_be_hidden</c> is set to <c>true</c>, the specified <c>line</c> can be hidden using <see cref="M:Godot.TextEdit.SetLineAsHidden(System.Int32,System.Boolean)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.TextEdit.CursorGetColumn">
@@ -31472,7 +31584,15 @@
         </member>
         <member name="M:Godot.TextEdit.Search(System.String,System.UInt32,System.Int32,System.Int32)">
             <summary>
-            <para>Perform a search inside the text. Search flags can be specified in the<c>SEARCH_*</c> enum.</para>
+            <para>Perform a search inside the text. Search flags can be specified in the <c>SEARCH_*</c> enum.</para>
+            <para>Returns an empty <c>PoolIntArray</c> if no result was found. Otherwise, the result line and column can be accessed at indices specified in the <c>SEARCH_RESULT_*</c> enum, e.g:</para>
+            <para><code>
+            var result = search(key, flags, line, column)
+            if result.size() &gt; 0:
+                # result found
+                var res_line = result[TextEdit.SEARCH_RESULT_LINE]
+                var res_column = result[TextEdit.SEARCH_RESULT_COLUMN]
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.TextEdit.Undo">
@@ -32091,6 +32211,11 @@
             <para>Returns all the constants as a <see cref="T:System.String"/> filled with each constant's name, for use in <see cref="M:Godot.Theme.GetConstant(System.String,System.String)"/>, if the Theme has <c>type</c>.</para>
             </summary>
         </member>
+        <member name="M:Godot.Theme.Clear">
+            <summary>
+            <para>Clears all values on the theme.</para>
+            </summary>
+        </member>
         <member name="M:Godot.Theme.GetTypeList(System.String)">
             <summary>
             <para>Returns all the types in <c>type</c> as a <see cref="T:System.String"/> for use in any of the get_* functions, if the Theme has <c>type</c>.</para>
@@ -32099,6 +32224,11 @@
         <member name="M:Godot.Theme.CopyDefaultTheme">
             <summary>
             <para>Sets the Theme's values to a copy of the default theme values.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Theme.CopyTheme(Godot.Theme)">
+            <summary>
+            <para>Sets the Theme's values to a copy of a given theme.</para>
             </summary>
         </member>
         <member name="T:Godot.Thread">
@@ -32245,6 +32375,16 @@
             <para>If <c>false</c>, the texture position start in the top-left corner unless <see cref="P:Godot.TileMap.CompatibilityMode"/> is enabled.</para>
             </summary>
         </member>
+        <member name="P:Godot.TileMap.CellClipUv">
+            <summary>
+            <para>If <c>true</c>, the cell's UVs will be clipped.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.TileMap.CollisionUseParent">
+            <summary>
+            <para>If <c>true</c>, this tilemap's collision shape will be added to the collision shape of the parent. The parent has to be a <see cref="T:Godot.CollisionObject2D"/>.</para>
+            </summary>
+        </member>
         <member name="P:Godot.TileMap.CollisionUseKinematic">
             <summary>
             <para>If <c>true</c>, TileMap collisions will be handled as a kinematic body. If <c>false</c>, collisions will be handled as static body.</para>
@@ -32344,6 +32484,11 @@
         <member name="M:Godot.TileMap.IsCellTransposed(System.Int32,System.Int32)">
             <summary>
             <para>Returns <c>true</c> if the given cell is transposed, i.e. the X and Y axes are swapped.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TileMap.GetCellAutotileCoord(System.Int32,System.Int32)">
+            <summary>
+            <para>Returns the coordinate of the autotile variation in the tileset. Returns a zero vector if the cell doesn't have autotiling.</para>
             </summary>
         </member>
         <member name="M:Godot.TileMap.FixInvalidTiles">
@@ -37386,6 +37531,12 @@
         <member name="M:Godot.VisualServer.HasOsFeature(System.String)">
             <summary>
             <para>Returns <c>true</c> if the OS supports a certain feature. Features might be s3tc, etc, etc2 and pvrtc,</para>
+            </summary>
+        </member>
+        <member name="T:Godot.VisualShader">
+            <summary>
+            <para>This class allows you to define a custom shader program that can be used for various materials to render objects.</para>
+            <para>The visual shader editor creates the shader.</para>
             </summary>
         </member>
         <member name="F:Godot.VisualShader.Type.Max">
