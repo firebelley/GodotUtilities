@@ -29,9 +29,9 @@ namespace GodotApiTools.Logic
 
         public void ChangeState(T state)
         {
-            if (_leaveStates.ContainsKey(state))
+            if (_leaveStates.ContainsKey(CurrentState))
             {
-                _leaveStates[state]();
+                _leaveStates[CurrentState]();
             }
             CurrentState = state;
             if (_states.ContainsKey(CurrentState))
