@@ -21,7 +21,7 @@ namespace GodotApiTools.Extension
             var raycastDict = state.IntersectRay(from, to, exclude, collisionLayer, collideWithBodies, collideWithAreas);
             if (raycastDict != null && raycastDict.Count > 0)
             {
-                return RaycastResult.FromResultDictionary(raycastDict);
+                return new RaycastResult(from, to, raycastDict);
             }
             return null;
         }

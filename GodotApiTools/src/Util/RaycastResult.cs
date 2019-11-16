@@ -12,23 +12,20 @@ namespace GodotApiTools.Util
         public RID RID { get; set; }
         public int Shape { get; set; }
         public object Metadata { get; set; }
+        public Vector2 FromPosition { get; set; }
+        public Vector2 ToPosition { get; set; }
 
-        public static RaycastResult FromResultDictionary(Dictionary dict)
+        public RaycastResult(Vector2 from, Vector2 to, Dictionary resultDict)
         {
-            var result = new RaycastResult();
-            result.Position = (Vector2) dict["position"];
-            result.Normal = (Vector2) dict["normal"];
-            result.Collider = (Object) dict["collider"];
-            result.ColliderId = (int) dict["collider_id"];
-            result.RID = (RID) dict["rid"];
-            result.Shape = (int) dict["shape"];
-            result.Metadata = dict["metadata"];
-            return result;
-        }
-
-        private RaycastResult()
-        {
-
+            FromPosition = from;
+            ToPosition = to;
+            Position = (Vector2) resultDict["position"];
+            Normal = (Vector2) resultDict["normal"];
+            Collider = (Object) resultDict["collider"];
+            ColliderId = (int) resultDict["collider_id"];
+            RID = (RID) resultDict["rid"];
+            Shape = (int) resultDict["shape"];
+            Metadata = resultDict["metadata"];
         }
     }
 }
