@@ -329,6 +329,11 @@
             <para>The override to the default <see cref="T:Godot.MultiplayerAPI"/>. Set to <c>null</c> to use the default <see cref="T:Godot.SceneTree"/> one.</para>
             </summary>
         </member>
+        <member name="P:Godot.Node.ProcessPriority">
+            <summary>
+            <para>The node's priority in the execution order of the enabled processing callbacks (i.e. ,  and their internal counterparts). Nodes with a higher process priority will have their processing callbacks executed first.</para>
+            </summary>
+        </member>
         <member name="M:Godot.Node._EnterTree">
             <summary>
             <para>Called when the node enters the <see cref="T:Godot.SceneTree"/> (e.g. upon instancing, scene changing, or after calling <see cref="M:Godot.Node.AddChild(Godot.Node,System.Boolean)"/> in a script). If the node has children, its <see cref="M:Godot.Node._EnterTree"/> callback will be called first, and then that of the children.</para>
@@ -630,11 +635,6 @@
         <member name="M:Godot.Node.SetProcess(System.Boolean)">
             <summary>
             <para>Enables or disables processing. When a node is being processed, it will receive a  on every drawn frame (and the <see cref="M:Godot.Node._Process(System.Single)"/> callback will be called if exists). Enabled automatically if <see cref="M:Godot.Node._Process(System.Single)"/> is overridden. Any calls to this before <see cref="M:Godot.Node._Ready"/> will be ignored.</para>
-            </summary>
-        </member>
-        <member name="M:Godot.Node.SetProcessPriority(System.Int32)">
-            <summary>
-            <para>Sets the node's priority in the execution order of the enabled processing callbacks (i.e. ,  and their internal counterparts). Nodes with a higher process priority will have their processing callbacks executed first.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.IsProcessing">
@@ -1098,7 +1098,7 @@
         </member>
         <member name="M:Godot.Object.Connect(System.String,Godot.Object,System.String,Godot.Collections.Array,System.UInt32)">
             <summary>
-            <para>Connects a <c>signal</c> to a <c>method</c> on a <c>target</c> object. Pass optional <c>binds</c> to the call as an <see cref="T:Godot.Collections.Array"/> of parameters. Use <c>flags</c> to set deferred or one-shot connections. See <see cref="T:Godot.Object.ConnectFlags"/> constants.</para>
+            <para>Connects a <c>signal</c> to a <c>method</c> on a <c>target</c> object. Pass optional <c>binds</c> to the call as an <see cref="T:Godot.Collections.Array"/> of parameters. These parameters will be passed to the method after any parameter used in the call to <see cref="M:Godot.Object.EmitSignal(System.String,System.Object[])"/>. Use <c>flags</c> to set deferred or one-shot connections. See <see cref="T:Godot.Object.ConnectFlags"/> constants.</para>
             <para>A <c>signal</c> can only be connected once to a <c>method</c>. It will throw an error if already connected, unless the signal was connected with . To avoid this, first, use <see cref="M:Godot.Object.IsConnected(System.String,Godot.Object,System.String)"/> to check for existing connections.</para>
             <para>If the <c>target</c> is destroyed in the game's lifecycle, the connection will be lost.</para>
             <para>Examples:</para>
@@ -1106,6 +1106,13 @@
             connect("pressed", self, "_on_Button_pressed") # BaseButton signal
             connect("text_entered", self, "_on_LineEdit_text_entered") # LineEdit signal
             connect("hit", self, "_on_Player_hit", [ weapon_type, damage ]) # User-defined signal
+            </code></para>
+            <para>An example of the relationship between <c>binds</c> passed to <see cref="M:Godot.Object.Connect(System.String,Godot.Object,System.String,Godot.Collections.Array,System.UInt32)"/> and parameters used when calling <see cref="M:Godot.Object.EmitSignal(System.String,System.Object[])"/>:</para>
+            <para><code>
+            connect("hit", self, "_on_Player_hit", [ weapon_type, damage ]) # weapon_type and damage are passed last
+            emit_signal("hit", "Dark lord", 5) # "Dark lord" and 5 are passed first
+            func _on_Player_hit(hit_by, level, weapon_type, damage):
+                print("Hit by %s (lvl %d) with weapon %s for %d damage" % [hit_by, level, weapon_type, damage])
             </code></para>
             <param name="binds">If the parameter is null, then the default value is new Godot.Collections.Array {}</param>
             </summary>
@@ -3768,12 +3775,12 @@
             <paramref name="type"/> is not a generic type. That is, IsGenericType returns false.
             </exception>
         </member>
-        <member name="M:Godot.Mathf.PosMod(System.Single,System.Single)">
+        <member name="M:Godot.Mathf.PosMod(System.Int32,System.Int32)">
             <summary>
             Performs a canonical Modulus operation, where the output is on the range [0, b).
             </summary>
         </member>
-        <member name="M:Godot.Mathf.PosMod(System.Int32,System.Int32)">
+        <member name="M:Godot.Mathf.PosMod(System.Single,System.Single)">
             <summary>
             Performs a canonical Modulus operation, where the output is on the range [0, b).
             </summary>
@@ -6386,18 +6393,32 @@
         </member>
         <member name="T:Godot.AStar">
             <summary>
-            <para>A* (A star) is a computer algorithm that is widely used in pathfinding and graph traversal, the process of plotting an efficiently directed path between multiple points. It enjoys widespread use due to its performance and accuracy. Godot's A* implementation make use of vectors as points.</para>
-            <para>You must add points manually with <see cref="M:Godot.AStar.AddPoint(System.Int32,Godot.Vector3,System.Single)"/> and create segments manually with <see cref="M:Godot.AStar.ConnectPoints(System.Int32,System.Int32,System.Boolean)"/>. So you can test if there is a path between two points with the <see cref="M:Godot.AStar.ArePointsConnected(System.Int32,System.Int32)"/> function, get the list of existing ids in the found path with <see cref="M:Godot.AStar.GetIdPath(System.Int32,System.Int32)"/>, or the points list with <see cref="M:Godot.AStar.GetPointPath(System.Int32,System.Int32)"/>.</para>
+            <para>A* (A star) is a computer algorithm that is widely used in pathfinding and graph traversal, the process of plotting short paths among vertices (points), passing through a given set of edges (segments). It enjoys widespread use due to its performance and accuracy. Godot's A* implementation uses points in three-dimensional space and Euclidean distances by default.</para>
+            <para>You must add points manually with <see cref="M:Godot.AStar.AddPoint(System.Int32,Godot.Vector3,System.Single)"/> and create segments manually with <see cref="M:Godot.AStar.ConnectPoints(System.Int32,System.Int32,System.Boolean)"/>. Then you can test if there is a path between two points with the <see cref="M:Godot.AStar.ArePointsConnected(System.Int32,System.Int32,System.Boolean)"/> function, get a path containing indices by <see cref="M:Godot.AStar.GetIdPath(System.Int32,System.Int32)"/>, or one containing actual coordinates with <see cref="M:Godot.AStar.GetPointPath(System.Int32,System.Int32)"/>.</para>
+            <para>It is also possible to use non-Euclidean distances. To do so, create a class that extends <c>AStar</c> and override methods <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> and <see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/>. Both take two indices and return a length, as is shown in the following example.</para>
+            <para><code>
+            class MyAStar:
+                extends AStar
+            
+                func _compute_cost(u, v):
+                    return abs(u - v)
+            
+                func _estimate_cost(u, v):
+                    return min(0, abs(u - v) - 1)
+            </code></para>
+            <para><see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/> should return a lower bound of the distance, i.e. <c>_estimate_cost(u, v) &lt;= _compute_cost(u, v)</c>. This serves as a hint to the algorithm because the custom <c>_compute_cost</c> might be computation-heavy. If this is not the case, make <see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/> return the same value as <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> to provide the algorithm with the most accurate information.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)">
             <summary>
             <para>Called when computing the cost between two connected points.</para>
+            <para>Note that this function is hidden in the default <c>AStar</c> class.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)">
             <summary>
             <para>Called when estimating the cost between a point and the path's ending point.</para>
+            <para>Note that this function is hidden in the default <c>AStar</c> class.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar.GetAvailablePointId">
@@ -6488,14 +6509,14 @@
             </code></para>
             </summary>
         </member>
-        <member name="M:Godot.AStar.DisconnectPoints(System.Int32,System.Int32)">
+        <member name="M:Godot.AStar.DisconnectPoints(System.Int32,System.Int32,System.Boolean)">
             <summary>
-            <para>Deletes the segment between the given points.</para>
+            <para>Deletes the segment between the given points. If <c>bidirectional</c> is <c>false</c>, only movement from <c>id</c> to <c>to_id</c> is prevented, and a unidirectional segment possibly remains.</para>
             </summary>
         </member>
-        <member name="M:Godot.AStar.ArePointsConnected(System.Int32,System.Int32)">
+        <member name="M:Godot.AStar.ArePointsConnected(System.Int32,System.Int32,System.Boolean)">
             <summary>
-            <para>Returns whether there is a connection/segment between the given points.</para>
+            <para>Returns whether the two given points are directly connected by a segment. If <c>bidirectional</c> is <c>false</c>, returns whether movement from <c>id</c> to <c>to_id</c> is possible through this segment.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar.GetPointCount">
@@ -8631,7 +8652,7 @@
         </member>
         <member name="M:Godot.Camera.ProjectPosition(Godot.Vector2,System.Single)">
             <summary>
-            <para>Returns the 3D point in worldspace that maps to the given 2D coordinate in the <see cref="T:Godot.Viewport"/> rectangle on a plane that is the given distance into the scene away from the camera.</para>
+            <para>Returns the 3D point in worldspace that maps to the given 2D coordinate in the <see cref="T:Godot.Viewport"/> rectangle on a plane that is the given <c>z_depth</c> distance into the scene away from the camera.</para>
             </summary>
         </member>
         <member name="M:Godot.Camera.SetPerspective(System.Single,System.Single,System.Single)">
@@ -11231,7 +11252,18 @@
         </member>
         <member name="M:Godot.Control.SetDragPreview(Godot.Control)">
             <summary>
-            <para>Shows the given control at the mouse pointer. A good time to call this method is in <see cref="M:Godot.Control.GetDragData(Godot.Vector2)"/>.</para>
+            <para>Shows the given control at the mouse pointer. A good time to call this method is in <see cref="M:Godot.Control.GetDragData(Godot.Vector2)"/>. The control must not be in the scene tree.</para>
+            <para><code>
+            export (Color, RGBA) var color = Color(1, 0, 0, 1)
+            
+            func get_drag_data(position):
+                # Use a control that is not in the tree
+                var cpb = ColorPickerButton.new()
+                cpb.color = color
+                cpb.rect_size = Vector2(50, 50)
+                set_drag_preview(cpb)
+                return color
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.Control.WarpMouse(Godot.Vector2)">
@@ -16500,6 +16532,35 @@
             <summary>
             <para>A node with the ability to send HTTP requests. Uses <see cref="T:Godot.HTTPClient"/> internally.</para>
             <para>Can be used to make HTTP requests, i.e. download or upload files or web content via HTTP.</para>
+            <para>Example of loading and displaying an image using HTTPRequest:</para>
+            <para><code>
+            func _ready():
+                # Create an HTTP request node and connect its completion signal.
+                var http_request = HTTPRequest.new()
+                add_child(http_request)
+                http_request.connect("request_completed", self, "_http_request_completed")
+            
+                # Perform the HTTP request. The URL below returns a PNG image as of writing.
+                var error = http_request.request("https://via.placeholder.com/512")
+                if error != OK:
+                    push_error("An error occurred in the HTTP request.")
+            
+            
+            # Called when the HTTP request is completed.
+            func _http_request_completed(result, response_code, headers, body):
+                var image = Image.new()
+                var error = image.load_png_from_buffer(body)
+                if error != OK:
+                    push_error("Couldn't load the image.")
+            
+                var texture = ImageTexture.new()
+                texture.create_from_image(image)
+            
+                # Display the image in a TextureRect node.
+                var texture_rect = TextureRect.new()
+                add_child(texture_rect)
+                texture_rect.texture = texture
+            </code></para>
             </summary>
         </member>
         <member name="F:Godot.HTTPRequest.Result.Success">
@@ -16956,7 +17017,7 @@
         </member>
         <member name="M:Godot.Image.SaveExr(System.String,System.Boolean)">
             <summary>
-            <para>Saves the image as an EXR file to <c>path</c>. If grayscale is <c>true</c> and the image has only one channel, it will be saved explicitly as monochrome rather than one red channel. This function will return  if Godot was compiled without the TinyEXR module.</para>
+            <para>Saves the image as an EXR file to <c>path</c>. If <c>grayscale</c> is <c>true</c> and the image has only one channel, it will be saved explicitly as monochrome rather than one red channel. This function will return  if Godot was compiled without the TinyEXR module.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.DetectAlpha">
@@ -17562,9 +17623,9 @@
             <para>Returns <c>true</c> if this input event matches a pre-defined action of any type.</para>
             </summary>
         </member>
-        <member name="M:Godot.InputEvent.IsActionPressed(System.String)">
+        <member name="M:Godot.InputEvent.IsActionPressed(System.String,System.Boolean)">
             <summary>
-            <para>Returns <c>true</c> if the given action is being pressed (and is not an echo event for <see cref="T:Godot.InputEventKey"/> events). Not relevant for events of type <see cref="T:Godot.InputEventMouseMotion"/> or <see cref="T:Godot.InputEventScreenDrag"/>.</para>
+            <para>Returns <c>true</c> if the given action is being pressed (and is not an echo event for <see cref="T:Godot.InputEventKey"/> events, unless <c>allow_echo</c> is <c>true</c>). Not relevant for events of type <see cref="T:Godot.InputEventMouseMotion"/> or <see cref="T:Godot.InputEventScreenDrag"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.InputEvent.IsActionReleased(System.String)">
@@ -21674,6 +21735,11 @@
             <para>If <c>true</c>, the engine optimizes for low processor usage by only refreshing the screen if needed. Can improve battery consumption on mobile.</para>
             </summary>
         </member>
+        <member name="P:Godot.OS.LowProcessorUsageModeSleepUsec">
+            <summary>
+            <para>The amount of sleeping between frames when the low-processor usage mode is enabled (in microseconds). Higher values will result in lower CPU usage.</para>
+            </summary>
+        </member>
         <member name="P:Godot.OS.KeepScreenOn">
             <summary>
             <para>If <c>true</c>, the engine tries to keep the screen on while the game is running. Useful on mobile.</para>
@@ -23312,6 +23378,23 @@
         <member name="P:Godot.PathFollow2D.Lookahead">
             <summary>
             <para>How far to look ahead of the curve to calculate the tangent if the node is rotating. E.g. shorter lookaheads will lead to faster rotations.</para>
+            </summary>
+        </member>
+        <member name="T:Godot.PCKPacker">
+            <summary>
+            <para>The <see cref="T:Godot.PCKPacker"/> is used to create packages in application runtime.</para>
+            <para><code>
+            var packer = PCKPacker.new()
+            packer.pck_start("test.pck", 0)
+            packer.add_file("res://text.txt", "text.txt")
+            packer.flush(false)
+            </code></para>
+            <para>The above <see cref="T:Godot.PCKPacker"/> creates package test.pck, then adds a file named text.txt in the root of the package.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PCKPacker.AddFile(System.String,System.String)">
+            <summary>
+            <para>Adds the <c>source_path</c> file to the current PCK package at the <c>pck_path</c> internal path (should start with <c>res://</c>).</para>
             </summary>
         </member>
         <member name="T:Godot.Performance">
@@ -28437,11 +28520,13 @@
         <member name="M:Godot.SceneTree.SetAutoAcceptQuit(System.Boolean)">
             <summary>
             <para>If <c>true</c>, the application automatically accepts quitting. Enabled by default.</para>
+            <para>For mobile platforms, see <see cref="M:Godot.SceneTree.SetQuitOnGoBack(System.Boolean)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.SetQuitOnGoBack(System.Boolean)">
             <summary>
             <para>If <c>true</c>, the application quits automatically on going back (e.g. on Android). Enabled by default.</para>
+            <para>To handle 'Go Back' button when this option is disabled, use .</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.SetInputAsHandled">
@@ -28541,7 +28626,7 @@
         <member name="M:Godot.SceneTree.ReloadCurrentScene">
             <summary>
             <para>Reloads the currently active scene.</para>
-            <para>Returns an <see cref="T:Godot.Error"/> code as described in <see cref="M:Godot.SceneTree.ChangeScene(System.String)"/>, with the addition of  if no <see cref="P:Godot.SceneTree.CurrentScene"/> was defined yet.</para>
+            <para>Returns  on success,  if no <see cref="P:Godot.SceneTree.CurrentScene"/> was defined yet,  if <see cref="P:Godot.SceneTree.CurrentScene"/> cannot be loaded into a <see cref="T:Godot.PackedScene"/>, or  if the scene cannot be instantiated.</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.IsNetworkServer">
@@ -29998,6 +30083,58 @@
             <para>The spotlight's angular attenuation curve.</para>
             </summary>
         </member>
+        <member name="T:Godot.SpringArm">
+            <summary>
+            <para>The SpringArm node is a node that casts a ray (or collision shape) along its z axis and moves all its direct children to the collision point, minus a margin.</para>
+            <para>The most common use case for this is to make a 3rd person camera that reacts to collisions in the environment.</para>
+            <para>The SpringArm will either cast a ray, or if a shape is given, it will cast the shape in the direction of its z axis.</para>
+            <para>If you use the SpringArm as a camera controller for your player, you might need to exclude the player's collider from the SpringArm's collision check.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SpringArm.CollisionMask">
+            <summary>
+            <para>The layers against which the collision check shall be done.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SpringArm.Shape">
+            <summary>
+            <para>The <see cref="T:Godot.Shape"/> to use for the SpringArm.</para>
+            <para>When the shape is set, the SpringArm will cast the <see cref="T:Godot.Shape"/> on its z axis instead of performing a ray cast.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SpringArm.SpringLength">
+            <summary>
+            <para>The maximum extent of the SpringArm. This is used as a length for both the ray and the shape cast used internally to calculate the desired position of the SpringArm's child nodes.</para>
+            <para>To know more about how to perform a shape cast or a ray cast, please consult the <see cref="T:Godot.PhysicsDirectSpaceState"/> documentation.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.SpringArm.Margin">
+            <summary>
+            <para>When the collision check is made, a candidate length for the SpringArm is given.</para>
+            <para>The margin is then subtracted to this length and the translation is applied to the child objects of the SpringArm.</para>
+            <para>This margin is useful for when the SpringArm has a <see cref="T:Godot.Camera"/> as a child node: without the margin, the <see cref="T:Godot.Camera"/> would be placed on the exact point of collision, while with the margin the <see cref="T:Godot.Camera"/> would be placed close to the point of collision.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.SpringArm.GetHitLength">
+            <summary>
+            <para>Returns the proportion between the current arm length (after checking for collisions) and the <see cref="P:Godot.SpringArm.SpringLength"/>. Ranges from 0 to 1.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.SpringArm.AddExcludedObject(Godot.RID)">
+            <summary>
+            <para>Adds the object with the given <see cref="T:Godot.RID"/> to the list of objects excluded from the collision check.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.SpringArm.RemoveExcludedObject(Godot.RID)">
+            <summary>
+            <para>Removes the given <see cref="T:Godot.RID"/> from the list of objects excluded from the collision check.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.SpringArm.ClearExcludedObjects">
+            <summary>
+            <para>Clears the list of objects excluded from the collision check.</para>
+            </summary>
+        </member>
         <member name="T:Godot.Sprite">
             <summary>
             <para>A node that displays a 2D texture. The texture displayed can be a region from a larger atlas texture, or a frame from a sprite sheet animation.</para>
@@ -31334,17 +31471,17 @@
         </member>
         <member name="F:Godot.TextEdit.SearchResult.Column">
             <summary>
-            <para>Used to access the result column from .</para>
+            <para>Used to access the result column from <see cref="M:Godot.TextEdit.Search(System.String,System.UInt32,System.Int32,System.Int32)"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.TextEdit.SearchResult.Line">
             <summary>
-            <para>Used to access the result line from .</para>
+            <para>Used to access the result line from <see cref="M:Godot.TextEdit.Search(System.String,System.UInt32,System.Int32,System.Int32)"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.TextEdit.MenuItems.Cut">
             <summary>
-            <para>Cuts (Copies and clears) the selected text.</para>
+            <para>Cuts (copies and clears) the selected text.</para>
             </summary>
         </member>
         <member name="F:Godot.TextEdit.MenuItems.Copy">
@@ -31584,8 +31721,8 @@
         </member>
         <member name="M:Godot.TextEdit.Search(System.String,System.UInt32,System.Int32,System.Int32)">
             <summary>
-            <para>Perform a search inside the text. Search flags can be specified in the <c>SEARCH_*</c> enum.</para>
-            <para>Returns an empty <c>PoolIntArray</c> if no result was found. Otherwise, the result line and column can be accessed at indices specified in the <c>SEARCH_RESULT_*</c> enum, e.g:</para>
+            <para>Perform a search inside the text. Search flags can be specified in the <see cref="T:Godot.TextEdit.SearchFlags"/> enum.</para>
+            <para>Returns an empty <c>PoolIntArray</c> if no result was found. Otherwise, the result line and column can be accessed at indices specified in the <see cref="T:Godot.TextEdit.SearchResult"/> enum, e.g:</para>
             <para><code>
             var result = search(key, flags, line, column)
             if result.size() &gt; 0:
@@ -32981,7 +33118,7 @@
         </member>
         <member name="P:Godot.TouchScreenButton.ShapeCentered">
             <summary>
-            <para>If <c>true</c>, the button's shape is centered.</para>
+            <para>If <c>true</c>, the button's shape is centered in the provided texture. If no texture is used, this property has no effect.</para>
             </summary>
         </member>
         <member name="P:Godot.TouchScreenButton.ShapeVisible">
@@ -36638,6 +36775,16 @@
         <member name="F:Godot.VisualServer.ViewportMSAA.Msaa16x">
             <summary>
             <para>Multisample antialiasing is set to 16×.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.VisualServer.ViewportMSAA.Ext2x">
+            <summary>
+            <para>Multisample antialiasing is set to 2× on external texture. Special mode for GLES2 Android VR (Oculus Quest and Go).</para>
+            </summary>
+        </member>
+        <member name="F:Godot.VisualServer.ViewportMSAA.Ext4x">
+            <summary>
+            <para>Multisample antialiasing is set to 4× on external texture. Special mode for GLES2 Android VR (Oculus Quest and Go).</para>
             </summary>
         </member>
         <member name="F:Godot.VisualServer.LightType.Directional">
