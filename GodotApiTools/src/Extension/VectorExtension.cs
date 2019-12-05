@@ -9,8 +9,9 @@ namespace GodotApiTools.Extension
 
         public static float ApproximateLength(this Vector2 vec)
         {
-            var min = Mathf.Min(vec.x, vec.y);
-            var max = Mathf.Max(vec.x, vec.y);
+            var absVec = vec.Abs();
+            var min = Mathf.Min(absVec.x, absVec.y);
+            var max = Mathf.Max(absVec.x, absVec.y);
             return ALPHA * max + BETA * min;
         }
     }
