@@ -44,23 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\Extension\AudioStreamPlayerExtension.cs" />
-    <Compile Include="src\Extension\NodeExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Extension\Physics2DDirectSpaceStateExtensions.cs" />
-    <Compile Include="src\Extension\ResourcePreloaderExtension.cs" />
-    <Compile Include="src\Logic\LootTable.cs" />
-    <Compile Include="src\Logic\StateMachine.cs" />
-    <Compile Include="src\Util\Logger.cs" />
-    <Compile Include="src\Util\PerlinNoise.cs" />
-    <Compile Include="src\Util\RaycastResult.cs" />
+    <Compile Include="src\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\GodotSharp.dll" />
-    <Compile Include="src\Extension\SceneTreeExtension.cs" />
-    <Compile Include="src\Logic\Interface\IStateExecutor.cs" />
-    <Compile Include="src\Logic\StateExecutorMachine.cs" />
-    <Compile Include="src\Logic\ImmediateStateMachine.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
