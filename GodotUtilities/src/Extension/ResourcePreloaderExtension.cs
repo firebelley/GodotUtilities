@@ -1,7 +1,7 @@
 using Godot;
-using GodotApiTools.Util;
+using GodotUtilities.Util;
 
-namespace GodotApiTools.Extension
+namespace GodotUtilities.Extension
 {
     public static class ResourcePreloaderExtension
     {

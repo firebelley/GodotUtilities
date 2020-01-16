@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Godot;
 
-namespace GodotApiTools.Extension
+namespace GodotUtilities.Extension
 {
     public static class NodeExtensions
     {

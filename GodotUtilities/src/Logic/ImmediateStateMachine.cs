@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GodotApiTools.Logic
+namespace GodotUtilities.Logic
 {
     /// <summary>
     /// A state machine designed for states that don't need to be updated every frame.

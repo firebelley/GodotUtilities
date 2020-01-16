@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GodotApiTools.Logic
+namespace GodotUtilities.Logic
 {
     public class StateMachine<T>
     {

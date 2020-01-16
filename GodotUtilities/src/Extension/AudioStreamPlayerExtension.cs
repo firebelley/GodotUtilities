@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotApiTools.Extension
+namespace GodotUtilities.Extension
 {
     public static class AudioStreamPlayerExtension
     {

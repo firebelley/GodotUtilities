@@ -993,7 +993,10 @@
         </member>
         <member name="M:Godot.EditorSettings.AddPropertyInfo(Godot.Collections.Dictionary)">
             <summary>
-            <para>Adds a custom property info to a property. The dictionary must contain: name:<see cref="T:System.String"/>(the name of the property) and type:<see cref="T:System.Int32"/>(see <c>TYPE_*</c> in <c>@GlobalScope</c>), and optionally hint:<see cref="T:System.Int32"/>(see <c>PROPERTY_HINT_*</c> in <c>@GlobalScope</c>), hint_string:<see cref="T:System.String"/>.</para>
+            <para>Adds a custom property info to a property. The dictionary must contain:</para>
+            <para>- <c>name</c>: <see cref="T:System.String"/> (the name of the property)</para>
+            <para>- <c>type</c>: <see cref="T:System.Int32"/> (see <see cref="T:Godot.Variant.Type"/>)</para>
+            <para>- optionally <c>hint</c>: <see cref="T:System.Int32"/> (see <see cref="T:Godot.PropertyHint"/>) and <c>hint_string</c>: <see cref="T:System.String"/></para>
             <para>Example:</para>
             <para><code>
             editor_settings.set("category/property_name", 0)
@@ -1079,20 +1082,22 @@
             <para>The <see cref="T:Godot.Camera"/> is also provided so screen coordinates can be converted to raycasts.</para>
             </summary>
         </member>
-        <member name="M:Godot.EditorSpatialGizmo.AddLines(Godot.Vector3[],Godot.Material,System.Boolean)">
+        <member name="M:Godot.EditorSpatialGizmo.AddLines(Godot.Vector3[],Godot.Material,System.Boolean,System.Nullable{Godot.Color})">
             <summary>
             <para>Adds lines to the gizmo (as sets of 2 points), with a given material. The lines are used for visualizing the gizmo. Call this function during <see cref="M:Godot.EditorSpatialGizmo.Redraw"/>.</para>
             </summary>
+            <param name="modulate">If the parameter is null, then the default value is new Color(1, 1, 1, 1)</param>
         </member>
         <member name="M:Godot.EditorSpatialGizmo.AddCollisionTriangles(Godot.TriangleMesh)">
             <summary>
             <para>Adds collision triangles to the gizmo for picking. A <see cref="T:Godot.TriangleMesh"/> can be generated from a regular <see cref="T:Godot.Mesh"/> too. Call this function during <see cref="M:Godot.EditorSpatialGizmo.Redraw"/>.</para>
             </summary>
         </member>
-        <member name="M:Godot.EditorSpatialGizmo.AddUnscaledBillboard(Godot.Material,System.Single)">
+        <member name="M:Godot.EditorSpatialGizmo.AddUnscaledBillboard(Godot.Material,System.Single,System.Nullable{Godot.Color})">
             <summary>
             <para>Adds an unscaled billboard for visualization. Call this function during <see cref="M:Godot.EditorSpatialGizmo.Redraw"/>.</para>
             </summary>
+            <param name="modulate">If the parameter is null, then the default value is new Color(1, 1, 1, 1)</param>
         </member>
         <member name="M:Godot.EditorSpatialGizmo.AddHandles(Godot.Vector3[],Godot.Material,System.Boolean,System.Boolean)">
             <summary>
@@ -1172,14 +1177,14 @@
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.CreateMaterial(System.String,Godot.Color,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
-            <para>Creates an unshaded material with its variants (selected and/or editable) and adds them to the internal material list. They can then be accessed with <see cref="M:Godot.EditorSpatialGizmoPlugin.GetMaterial(System.String,Godot.EditorSpatialGizmo)"/> and used in <see cref="M:Godot.EditorSpatialGizmo.AddMesh(Godot.ArrayMesh,System.Boolean,Godot.SkinReference,Godot.Material)"/> and <see cref="M:Godot.EditorSpatialGizmo.AddLines(Godot.Vector3[],Godot.Material,System.Boolean)"/>. Should not be overridden.</para>
+            <para>Creates an unshaded material with its variants (selected and/or editable) and adds them to the internal material list. They can then be accessed with <see cref="M:Godot.EditorSpatialGizmoPlugin.GetMaterial(System.String,Godot.EditorSpatialGizmo)"/> and used in <see cref="M:Godot.EditorSpatialGizmo.AddMesh(Godot.ArrayMesh,System.Boolean,Godot.SkinReference,Godot.Material)"/> and <see cref="M:Godot.EditorSpatialGizmo.AddLines(Godot.Vector3[],Godot.Material,System.Boolean,System.Nullable{Godot.Color})"/>. Should not be overridden.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.CreateIconMaterial(System.String,Godot.Texture,System.Boolean,System.Nullable{Godot.Color})">
             <summary>
-            <para>Creates an icon material with its variants (selected and/or editable) and adds them to the internal material list. They can then be accessed with <see cref="M:Godot.EditorSpatialGizmoPlugin.GetMaterial(System.String,Godot.EditorSpatialGizmo)"/> and used in <see cref="M:Godot.EditorSpatialGizmo.AddUnscaledBillboard(Godot.Material,System.Single)"/>. Should not be overridden.</para>
-            <param name="color">If the parameter is null, then the default value is new Color(1, 1, 1, 1)</param>
+            <para>Creates an icon material with its variants (selected and/or editable) and adds them to the internal material list. They can then be accessed with <see cref="M:Godot.EditorSpatialGizmoPlugin.GetMaterial(System.String,Godot.EditorSpatialGizmo)"/> and used in <see cref="M:Godot.EditorSpatialGizmo.AddUnscaledBillboard(Godot.Material,System.Single,System.Nullable{Godot.Color})"/>. Should not be overridden.</para>
             </summary>
+            <param name="color">If the parameter is null, then the default value is new Color(1, 1, 1, 1)</param>
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.CreateHandleMaterial(System.String,System.Boolean)">
             <summary>
@@ -1280,7 +1285,7 @@
             </code></para>
             </summary>
         </member>
-        <member name="M:Godot.ScriptCreateDialog.Config(System.String,System.String,System.Boolean)">
+        <member name="M:Godot.ScriptCreateDialog.Config(System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             <para>Prefills required fields to configure the ScriptCreateDialog for use.</para>
             </summary>

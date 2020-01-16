@@ -8,7 +8,7 @@
 //
 using Godot;
 
-namespace GodotApiTools.Util
+namespace GodotUtilities.Util
 {
     public static class PerlinNoise
     {

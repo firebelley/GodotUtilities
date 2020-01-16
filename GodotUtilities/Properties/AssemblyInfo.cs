@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly : AssemblyTitle("Firebelley's GodotApiTools")]
+[assembly : AssemblyTitle("Firebelley's GodotUtilities")]
 [assembly : AssemblyDescription("A set of tools to make development in Godot with C# easier.")]
 [assembly : AssemblyConfiguration("")]
 [assembly : AssemblyCompany("")]
-[assembly : AssemblyProduct("GodotApiTools")]
+[assembly : AssemblyProduct("GodotUtilities")]
 [assembly : AssemblyCopyright("Copyright ©  2019")]
 [assembly : AssemblyTrademark("")]
 [assembly : AssemblyCulture("")]

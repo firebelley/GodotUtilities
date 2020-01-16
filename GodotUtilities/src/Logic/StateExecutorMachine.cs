@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using GodotApiTools.Logic.Interface;
+using GodotUtilities.Logic.Interface;
 
-namespace GodotApiTools.Logic
+namespace GodotUtilities.Logic
 {
     public class StateExecutorMachine
     {
