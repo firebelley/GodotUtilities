@@ -360,7 +360,7 @@
         </member>
         <member name="M:Godot.EditorInspectorPlugin.ParseProperty(Godot.Object,System.Int32,System.String,System.Int32,System.String,System.Int32)">
             <summary>
-            <para>Called to allow adding property specific editors to the inspector. Usually these inherit <see cref="T:Godot.EditorProperty"/></para>
+            <para>Called to allow adding property specific editors to the inspector. Usually these inherit <see cref="T:Godot.EditorProperty"/>. Returning <c>true</c> removes the built-in editor for this property, otherwise allows to insert a custom editor before the built-in one.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorInspectorPlugin.AddCustomControl(Godot.Control)">
@@ -1132,7 +1132,7 @@
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.CreateGizmo(Godot.Spatial)">
             <summary>
-            <para>Override this method to return a custom <see cref="T:Godot.EditorSpatialGizmo"/> for the spatial nodes of your choice, return <c>null</c> for the rest of nodes. (See also <see cref="M:Godot.EditorSpatialGizmoPlugin.HasGizmo(Godot.Spatial)"/>)</para>
+            <para>Override this method to return a custom <see cref="T:Godot.EditorSpatialGizmo"/> for the spatial nodes of your choice, return <c>null</c> for the rest of nodes. See also <see cref="M:Godot.EditorSpatialGizmoPlugin.HasGizmo(Godot.Spatial)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.GetHandleName(Godot.EditorSpatialGizmo,System.Int32)">
@@ -1213,7 +1213,7 @@
         </member>
         <member name="M:Godot.EditorVCSInterface.Initialize(System.String)">
             <summary>
-            <para>Initialize the VCS addon if not already. Uses the argument value as the path to the working directory of the project. Creates the initial commit if required. Returns <c>true</c> if no failure occurs, else returns <c>false</c>.</para>
+            <para>Initializes the VCS addon if not already. Uses the argument value as the path to the working directory of the project. Creates the initial commit if required. Returns <c>true</c> if no failure occurs, else returns <c>false</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorVCSInterface.IsVcsInitialized">
@@ -1234,12 +1234,12 @@
         </member>
         <member name="M:Godot.EditorVCSInterface.StageFile(System.String)">
             <summary>
-            <para>Stage the file which should be committed when <see cref="M:Godot.EditorVCSInterface.Commit(System.String)"/> is called. Argument should contain the absolute path.</para>
+            <para>Stages the file which should be committed when <see cref="M:Godot.EditorVCSInterface.Commit(System.String)"/> is called. Argument should contain the absolute path.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorVCSInterface.UnstageFile(System.String)">
             <summary>
-            <para>Unstage the file which was staged previously to be committed, so that it is no longer committed when <see cref="M:Godot.EditorVCSInterface.Commit(System.String)"/> is called. Argument should contain the absolute path.</para>
+            <para>Unstages the file which was staged previously to be committed, so that it is no longer committed when <see cref="M:Godot.EditorVCSInterface.Commit(System.String)"/> is called. Argument should contain the absolute path.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorVCSInterface.Commit(System.String)">
@@ -1266,12 +1266,12 @@
         </member>
         <member name="M:Godot.EditorVCSInterface.GetProjectName">
             <summary>
-            <para>Return the project name of the VCS working directory</para>
+            <para>Returns the project name of the VCS working directory.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorVCSInterface.GetVcsName">
             <summary>
-            <para>Return the name of the VCS if the VCS has been initialized, else return an empty string.</para>
+            <para>Returns the name of the VCS if the VCS has been initialized, else return an empty string.</para>
             </summary>
         </member>
         <member name="T:Godot.ScriptCreateDialog">

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Firebelley.GodotUtilities</id>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <title>Firebelley's GodotUtilities</title>
     <authors>Firebelley</authors>
     <owners>Firebelley</owners>
@@ -13,7 +13,7 @@
     <tags></tags>
   </metadata>
   <files>
-    <file src="bin\Release\GodotUtilities.dll" target="lib\net45" />
-    <file src="bin\Release\GodotUtilities.xml" target="lib\net45" />
+    <file src="bin\Release\GodotUtilities.dll" target="lib\net47" />
+    <file src="bin\Release\GodotUtilities.xml" target="lib\net47" />
   </files>
 </package>
