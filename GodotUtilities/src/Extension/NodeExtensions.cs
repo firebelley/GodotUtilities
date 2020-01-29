@@ -79,7 +79,7 @@ namespace GodotUtilities.Extension
             }
         }
 
-        public static T GetFirstNodeOfType<T>(this Node node) where T : Node
+        public static T GetFirstNodeOfType<T>(this Node node)
         {
             foreach (var child in node.GetChildren())
             {
@@ -88,12 +88,18 @@ namespace GodotUtilities.Extension
                     return t;
                 }
             }
-            return null;
+            return default;
         }
 
         public static void AddChildDeferred(this Node node, Node child)
         {
             node.CallDeferred("add_child", child);
+        }
+
+        public static T GetNullableNodePath<T>(this Node n, NodePath nodePath) where T : Node
+        {
+            if (nodePath == null) return null;
+            return n.GetNodeOrNull<T>(nodePath);
         }
     }
 }
