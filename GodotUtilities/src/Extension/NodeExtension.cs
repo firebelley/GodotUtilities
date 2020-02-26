@@ -6,7 +6,7 @@ using Godot;
 
 namespace GodotUtilities.Extension
 {
-    public static class NodeExtensions
+    public static class NodeExtension
     {
         /// <summary>
         /// Uses reflection to find non-public NodePath fields. It is assumed that declared NodePath field names end with "Path". 
@@ -32,25 +32,6 @@ namespace GodotUtilities.Extension
                         throw new Exception($"Target field with name \"{target}\" was not found.");
                     }
                     targetField.SetValue(node, pathNode);
-                }
-            }
-        }
-
-        public static void DisconnectAllSignals(this Node target, Node source)
-        {
-            var signalList = source.GetSignalList();
-            foreach (var signal in signalList)
-            {
-                var dict = (Godot.Collections.Dictionary) signal;
-                var signalName = (string) dict["name"];
-                var connectedSignalList = source.GetSignalConnectionList(signalName);
-                foreach (var connectedSignal in connectedSignalList)
-                {
-                    var connectedDict = (Godot.Collections.Dictionary) connectedSignal;
-                    if (connectedDict["target"] == target)
-                    {
-                        source.Disconnect((string) connectedDict["signal"], target, (string) connectedDict["method"]);
-                    }
                 }
             }
         }
