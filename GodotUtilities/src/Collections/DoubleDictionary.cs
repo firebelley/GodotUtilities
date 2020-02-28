@@ -16,6 +16,11 @@ namespace GodotUtilities.Collections
             }
             set
             {
+                if (_keyToValue.ContainsKey(key))
+                {
+                    var oldVal = _keyToValue[key];
+                    _valueToKey.Remove(oldVal);
+                }
                 _keyToValue[key] = value;
                 _valueToKey[value] = key;
             }
@@ -29,6 +34,11 @@ namespace GodotUtilities.Collections
             }
             set
             {
+                if (_valueToKey.ContainsKey(val))
+                {
+                    var oldVal = _valueToKey[val];
+                    _keyToValue.Remove(oldVal);
+                }
                 _valueToKey[val] = value;
                 _keyToValue[value] = val;
             }
