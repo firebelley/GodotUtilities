@@ -22,6 +22,19 @@
             This is equivalent to <see cref="P:Godot.Basis.Column2"/>.
             </summary>
         </member>
+        <member name="P:Godot.Basis.Item(System.Int32)">
+            <summary>
+            Access whole columns in the form of Vector3.
+            </summary>
+            <param name="column">Which column vector.</param>
+        </member>
+        <member name="P:Godot.Basis.Item(System.Int32,System.Int32)">
+            <summary>
+            Access matrix elements in column-major order.
+            </summary>
+            <param name="column">Which column, the matrix horizontal position.</param>
+            <param name="row">Which row, the matrix vertical position.</param>
+        </member>
         <member name="T:Godot.DynamicGodotObject">
              <summary>
              Represents an <see cref="T:Godot.Object"/> whose members can be dynamically accessed at runtime through the Variant API.
@@ -616,12 +629,12 @@
         </member>
         <member name="M:Godot.Node.SetPhysicsProcess(System.Boolean)">
             <summary>
-            <para>Enables or disables physics (i.e. fixed framerate) processing. When a node is being processed, it will receive a  at a fixed (usually 60 FPS, see <see cref="P:Godot.Engine.TargetFps"/> to change) interval (and the <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> callback will be called if exists). Enabled automatically if <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> is overridden. Any calls to this before <see cref="M:Godot.Node._Ready"/> will be ignored.</para>
+            <para>Enables or disables physics (i.e. fixed framerate) processing. When a node is being processed, it will receive a  at a fixed (usually 60 FPS, see <see cref="P:Godot.Engine.IterationsPerSecond"/> to change) interval (and the <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> callback will be called if exists). Enabled automatically if <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> is overridden. Any calls to this before <see cref="M:Godot.Node._Ready"/> will be ignored.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.GetPhysicsProcessDeltaTime">
             <summary>
-            <para>Returns the time elapsed since the last physics-bound frame (see <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>). This is always a constant value in physics processing unless the frames per second is changed via <see cref="P:Godot.Engine.TargetFps"/>.</para>
+            <para>Returns the time elapsed since the last physics-bound frame (see <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>). This is always a constant value in physics processing unless the frames per second is changed via <see cref="P:Godot.Engine.IterationsPerSecond"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.IsPhysicsProcessing">
@@ -1280,6 +1293,32 @@
             <summary>
             Return the length of the string in characters.
             </summary>
+        </member>
+        <member name="P:Godot.Transform.Item(System.Int32)">
+            <summary>
+            Access whole columns in the form of Vector3. The fourth column is the origin vector.
+            </summary>
+            <param name="column">Which column vector.</param>
+        </member>
+        <member name="P:Godot.Transform.Item(System.Int32,System.Int32)">
+            <summary>
+            Access matrix elements in column-major order. The fourth column is the origin vector.
+            </summary>
+            <param name="column">Which column, the matrix horizontal position.</param>
+            <param name="row">Which row, the matrix vertical position.</param>
+        </member>
+        <member name="P:Godot.Transform2D.Item(System.Int32)">
+            <summary>
+            Access whole columns in the form of Vector2. The third column is the origin vector.
+            </summary>
+            <param name="column">Which column vector.</param>
+        </member>
+        <member name="P:Godot.Transform2D.Item(System.Int32,System.Int32)">
+            <summary>
+            Access matrix elements in column-major order. The third column is the origin vector.
+            </summary>
+            <param name="column">Which column, the matrix horizontal position.</param>
+            <param name="row">Which row, the matrix vertical position.</param>
         </member>
         <member name="T:Godot.Vector2">
             <summary>
@@ -4105,6 +4144,11 @@
             <para>Returns the tracker's type.</para>
             </summary>
         </member>
+        <member name="M:Godot.ARVRPositionalTracker.GetTrackerId">
+            <summary>
+            <para>Returns the internal tracker ID. This uniquely identifies the tracker per tracker type and matches the ID you need to specify for nodes such as the <see cref="T:Godot.ARVRController"/> and <see cref="T:Godot.ARVRAnchor"/> nodes.</para>
+            </summary>
+        </member>
         <member name="M:Godot.ARVRPositionalTracker.GetName">
             <summary>
             <para>Returns the controller or anchor point's name if available.</para>
@@ -5687,6 +5731,7 @@
         <member name="T:Godot.AnimationPlayer">
             <summary>
             <para>An animation player is used for general-purpose playback of <see cref="T:Godot.Animation"/> resources. It contains a dictionary of animations (referenced by name) and custom blend times between their transitions. Additionally, animations can be played and blended in different channels.</para>
+            <para><see cref="T:Godot.AnimationPlayer"/> is more suited than <see cref="T:Godot.Tween"/> for animations where you know the final values in advance. For example, fading a screen in and out is more easily done with an <see cref="T:Godot.AnimationPlayer"/> node thanks to the animation tools provided by the editor. That particular example can also be implemented with a <see cref="T:Godot.Tween"/> node, but it requires doing everything by code.</para>
             <para>Updating the target properties of animations occurs at process time.</para>
             </summary>
         </member>
@@ -8164,6 +8209,31 @@
             <para>The highest bake quality mode. Takes longer to calculate.</para>
             </summary>
         </member>
+        <member name="F:Godot.BakedLightmap.BakeError.Ok">
+            <summary>
+            <para>Baking was successful.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.BakedLightmap.BakeError.NoSavePath">
+            <summary>
+            <para>Returns if no viable save path is found. This can happen where an <see cref="P:Godot.BakedLightmap.ImagePath"/> is not specified or when the save location is invalid.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.BakedLightmap.BakeError.NoMeshes">
+            <summary>
+            <para>Currently unused.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.BakedLightmap.BakeError.CantCreateImage">
+            <summary>
+            <para>Returns when the baker cannot save per-mesh textures to file.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.BakedLightmap.BakeError.UserAborted">
+            <summary>
+            <para>Returns if user cancels baking.</para>
+            </summary>
+        </member>
         <member name="F:Godot.BakedLightmap.BakeModeEnum.ConeTrace">
             <summary>
             <para>Less precise but faster bake mode.</para>
@@ -8231,7 +8301,7 @@
         </member>
         <member name="M:Godot.BakedLightmap.Bake(Godot.Node,System.Boolean)">
             <summary>
-            <para>Bakes the lightmaps within the currently edited scene.</para>
+            <para>Bakes the lightmaps within the currently edited scene. Returns a <see cref="T:Godot.BakedLightmap.BakeError"/> to signify if the bake was successful, or if unsuccessful, how the bake failed.</para>
             </summary>
         </member>
         <member name="M:Godot.BakedLightmap.DebugBake">
@@ -11093,12 +11163,12 @@
         </member>
         <member name="T:Godot.CheckBox">
             <summary>
-            <para>A checkbox allows the user to make a binary choice (choosing only one of two possible options).</para>
+            <para>A checkbox allows the user to make a binary choice (choosing only one of two possible options). It's similar to <see cref="T:Godot.CheckButton"/> in functionality, but it has a different apperance. To follow established UX patterns, it's recommended to use CheckBox when toggling it has no immediate effect on something. For instance, it should be used when toggling it will only do something once a confirmation button is pressed.</para>
             </summary>
         </member>
         <member name="T:Godot.CheckButton">
             <summary>
-            <para>CheckButton is a toggle button displayed as a check field.</para>
+            <para>CheckButton is a toggle button displayed as a check field. It's similar to <see cref="T:Godot.CheckBox"/> in functionality, but it has a different apperance. To follow established UX patterns, it's recommended to use CheckButton when toggling it has an immediate effect on something. For instance, it should be used if toggling it enables/disables a setting without requiring the user to press a confirmation button.</para>
             </summary>
         </member>
         <member name="T:Godot.CircleShape2D">
@@ -11613,6 +11683,7 @@
         <member name="T:Godot.ConcavePolygonShape">
             <summary>
             <para>Concave polygon shape resource, which can be set into a <see cref="T:Godot.PhysicsBody"/> or area. This shape is created by feeding a list of triangles.</para>
+            <para>Note: when used for collision, <see cref="T:Godot.ConcavePolygonShape"/> is intended to work with static <see cref="T:Godot.PhysicsBody"/> nodes like <see cref="T:Godot.StaticBody"/> and will not work with <see cref="T:Godot.KinematicBody"/> or <see cref="T:Godot.RigidBody"/> with a mode other than Static.</para>
             </summary>
         </member>
         <member name="M:Godot.ConcavePolygonShape.SetFaces(Godot.Vector3[])">
@@ -11737,12 +11808,12 @@
         </member>
         <member name="M:Godot.ConfigFile.SetValue(System.String,System.String,System.Object)">
             <summary>
-            <para>Assigns a value to the specified key of the specified section. If the section and/or the key do not exist, they are created. Passing a <c>null</c> value deletes the specified key if it exists, and deletes the section if it ends up empty once the key has been removed.</para>
+            <para>Assigns a value to the specified key of the specified section. If either the section or the key do not exist, they are created. Passing a <c>null</c> value deletes the specified key if it exists, and deletes the section if it ends up empty once the key has been removed.</para>
             </summary>
         </member>
         <member name="M:Godot.ConfigFile.GetValue(System.String,System.String,System.Object)">
             <summary>
-            <para>Returns the current value for the specified section and key. If the section and/or the key do not exist, the method returns the value of the optional <c>default</c> argument, or <c>null</c> if it is omitted.</para>
+            <para>Returns the current value for the specified section and key. If either the section or the key do not exist, the method returns the fallback <c>default</c> value. If <c>default</c> is not specified or set to <c>null</c>, an error is also raised.</para>
             </summary>
         </member>
         <member name="M:Godot.ConfigFile.HasSection(System.String)">
@@ -11762,23 +11833,58 @@
         </member>
         <member name="M:Godot.ConfigFile.GetSectionKeys(System.String)">
             <summary>
-            <para>Returns an array of all defined key identifiers in the specified section.</para>
+            <para>Returns an array of all defined key identifiers in the specified section. Raises an error and returns an empty array if the section does not exist.</para>
             </summary>
         </member>
         <member name="M:Godot.ConfigFile.EraseSection(System.String)">
             <summary>
-            <para>Deletes the specified section along with all the key-value pairs inside.</para>
+            <para>Deletes the specified section along with all the key-value pairs inside. Raises an error if the section does not exist.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ConfigFile.EraseSectionKey(System.String,System.String)">
+            <summary>
+            <para>Deletes the specified key in a section. Raises an error if either the section or the key do not exist.</para>
             </summary>
         </member>
         <member name="M:Godot.ConfigFile.Load(System.String)">
             <summary>
-            <para>Loads the config file specified as a parameter. The file's contents are parsed and loaded in the ConfigFile object which the method was called on.</para>
+            <para>Loads the config file specified as a parameter. The file's contents are parsed and loaded in the <see cref="T:Godot.ConfigFile"/> object which the method was called on.</para>
+            <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ConfigFile.Parse(System.String)">
+            <summary>
+            <para>Parses the the passed string as the contents of a config file. The string is parsed and loaded in the ConfigFile object which the method was called on.</para>
             <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
             </summary>
         </member>
         <member name="M:Godot.ConfigFile.Save(System.String)">
             <summary>
-            <para>Saves the contents of the ConfigFile object to the file specified as a parameter. The output file uses an INI-style structure.</para>
+            <para>Saves the contents of the <see cref="T:Godot.ConfigFile"/> object to the file specified as a parameter. The output file uses an INI-style structure.</para>
+            <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ConfigFile.LoadEncrypted(System.String,System.Byte[])">
+            <summary>
+            <para>Loads the encrypted config file specified as a parameter, using the provided <c>key</c> to decrypt it. The file's contents are parsed and loaded in the <see cref="T:Godot.ConfigFile"/> object which the method was called on.</para>
+            <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ConfigFile.LoadEncryptedPass(System.String,System.String)">
+            <summary>
+            <para>Loads the encrypted config file specified as a parameter, using the provided <c>password</c> to decrypt it. The file's contents are parsed and loaded in the <see cref="T:Godot.ConfigFile"/> object which the method was called on.</para>
+            <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ConfigFile.SaveEncrypted(System.String,System.Byte[])">
+            <summary>
+            <para>Saves the contents of the <see cref="T:Godot.ConfigFile"/> object to the AES-256 encrypted file specified as a parameter, using the provided <c>key</c> to encrypt it. The output file uses an INI-style structure.</para>
+            <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.ConfigFile.SaveEncryptedPass(System.String,System.String)">
+            <summary>
+            <para>Saves the contents of the <see cref="T:Godot.ConfigFile"/> object to the AES-256 encrypted file specified as a parameter, using the provided <c>password</c> to encrypt it. The output file uses an INI-style structure.</para>
             <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
             </summary>
         </member>
@@ -18539,7 +18645,8 @@
         <member name="M:Godot.KinematicBody.MoveAndSlide(Godot.Vector3,System.Nullable{Godot.Vector3},System.Boolean,System.Int32,System.Single,System.Boolean)">
             <summary>
             <para>Moves the body along a vector. If the body collides with another, it will slide along the other body rather than stop immediately. If the other body is a <see cref="T:Godot.KinematicBody"/> or <see cref="T:Godot.RigidBody"/>, it will also be affected by the motion of the other body. You can use this to make moving or rotating platforms, or to make nodes push other nodes.</para>
-            <para><c>linear_velocity</c> is the velocity vector (typically meters per second). Unlike in <see cref="M:Godot.KinematicBody.MoveAndCollide(Godot.Vector3,System.Boolean,System.Boolean,System.Boolean)"/>, you should not multiply it by <c>delta</c> — the physics engine handles applying the velocity.</para>
+            <para>This method should be used in <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> (or in a method called by <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>), as it uses the physics step's <c>delta</c> value automatically in calculations. Otherwise, the simulation will run at an incorrect speed.</para>
+            <para><c>linear_velocity</c> is the velocity vector (typically meters per second). Unlike in <see cref="M:Godot.KinematicBody.MoveAndCollide(Godot.Vector3,System.Boolean,System.Boolean,System.Boolean)"/>, you should not multiply it by <c>delta</c> — the physics engine handles applying the velocity. </para>
             <para><c>up_direction</c> is the up direction, used to determine what is a wall and what is a floor or a ceiling. If set to the default value of <c>Vector3(0, 0, 0)</c>, everything is considered a wall.</para>
             <para>If <c>stop_on_slope</c> is <c>true</c>, body will not slide on slopes if you include gravity in <c>linear_velocity</c>.</para>
             <para>If the body collides, it will change direction a maximum of <c>max_slides</c> times before it stops.</para>
@@ -18632,7 +18739,8 @@
         <member name="M:Godot.KinematicBody2D.MoveAndSlide(Godot.Vector2,System.Nullable{Godot.Vector2},System.Boolean,System.Int32,System.Single,System.Boolean)">
             <summary>
             <para>Moves the body along a vector. If the body collides with another, it will slide along the other body rather than stop immediately. If the other body is a <see cref="T:Godot.KinematicBody2D"/> or <see cref="T:Godot.RigidBody2D"/>, it will also be affected by the motion of the other body. You can use this to make moving or rotating platforms, or to make nodes push other nodes.</para>
-            <para><c>linear_velocity</c> is the velocity vector in pixels per second. Unlike in <see cref="M:Godot.KinematicBody2D.MoveAndCollide(Godot.Vector2,System.Boolean,System.Boolean,System.Boolean)"/>, you should not multiply it by <c>delta</c> — the physics engine handles applying the velocity.</para>
+            <para>This method should be used in <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> (or in a method called by <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>), as it uses the physics step's <c>delta</c> value automatically in calculations. Otherwise, the simulation will run at an incorrect speed.</para>
+            <para><c>linear_velocity</c> is the velocity vector in pixels per second. Unlike in <see cref="M:Godot.KinematicBody2D.MoveAndCollide(Godot.Vector2,System.Boolean,System.Boolean,System.Boolean)"/>, you should not multiply it by <c>delta</c> — the physics engine handles applying the velocity. </para>
             <para><c>up_direction</c> is the up direction, used to determine what is a wall and what is a floor or a ceiling. If set to the default value of <c>Vector2(0, 0)</c>, everything is considered a wall. This is useful for topdown games.</para>
             <para>If <c>stop_on_slope</c> is <c>true</c>, body will not slide on slopes when you include gravity in <c>linear_velocity</c> and the body is standing still.</para>
             <para>If the body collides, it will change direction a maximum of <c>max_slides</c> times before it stops.</para>
@@ -19726,6 +19834,16 @@
             <para>The LinkButton will never show an underline at the bottom of its text.</para>
             </summary>
         </member>
+        <member name="P:Godot.LinkButton.Text">
+            <summary>
+            <para>The button's text that will be displayed inside the button's area.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.LinkButton.Underline">
+            <summary>
+            <para>Determines when to show the underline. See <see cref="T:Godot.LinkButton.UnderlineMode"/> for options.</para>
+            </summary>
+        </member>
         <member name="T:Godot.Listener">
             <summary>
             <para>Once added to the scene tree and enabled using <see cref="M:Godot.Listener.MakeCurrent"/>, this node will override the location sounds are heard from. This can be used to listen from a location different from the <see cref="T:Godot.Camera"/>.</para>
@@ -20633,8 +20751,7 @@
         </member>
         <member name="M:Godot.MeshLibrary.GetItemPreview(System.Int32)">
             <summary>
-            <para>Returns a generated item preview (a 3D rendering in isometric perspective).</para>
-            <para>Note: Since item previews are only generated in an editor context, this function will return an empty <see cref="T:Godot.Texture"/> in a running project.</para>
+            <para>When running in the editor, returns a generated item preview (a 3D rendering in isometric perspective). When used in a running project, returns the manually-defined item preview which can be set using <see cref="M:Godot.MeshLibrary.SetItemPreview(System.Int32,Godot.Texture)"/>. Returns an empty <see cref="T:Godot.Texture"/> if no preview was manually set in a running project.</para>
             </summary>
         </member>
         <member name="M:Godot.MeshLibrary.RemoveItem(System.Int32)">
@@ -21737,7 +21854,8 @@
         </member>
         <member name="P:Godot.OpenSimplexNoise.Octaves">
             <summary>
-            <para>Number of OpenSimplex noise layers that are sampled to get the fractal noise.</para>
+            <para>Number of OpenSimplex noise layers that are sampled to get the fractal noise. Higher values result in more detailed noise but take more time to generate.</para>
+            <para>Note: The maximum allowed value is 9.</para>
             </summary>
         </member>
         <member name="P:Godot.OpenSimplexNoise.Period">
@@ -22153,6 +22271,8 @@
         <member name="T:Godot.PanoramaSky">
             <summary>
             <para>A resource referenced in an <see cref="T:Godot.Environment"/> that is used to draw a background. The Panorama sky functions similar to skyboxes in other engines, except it uses an equirectangular sky map instead of a cube map.</para>
+            <para>Using an HDR panorama is strongly recommended for accurate, high-quality reflections. Godot supports the Radiance HDR (<c>.hdr</c>) and OpenEXR (<c>.exr</c>) image formats for this purpose.</para>
+            <para>You can use <a href="https://danilw.github.io/GLSL-howto/cubemap_to_panorama_js/cubemap_to_panorama.html">this tool</a> to convert a cube map to an equirectangular sky map.</para>
             </summary>
         </member>
         <member name="P:Godot.PanoramaSky.Panorama">
@@ -27092,7 +27212,7 @@
             var regex = RegEx.new()
             regex.compile("\\w-(\\d+)")
             </code></para>
-            <para>The search pattern must be escaped first for gdscript before it is escaped for the expression. For example, <c>compile("\\d+")</c> would be read by RegEx as <c>\d+</c>. Similarly, <c>compile("\"(?:\\\\.|[^\"])*\"")</c> would be read as <c>"(?:\\.|[^"])*"</c>.</para>
+            <para>The search pattern must be escaped first for GDScript before it is escaped for the expression. For example, <c>compile("\\d+")</c> would be read by RegEx as <c>\d+</c>. Similarly, <c>compile("\"(?:\\\\.|[^\"])*\"")</c> would be read as <c>"(?:\\.|[^"])*"</c>.</para>
             <para>Using <see cref="M:Godot.RegEx.Search(System.String,System.Int32,System.Int32)"/> you can find the pattern within the given text. If a pattern is found, <see cref="T:Godot.RegExMatch"/> is returned and you can retrieve details of the results using functions such as <see cref="M:Godot.RegExMatch.GetString(System.Object)"/> and <see cref="M:Godot.RegExMatch.GetStart(System.Object)"/>.</para>
             <para><code>
             var regex = RegEx.new()
@@ -27117,6 +27237,8 @@
             # Would print 01 03 3f 42
             # Note that d0c would not match
             </code></para>
+            <para>Note: Godot's regex implementation is based on the <a href="https://www.pcre.org/">PCRE2</a> library. You can view the full pattern reference <a href="https://www.pcre.org/current/doc/html/pcre2pattern.html">here</a>.</para>
+            <para>Tip: You can use <a href="https://regexr.com/">Regexr</a> to test regular expressions online.</para>
             </summary>
         </member>
         <member name="M:Godot.RegEx.Clear">
@@ -28929,9 +29051,24 @@
         <member name="M:Godot.Skeleton.PhysicalBonesStartSimulation(Godot.Collections.Array)">
             <param name="bones">If the parameter is null, then the default value is new Godot.Collections.Array {}</param>
         </member>
+        <member name="T:Godot.Skeleton2D">
+            <summary>
+            <para>Skeleton2D parents a hierarchy of <see cref="T:Godot.Bone2D"/> objects. It is a requirement of <see cref="T:Godot.Bone2D"/>. Skeleton2D holds a reference to the rest pose of its children and acts as a single point of access to its bones.</para>
+            </summary>
+        </member>
         <member name="M:Godot.Skeleton2D.GetBoneCount">
             <summary>
-            <para>Returns the amount of bones in the skeleton.</para>
+            <para>Returns the number of <see cref="T:Godot.Bone2D"/> nodes in the node hierarchy parented by Skeleton2D.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Skeleton2D.GetBone(System.Int32)">
+            <summary>
+            <para>Returns a <see cref="T:Godot.Bone2D"/> from the node hierarchy parented by Skeleton2D. The object to return is identified by the parameter <c>idx</c>. Bones are indexed by descending the node hierarchy from top to bottom, adding the children of each branch before moving to the next sibling.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Skeleton2D.GetSkeleton">
+            <summary>
+            <para>Returns the <see cref="T:Godot.RID"/> of a Skeleton2D instance.</para>
             </summary>
         </member>
         <member name="T:Godot.Sky">
@@ -30162,7 +30299,7 @@
         </member>
         <member name="P:Godot.SpatialMaterial.Metallic">
             <summary>
-            <para>The reflectivity of the object's surface. The higher the value, the more light is reflected.</para>
+            <para>A high value makes the material appear more like a metal. Non-metals use their albedo as the diffuse color and add diffuse to the specular reflection. With non-metals, the reflection appears on top of the albedo color. Metals use their albedo as a multiplier to the specular reflection and set the diffuse color to black resulting in a tinted reflection. Materials work better when fully metal or fully non-metal, values between <c>0</c> and <c>1</c> should only be used for blending between metal and non-metal sections. To alter the amount of reflection use <see cref="P:Godot.SpatialMaterial.Roughness"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.SpatialMaterial.MetallicSpecular">
@@ -30726,17 +30863,17 @@
         </member>
         <member name="M:Godot.SpringArm.AddExcludedObject(Godot.RID)">
             <summary>
-            <para>Adds the object with the given <see cref="T:Godot.RID"/> to the list of objects excluded from the collision check.</para>
+            <para>Adds the <see cref="T:Godot.PhysicsBody"/> object with the given <see cref="T:Godot.RID"/> to the list of <see cref="T:Godot.PhysicsBody"/> objects excluded from the collision check.</para>
             </summary>
         </member>
         <member name="M:Godot.SpringArm.RemoveExcludedObject(Godot.RID)">
             <summary>
-            <para>Removes the given <see cref="T:Godot.RID"/> from the list of objects excluded from the collision check.</para>
+            <para>Removes the given <see cref="T:Godot.RID"/> from the list of <see cref="T:Godot.PhysicsBody"/> objects excluded from the collision check.</para>
             </summary>
         </member>
         <member name="M:Godot.SpringArm.ClearExcludedObjects">
             <summary>
-            <para>Clears the list of objects excluded from the collision check.</para>
+            <para>Clears the list of <see cref="T:Godot.PhysicsBody"/> objects excluded from the collision check.</para>
             </summary>
         </member>
         <member name="T:Godot.Sprite">
@@ -32872,7 +33009,77 @@
         </member>
         <member name="T:Godot.TextureLayered">
             <summary>
-            <para>Base class for <see cref="T:Godot.Texture3D"/> and <see cref="T:Godot.TextureArray"/>. Cannot be used directly.</para>
+            <para>Base class for <see cref="T:Godot.Texture3D"/> and <see cref="T:Godot.TextureArray"/>. Cannot be used directly, but contains all the functions necessary for accessing and using <see cref="T:Godot.Texture3D"/> and <see cref="T:Godot.TextureArray"/>. Data is set on a per-layer basis. For <see cref="T:Godot.Texture3D"/>s, the layer sepcifies the depth or Z-index, they can be treated as a bunch of 2D slices. Similarly, for <see cref="T:Godot.TextureArray"/>s, the layer specifies the array layer.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.TextureLayered.FlagsEnum.Mipmaps">
+            <summary>
+            <para>Texture will generate mipmaps on creation.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.TextureLayered.FlagsEnum.Repeat">
+            <summary>
+            <para>Texture will repeat when UV used is outside the 0-1 range.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.TextureLayered.FlagsEnum.Filter">
+            <summary>
+            <para>Use filtering when reading from texture. Filtering smooths out pixels. Turning filtering off is slightly faster and more appropriate when you need access to individual pixels.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.TextureLayered.FlagsEnum.Default">
+            <summary>
+            <para>Equivalent to .</para>
+            </summary>
+        </member>
+        <member name="P:Godot.TextureLayered.Flags">
+            <summary>
+            <para>Specifies which <see cref="T:Godot.TextureLayered.FlagsEnum"/> apply to this texture.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.TextureLayered.Data">
+            <summary>
+            <para>Returns a dictionary with all the data used by this texture.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.GetFormat">
+            <summary>
+            <para>Returns the current format being used by this texture. See <see cref="T:Godot.Image.Format"/> for details.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.GetWidth">
+            <summary>
+            <para>Returns the width of the texture. Width is typically represented by the X-axis.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.GetHeight">
+            <summary>
+            <para>Returns the height of the texture. Height is typically represented by the Y-axis.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.GetDepth">
+            <summary>
+            <para>Returns the depth of the texture. Depth is the 3rd dimension (typically Z-axis).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.Create(System.UInt32,System.UInt32,System.UInt32,Godot.Image.Format,System.UInt32)">
+            <summary>
+            <para>Creates the <see cref="T:Godot.Texture3D"/> or <see cref="T:Godot.TextureArray"/> with specified <c>width</c>, <c>height</c>, and <c>depth</c>. See <see cref="T:Godot.Image.Format"/> for <c>format</c> options. See <see cref="T:Godot.TextureLayered.FlagsEnum"/> enumerator for <c>flags</c> options.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.SetLayerData(Godot.Image,System.Int32)">
+            <summary>
+            <para>Sets the data for the specified layer. Data takes the form of a 2-dimensional <see cref="T:Godot.Image"/> resource.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.GetLayerData(System.Int32)">
+            <summary>
+            <para>Returns an <see cref="T:Godot.Image"/> resource with the data from specified <c>layer</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextureLayered.SetDataPartial(Godot.Image,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            <para>Partially sets the data for a specified <c>layer</c> by overwriting using the data of the specified <c>image</c>. <c>x_offset</c> and <c>y_offset</c> determine where the <see cref="T:Godot.Image"/> is "stamped" over the texture. The <c>image</c> must fit within the texture.</para>
             </summary>
         </member>
         <member name="T:Godot.TextureProgress">
@@ -34612,6 +34819,7 @@
         <member name="T:Godot.Tween">
             <summary>
             <para>Tweens are useful for animations requiring a numerical property to be interpolated over a range of values. The name tween comes from in-betweening, an animation technique where you specify keyframes and the computer interpolates the frames that appear between them.</para>
+            <para><see cref="T:Godot.Tween"/> is more suited than <see cref="T:Godot.AnimationPlayer"/> for animations where you don't know the final values in advance. For example, interpolating a dynamically-chosen camera zoom value is best done with a <see cref="T:Godot.Tween"/> node; it would be difficult to do the same thing with an <see cref="T:Godot.AnimationPlayer"/> node.</para>
             <para>Here is a brief usage example that causes a 2D node to move smoothly between two positions:</para>
             <para><code>
             var tween = get_node("Tween")
@@ -35068,7 +35276,7 @@
             <summary>
             <para>Adds a mapping to forward the external <c>port</c> (between 1 and 65535) on the default gateway (see <see cref="M:Godot.UPNP.GetGateway"/>) to the <c>internal_port</c> on the local machine for the given protocol <c>proto</c> (either <c>TCP</c> or <c>UDP</c>, with UDP being the default). If a port mapping for the given port and protocol combination already exists on that gateway device, this method tries to overwrite it. If that is not desired, you can retrieve the gateway manually with <see cref="M:Godot.UPNP.GetGateway"/> and call <see cref="M:Godot.UPNP.AddPortMapping(System.Int32,System.Int32,System.String,System.String,System.Int32)"/> on it, if any.</para>
             <para>If <c>internal_port</c> is <c>0</c> (the default), the same port number is used for both the external and the internal port (the <c>port</c> value).</para>
-            <para>The description (<c>desc</c>) is shown in some router UIs and can be used to point out which application added the mapping, and the lifetime of the mapping can be limited by <c>duration</c>. However, some routers are incompatible with one or both of these, so use with caution and add fallback logic in case of errors to retry without them if in doubt.</para>
+            <para>The description (<c>desc</c>) is shown in some router UIs and can be used to point out which application added the mapping. The mapping's lease duration can be limited by specifying a <c>duration</c> (in seconds). However, some routers are incompatible with one or both of these, so use with caution and add fallback logic in case of errors to retry without them if in doubt.</para>
             <para>See <see cref="T:Godot.UPNP.UPNPResult"/> for possible return values.</para>
             </summary>
         </member>
@@ -41875,7 +42083,7 @@
         </member>
         <member name="P:Godot.Engine.IterationsPerSecond">
             <summary>
-            <para>The number of fixed iterations per second (for fixed process and physics).</para>
+            <para>The number of fixed iterations per second. This controls how often physics simulation and <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/> methods are run. This value should generally always be set to <c>60</c> or above, as Godot doesn't interpolate the physics step. As a result, values lower than <c>60</c> will look stuttery. This value can be increased to make input more reactive or work around tunneling issues, but keep in mind doing so will increase CPU usage.</para>
             </summary>
         </member>
         <member name="P:Godot.Engine.TargetFps">
@@ -41890,7 +42098,7 @@
         </member>
         <member name="P:Godot.Engine.PhysicsJitterFix">
             <summary>
-            <para>Controls how much physic ticks are synchronized  with real time. For 0 or less, the ticks are synchronized. Such values are recommended for network games, where clock synchronization matters. Higher values cause higher deviation of in-game clock and real clock, but allows to smooth out framerate jitters. The default value of 0.5 should be fine for most; values above 2 could cause the game to react to dropped frames with a noticeable delay and are not recommended.</para>
+            <para>Controls how much physics ticks are synchronized with real time. For 0 or less, the ticks are synchronized. Such values are recommended for network games, where clock synchronization matters. Higher values cause higher deviation of in-game clock and real clock, but allows to smooth out framerate jitters. The default value of 0.5 should be fine for most; values above 2 could cause the game to react to dropped frames with a noticeable delay and are not recommended.</para>
             </summary>
         </member>
         <member name="M:Godot.Engine.GetPhysicsInterpolationFraction">
@@ -42909,7 +43117,7 @@
             <para>If <c>true</c>, the window background is transparent and window frame is removed.</para>
             <para>Use <c>get_tree().get_root().set_transparent_background(true)</c> to disable main viewport background rendering.</para>
             <para>Note: This property has no effect if Project &gt; Project Settings &gt; Display &gt; Window &gt; Per-pixel transparency &gt; Allowed setting is disabled.</para>
-            <para>Note: This property is implemented on Linux, macOS and Windows.</para>
+            <para>Note: This property is implemented on HTML5, Linux, macOS and Windows.</para>
             </summary>
         </member>
         <member name="P:Godot.OS.WindowFullscreen">

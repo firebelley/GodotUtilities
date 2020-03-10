@@ -327,6 +327,11 @@
             <para>Gets the name to display in the import window.</para>
             </summary>
         </member>
+        <member name="T:Godot.EditorInspector">
+            <summary>
+            <para>The editor inspector is by default located on the right-hand side of the editor. It's used to edit the properties of the selected node. For example, you can select a node such as Sprite2D then edit its transform through the inspector tool. The editor inspector is an essential tool in the game development workflow.</para>
+            </summary>
+        </member>
         <member name="T:Godot.EditorInspectorPlugin">
             <summary>
             <para>This plugins allows adding custom property editors to <see cref="T:Godot.EditorInspector"/>.</para>
@@ -557,6 +562,26 @@
         <member name="M:Godot.EditorPlugin.GetBreakpoints">
             <summary>
             <para>This is for editors that edit script-based objects. You can return a list of breakpoints in the format (<c>script:line</c>), for example: <c>res://path_to_script.gd:25</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorPlugin.GetPluginIcon">
+            <summary>
+            <para>Override this method in your plugin to return a <see cref="T:Godot.Texture"/> in order to give it an icon.</para>
+            <para>For main screen plugins, this appears at the top of the screen, to the right of the "2D", "3D", "Script", and "AssetLib" buttons.</para>
+            <para>Ideally, the plugin icon should be white with a transparent background and 16x16 pixels in size.</para>
+            <para><code>
+            func get_plugin_icon():
+                # You can use a custom icon:
+                return preload("res://addons/my_plugin/my_plugin_icon.svg")
+                # Or use a built-in icon:
+                return get_editor_interface().get_base_control().get_icon("Node", "EditorIcons")
+            </code></para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorPlugin.GetPluginName">
+            <summary>
+            <para>Override this method in your plugin to provide the name of the plugin when displayed in the Godot editor.</para>
+            <para>For main screen plugins, this appears at the top of the screen, to the right of the "2D", "3D", "Script", and "AssetLib" buttons.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.GetState">
@@ -841,7 +866,7 @@
         </member>
         <member name="T:Godot.EditorSceneImporterAssimp">
             <summary>
-            <para>This is a multi-format 3D asset importer based on <a href="http://assimp.org/">Assimp</a>. See <a href="https://assimp-docs.readthedocs.io/en/latest/about/intoduction.html#installation">this page</a> for a full list of supported formats.</para>
+            <para>This is an FBX 3D asset importer based on <a href="http://assimp.org/">Assimp</a>. It currently has many known limitations and works best with static meshes. Most animated meshes won't import correctly.</para>
             <para>If exporting a FBX scene from Autodesk Maya, use these FBX export settings:</para>
             <para><code>
             - Smoothing Groups
