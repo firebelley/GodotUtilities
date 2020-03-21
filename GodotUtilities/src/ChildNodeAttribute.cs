@@ -39,7 +39,7 @@ namespace GodotUtilities
 
         private static MemberInfo[] GetFieldsAndProperties(Node n)
         {
-            var flags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             var properties = n.GetType().GetProperties(flags);
             var fields = n.GetType().GetFields(flags);
             var memberInfo = new MemberInfo[properties.Length + fields.Length];
