@@ -8,34 +8,6 @@ namespace GodotUtilities.Extension
 {
     public static class NodeExtension
     {
-        /// <summary>
-        /// Uses reflection to find non-public NodePath fields. It is assumed that declared NodePath field names end with "Path". 
-        /// This method will use reflection to find the corresponding Node field by removing "Path" from the name and matching on the result.
-        /// For example, a NodePath field with name "_labelPath" will automatically try to set the non-public field "_label" to the node present at the NodePath location.
-        /// </summary>
-        /// <param name="n"></param>
-        public static void SetNodesByDeclaredNodePaths(this Node node)
-        {
-            var flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-            var type = node.GetType();
-            var fields = type.GetFields(flags);
-            foreach (var field in fields)
-            {
-                if (field.FieldType == typeof(NodePath))
-                {
-                    var name = field.Name;
-                    var target = name.Substr(0, name.Length - 4);
-                    var pathNode = node.GetNode(field.GetValue(node) as NodePath);
-                    var targetField = type.GetField(target, flags);
-                    if (targetField == null)
-                    {
-                        throw new Exception($"Target field with name \"{target}\" was not found.");
-                    }
-                    targetField.SetValue(node, pathNode);
-                }
-            }
-        }
-
         public static T GetSibling<T>(this Node node, int idx) where T : Node
         {
             return (T) node.GetParent().GetChild(idx);
@@ -62,7 +34,8 @@ namespace GodotUtilities.Extension
 
         public static T GetFirstNodeOfType<T>(this Node node)
         {
-            foreach (var child in node.GetChildren())
+            var children = node.GetChildren();
+            foreach (var child in children)
             {
                 if (child is T t)
                 {
@@ -81,6 +54,41 @@ namespace GodotUtilities.Extension
         {
             if (nodePath == null) return null;
             return n.GetNodeOrNull<T>(nodePath);
+        }
+
+        /// <summary>
+        /// Removes the node's children from the scene tree and then queues them for deletion.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void RemoveAndQueueFreeChildren<T>(this Node n) where T : Node
+        {
+            var children = n.GetChildren();
+            foreach (var child in children)
+            {
+                if (child is Node childNode)
+                {
+                    n.RemoveChild(childNode);
+                    childNode.QueueFree();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Queues all child nodes for deletion.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void QueueFreeChildren<T>(this Node n) where T : Node
+        {
+            var children = n.GetChildren();
+            foreach (var child in children)
+            {
+                if (child is Node childNode)
+                {
+                    childNode.QueueFree();
+                }
+            }
         }
     }
 }
