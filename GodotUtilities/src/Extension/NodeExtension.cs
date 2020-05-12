@@ -61,7 +61,7 @@ namespace GodotUtilities.Extension
         /// </summary>
         /// <param name="n"></param>
         /// <typeparam name="T"></typeparam>
-        public static void RemoveAndQueueFreeChildren<T>(this Node n) where T : Node
+        public static void RemoveAndQueueFreeChildren(this Node n)
         {
             var children = n.GetChildren();
             foreach (var child in children)
@@ -79,7 +79,7 @@ namespace GodotUtilities.Extension
         /// </summary>
         /// <param name="n"></param>
         /// <typeparam name="T"></typeparam>
-        public static void QueueFreeChildren<T>(this Node n) where T : Node
+        public static void QueueFreeChildren(this Node n)
         {
             var children = n.GetChildren();
             foreach (var child in children)
