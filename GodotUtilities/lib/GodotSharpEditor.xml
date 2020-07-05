@@ -4,9 +4,115 @@
         <name>GodotSharpEditor</name>
     </assembly>
     <members>
+        <member name="M:Godot.EditorExportPlugin._ExportBegin(System.String[],System.Boolean,System.String,System.Int32)">
+            <summary>
+            <para>Virtual method to be overridden by the user. It is called when the export starts and provides all information about the export.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin._ExportEnd">
+            <summary>
+            <para>Virtual method to be overridden by the user. Called when the export is finished.</para>
+            </summary>
+        </member>
+        <member name="T:Godot.EditorFeatureProfile">
+            <summary>
+            <para>An editor feature profile can be used to disable specific features of the Godot editor. When disabled, the features won't appear in the editor, which makes the editor less cluttered. This is useful in education settings to reduce confusion or when working in a team. For example, artists and level designers could use a feature profile that disables the script editor to avoid accidentally making changes to files they aren't supposed to edit.</para>
+            <para>To manage editor feature profiles visually, use Editor &gt; Manage Feature Profiles... at the top of the editor window.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.Feature3d">
+            <summary>
+            <para>The 3D editor. If this feature is disabled, the 3D editor won't display but 3D nodes will still display in the Create New Node dialog.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.Script">
+            <summary>
+            <para>The Script tab, which contains the script editor and class reference browser. If this feature is disabled, the Script tab won't display.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.AssetLib">
+            <summary>
+            <para>The AssetLib tab. If this feature is disabled, the AssetLib tab won't display.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.SceneTree">
+            <summary>
+            <para>Scene tree editing. If this feature is disabled, the Scene tree dock will still be visible but will be read-only.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.ImportDock">
+            <summary>
+            <para>The Import dock. If this feature is disabled, the Import dock won't be visible.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.NodeDock">
+            <summary>
+            <para>The Node dock. If this feature is disabled, signals and groups won't be visible and modifiable from the editor.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorFeatureProfile.Feature.FilesystemDock">
+            <summary>
+            <para>The FileSystem dock. If this feature is disabled, the FileSystem dock won't be visible.</para>
+            </summary>
+        </member>
         <member name="F:Godot.EditorFeatureProfile.Feature.Max">
             <summary>
             <para>Represents the size of the <see cref="T:Godot.EditorFeatureProfile.Feature"/> enum.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.SetDisableClass(System.String,System.Boolean)">
+            <summary>
+            <para>If <c>disable</c> is <c>true</c>, disables the class specified by <c>class_name</c>. When disabled, the class won't appear in the Create New Node dialog.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.IsClassDisabled(System.String)">
+            <summary>
+            <para>Returns <c>true</c> if the class specified by <c>class_name</c> is disabled. When disabled, the class won't appear in the Create New Node dialog.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.SetDisableClassEditor(System.String,System.Boolean)">
+            <summary>
+            <para>If <c>disable</c> is <c>true</c>, disables editing for the class specified by <c>class_name</c>. When disabled, the class will still appear in the Create New Node dialog but the inspector will be read-only when selecting a node that extends the class.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.IsClassEditorDisabled(System.String)">
+            <summary>
+            <para>Returns <c>true</c> if editing for the class specified by <c>class_name</c> is disabled. When disabled, the class will still appear in the Create New Node dialog but the inspector will be read-only when selecting a node that extends the class.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.SetDisableClassProperty(System.String,System.String,System.Boolean)">
+            <summary>
+            <para>If <c>disable</c> is <c>true</c>, disables editing for <c>property</c> in the class specified by <c>class_name</c>. When a property is disabled, it won't appear in the inspector when selecting a node that extends the class specified by <c>class_name</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.IsClassPropertyDisabled(System.String,System.String)">
+            <summary>
+            <para>Returns <c>true</c> if <c>property</c> is disabled in the class specified by <c>class_name</c>. When a property is disabled, it won't appear in the inspector when selecting a node that extends the class specified by <c>class_name</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.SetDisableFeature(Godot.EditorFeatureProfile.Feature,System.Boolean)">
+            <summary>
+            <para>If <c>disable</c> is <c>true</c>, disables the editor feature specified in <c>feature</c>. When a feature is disabled, it will disappear from the editor entirely.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.IsFeatureDisabled(Godot.EditorFeatureProfile.Feature)">
+            <summary>
+            <para>Returns <c>true</c> if the <c>feature</c> is disabled. When a feature is disabled, it will disappear from the editor entirely.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.GetFeatureName(Godot.EditorFeatureProfile.Feature)">
+            <summary>
+            <para>Returns the specified <c>feature</c>'s human-readable name.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.SaveToFile(System.String)">
+            <summary>
+            <para>Saves the editor feature profile to a file in JSON format. It can then be imported using the feature profile manager's Import button or the <see cref="M:Godot.EditorFeatureProfile.LoadFromFile(System.String)"/> button.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFeatureProfile.LoadFromFile(System.String)">
+            <summary>
+            <para>Loads an editor feature profile from a file. The file must follow the JSON format obtained by using the feature profile manager's Export button or the <see cref="M:Godot.EditorFeatureProfile.SaveToFile(System.String)"/> method.</para>
             </summary>
         </member>
         <member name="F:Godot.EditorFileDialog.DisplayModeEnum.Thumbnails">
@@ -123,6 +229,7 @@
         <member name="T:Godot.EditorFileSystem">
             <summary>
             <para>This object holds information of all resources in the filesystem, their types, etc.</para>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorInterface.GetResourceFilesystem"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorFileSystem.GetFilesystem">
@@ -163,6 +270,11 @@
         <member name="M:Godot.EditorFileSystem.GetFileType(System.String)">
             <summary>
             <para>Gets the type of the file, given the full path.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorFileSystem.UpdateScriptClasses">
+            <summary>
+            <para>Scans the script files and updates the list of custom class names.</para>
             </summary>
         </member>
         <member name="T:Godot.EditorFileSystemDirectory">
@@ -329,7 +441,8 @@
         </member>
         <member name="T:Godot.EditorInspector">
             <summary>
-            <para>The editor inspector is by default located on the right-hand side of the editor. It's used to edit the properties of the selected node. For example, you can select a node such as Sprite2D then edit its transform through the inspector tool. The editor inspector is an essential tool in the game development workflow.</para>
+            <para>The editor inspector is by default located on the right-hand side of the editor. It's used to edit the properties of the selected node. For example, you can select a node such as <see cref="T:Godot.Sprite"/> then edit its transform through the inspector tool. The editor inspector is an essential tool in the game development workflow.</para>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorInterface.GetInspector"/>.</para>
             </summary>
         </member>
         <member name="T:Godot.EditorInspectorPlugin">
@@ -386,6 +499,7 @@
         <member name="T:Godot.EditorInterface">
             <summary>
             <para>EditorInterface gives you control over Godot editor's window. It allows customizing the window, saving and (re-)loading scenes, rendering mesh previews, inspecting and editing resources and objects, and provides access to <see cref="T:Godot.EditorSettings"/>, <see cref="T:Godot.EditorFileSystem"/>, <see cref="T:Godot.EditorResourcePreview"/>, <see cref="T:Godot.ScriptEditor"/>, the editor viewport, and information about scenes.</para>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorPlugin.GetEditorInterface"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorInterface.InspectObject(Godot.Object,System.String)">
@@ -801,6 +915,7 @@
         <member name="T:Godot.EditorResourcePreview">
             <summary>
             <para>This object is used to generate previews for resources of files.</para>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorInterface.GetResourcePreviewer"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorResourcePreview.QueueResourcePreview(System.String,Godot.Object,System.String,System.Object)">
@@ -968,6 +1083,7 @@
         <member name="T:Godot.EditorSelection">
             <summary>
             <para>This object manages the SceneTree selection in the editor.</para>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorInterface.GetSelection"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorSelection.Clear">
@@ -1004,6 +1120,7 @@
             settings.get(prop)
             list_of_settings = settings.get_property_list()
             </code></para>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorInterface.GetEditorSettings"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.EditorSettings.NotificationEditorSettingsChanged">
@@ -1313,6 +1430,11 @@
         <member name="M:Godot.ScriptCreateDialog.Config(System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             <para>Prefills required fields to configure the ScriptCreateDialog for use.</para>
+            </summary>
+        </member>
+        <member name="T:Godot.ScriptEditor">
+            <summary>
+            <para>Note: This class shouldn't be instantiated directly. Instead, access the singleton using <see cref="M:Godot.EditorInterface.GetScriptEditor"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.ScriptEditor.GotoLine(System.Int32)">
