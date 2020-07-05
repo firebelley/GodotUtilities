@@ -11,6 +11,9 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2020</copyright>
     <tags></tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7" />
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\GodotUtilities.dll" target="lib\net47" />
