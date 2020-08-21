@@ -47,9 +47,6 @@
   <ItemGroup>
     <Compile Include="src\**\*.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="lib\GodotSharp.dll" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>$(SolutionDir)GodotUtilities\nuget.exe pack $(SolutionDir)GodotUtilities\GodotUtilities.nuspec</PostBuildEvent>
