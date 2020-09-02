@@ -1295,12 +1295,14 @@
             <para>Finds a descendant of this node whose name matches <c>mask</c> as in <c>String.match</c> (i.e. case-sensitive, but <c>"*"</c> matches zero or more characters and <c>"?"</c> matches any single character except <c>"."</c>).</para>
             <para>Note: It does not match against the full path, just against individual node names.</para>
             <para>If <c>owned</c> is <c>true</c>, this method only finds nodes whose owner is this node. This is especially important for scenes instantiated through a script, because those scenes don't have an owner.</para>
+            <para>Note: As this method walks through all the descendants of the node, it is the slowest way to get a reference to another node. Whenever possible, consider using <see cref="M:Godot.Node.GetNode(Godot.NodePath)"/> instead. To avoid using <see cref="M:Godot.Node.FindNode(System.String,System.Boolean,System.Boolean)"/> too often, consider caching the node reference into a variable.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.FindParent(System.String)">
             <summary>
             <para>Finds the first parent of the current node whose name matches <c>mask</c> as in <c>String.match</c> (i.e. case-sensitive, but <c>"*"</c> matches zero or more characters and <c>"?"</c> matches any single character except <c>"."</c>).</para>
             <para>Note: It does not match against the full path, just against individual node names.</para>
+            <para>Note: As this method walks upwards in the scene tree, it can be slow in large, deeply nested scene trees. Whenever possible, consider using <see cref="M:Godot.Node.GetNode(Godot.NodePath)"/> instead. To avoid using <see cref="M:Godot.Node.FindParent(System.String)"/> too often, consider caching the node reference into a variable.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.HasNodeAndResource(Godot.NodePath)">
@@ -4642,22 +4644,22 @@
         </member>
         <member name="F:Godot.KeyList.Back">
             <summary>
-            <para>Back key.</para>
+            <para>Media back key. Not to be confused with the Back button on an Android device.</para>
             </summary>
         </member>
         <member name="F:Godot.KeyList.Forward">
             <summary>
-            <para>Forward key.</para>
+            <para>Media forward key.</para>
             </summary>
         </member>
         <member name="F:Godot.KeyList.Stop">
             <summary>
-            <para>Stop key.</para>
+            <para>Media stop key.</para>
             </summary>
         </member>
         <member name="F:Godot.KeyList.Refresh">
             <summary>
-            <para>Refresh key.</para>
+            <para>Media refresh key.</para>
             </summary>
         </member>
         <member name="F:Godot.KeyList.Volumedown">
@@ -7645,6 +7647,7 @@
         <member name="T:Godot.AnimatedSprite">
             <summary>
             <para>Animations are created using a <see cref="T:Godot.SpriteFrames"/> resource, which can be configured in the editor via the SpriteFrames panel.</para>
+            <para>Note: You can associate a set of normal maps by creating additional <see cref="T:Godot.SpriteFrames"/> resources with a <c>_normal</c> suffix. For example, having 2 <see cref="T:Godot.SpriteFrames"/> resources <c>run</c> and <c>run_normal</c> will make it so the <c>run</c> animation uses the normal map.</para>
             </summary>
         </member>
         <member name="P:Godot.AnimatedSprite.Frames">
@@ -8947,7 +8950,8 @@
         </member>
         <member name="P:Godot.AnimationPlayer.CurrentAnimation">
             <summary>
-            <para>The name of the current animation, "" if not playing anything. When being set, does not restart the animation. See also <see cref="M:Godot.AnimationPlayer.Play(System.String,System.Single,System.Single,System.Boolean)"/>.</para>
+            <para>The name of the currently playing animation. If no animation is playing, the property's value is an empty string. Changing this value does not restart the animation. See <see cref="M:Godot.AnimationPlayer.Play(System.String,System.Single,System.Single,System.Boolean)"/> for more information on playing animations.</para>
+            <para>Note: while this property appears in the inspector, it's not meant to be edited and it's not saved in the scene. This property is mainly used to get the currently playing animation, and internally for animation playback tracks. For more information, see <see cref="T:Godot.Animation"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.AnimationPlayer.AssignedAnimation">
@@ -9631,12 +9635,12 @@
         </member>
         <member name="P:Godot.Area.CollisionLayer">
             <summary>
-            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area.CollisionMask"/>.</para>
+            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area.CollisionMask"/>. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area.CollisionMask">
             <summary>
-            <para>The physics layers this area scans to determine collision detection.</para>
+            <para>The physics layers this area scans to determine collision detection. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area.AudioBusOverride">
@@ -9794,12 +9798,12 @@
         </member>
         <member name="P:Godot.Area2D.CollisionLayer">
             <summary>
-            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area2D.CollisionMask"/>.</para>
+            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area2D.CollisionMask"/>. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area2D.CollisionMask">
             <summary>
-            <para>The physics layers this area scans to determine collision detection.</para>
+            <para>The physics layers this area scans to determine collision detection. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area2D.AudioBusOverride">
@@ -11156,6 +11160,7 @@
         <member name="T:Godot.AudioStreamPlayer3D">
             <summary>
             <para>Plays a sound effect with directed sound effects, dampens with distance if needed, generates effect of hearable position in space.</para>
+            <para>By default, audio is heard from the camera position. This can be changed by adding a <see cref="T:Godot.Listener"/> node to the scene and enabling it by calling <see cref="M:Godot.Listener.MakeCurrent"/> on it.</para>
             </summary>
         </member>
         <member name="F:Godot.AudioStreamPlayer3D.AttenuationModelEnum.InverseDistance">
@@ -13190,12 +13195,12 @@
             <summary>
             <para>The physics layers this area is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the collision_mask property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.CSGShape.CollisionMask">
             <summary>
-            <para>The physics layers this CSG shape scans for collisions.</para>
+            <para>The physics layers this CSG shape scans for collisions. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.CSGShape.IsRootShape">
@@ -14511,7 +14516,7 @@
         </member>
         <member name="P:Godot.ClippedCamera.CollisionMask">
             <summary>
-            <para>The camera's collision mask. Only objects in at least one collision layer matching the mask will be detected.</para>
+            <para>The camera's collision mask. Only objects in at least one collision layer matching the mask will be detected. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.ClippedCamera.ClipToAreas">
@@ -15240,6 +15245,7 @@
             <para>Only one <see cref="T:Godot.Control"/> node can be in keyboard focus. Only the node in focus will receive keyboard events. To get the focus, call <see cref="M:Godot.Control.GrabFocus"/>. <see cref="T:Godot.Control"/> nodes lose focus when another node grabs it, or if you hide the node in focus.</para>
             <para>Sets <see cref="P:Godot.Control.MouseFilter"/> to  to tell a <see cref="T:Godot.Control"/> node to ignore mouse or touch events. You'll need it if you place an icon on top of a button.</para>
             <para><see cref="T:Godot.Theme"/> resources change the Control's appearance. If you change the <see cref="T:Godot.Theme"/> on a <see cref="T:Godot.Control"/> node, it affects all of its children. To override some of the theme's parameters, call one of the <c>add_*_override</c> methods, like <see cref="M:Godot.Control.AddFontOverride(System.String,Godot.Font)"/>. You can override the theme with the inspector.</para>
+            <para>Note: Theme items are not <see cref="T:Godot.Object"/> properties. This means you can't access their values using <see cref="M:Godot.Object.Get(System.String)"/> and <see cref="M:Godot.Object.Set(System.String,System.Object)"/>. Instead, use <see cref="M:Godot.Control.GetColor(System.String,System.String)"/>, <see cref="M:Godot.Control.GetConstant(System.String,System.String)"/>, <see cref="M:Godot.Control.GetFont(System.String,System.String)"/>, <see cref="M:Godot.Control.GetIcon(System.String,System.String)"/>, <see cref="M:Godot.Control.GetStylebox(System.String,System.String)"/>, and the <c>add_*_override</c> methods provided by this class.</para>
             </summary>
         </member>
         <member name="F:Godot.Control.NotificationResized">
@@ -15966,32 +15972,55 @@
         </member>
         <member name="M:Godot.Control.AddIconOverride(System.String,Godot.Texture)">
             <summary>
-            <para>Overrides the icon with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>icon</c> is empty or invalid, the override is cleared and the icon from assigned <see cref="T:Godot.Theme"/> is used.</para>
+            <para>Overrides the icon with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>icon</c> is <c>null</c> or invalid, the override is cleared and the icon from assigned <see cref="T:Godot.Theme"/> is used.</para>
             </summary>
         </member>
         <member name="M:Godot.Control.AddShaderOverride(System.String,Godot.Shader)">
             <summary>
-            <para>Overrides the <see cref="T:Godot.Shader"/> with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>shader</c> is empty or invalid, the override is cleared and the shader from assigned <see cref="T:Godot.Theme"/> is used.</para>
+            <para>Overrides the <see cref="T:Godot.Shader"/> with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>shader</c> is <c>null</c> or invalid, the override is cleared and the shader from assigned <see cref="T:Godot.Theme"/> is used.</para>
             </summary>
         </member>
         <member name="M:Godot.Control.AddStyleboxOverride(System.String,Godot.StyleBox)">
             <summary>
             <para>Overrides the <see cref="T:Godot.StyleBox"/> with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>stylebox</c> is empty or invalid, the override is cleared and the <see cref="T:Godot.StyleBox"/> from assigned <see cref="T:Godot.Theme"/> is used.</para>
+            <para>Example of modifying a property in a StyleBox by duplicating it:</para>
+            <para><code>
+            # The snippet below assumes the child node MyButton has a StyleBoxFlat assigned.
+            # Resources are shared across instances, so we need to duplicate it
+            # to avoid modifying the appearance of all other buttons.
+            var new_stylebox_normal = $MyButton.get_stylebox("normal").duplicate()
+            new_stylebox_normal.border_width_top = 3
+            new_stylebox_normal.border_color = Color(0, 1, 0.5)
+            $MyButton.add_stylebox_override("normal", new_stylebox_normal)
+            
+            # Remove the stylebox override:
+            $MyButton.add_stylebox_override("normal", null)
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.Control.AddFontOverride(System.String,Godot.Font)">
             <summary>
-            <para>Overrides the font with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>font</c> is empty or invalid, the override is cleared and the font from assigned <see cref="T:Godot.Theme"/> is used.</para>
+            <para>Overrides the font with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If <c>font</c> is <c>null</c> or invalid, the override is cleared and the font from assigned <see cref="T:Godot.Theme"/> is used.</para>
             </summary>
         </member>
         <member name="M:Godot.Control.AddColorOverride(System.String,Godot.Color)">
             <summary>
-            <para>Overrides the <see cref="T:Godot.Color"/> with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If the <c>color</c> is empty or invalid, the override is cleared and the color from assigned <see cref="T:Godot.Theme"/> is used.</para>
+            <para>Overrides the <see cref="T:Godot.Color"/> with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses.</para>
+            <para>Note: Unlike other theme overrides, there is no way to undo a color override without manually assigning the previous color.</para>
+            <para>Example of overriding a label's color and resetting it later:</para>
+            <para><code>
+            # Override the child node "MyLabel"'s font color to orange.
+            $MyLabel.add_color_override("font_color", Color(1, 0.5, 0))
+            
+            # Reset the color by creating a new node to get the default value:
+            var default_label_color = Label.new().get_color("font_color")
+            $MyLabel.add_color_override("font_color", default_label_color)
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.Control.AddConstantOverride(System.String,System.Int32)">
             <summary>
-            <para>Overrides an integer constant with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If the <c>constant</c> is empty or invalid, the override is cleared and the constant from assigned <see cref="T:Godot.Theme"/> is used.</para>
+            <para>Overrides an integer constant with given <c>name</c> in the <see cref="P:Godot.Control.Theme"/> resource the control uses. If the <c>constant</c> is <c>0</c>, the override is cleared and the constant from assigned <see cref="T:Godot.Theme"/> is used.</para>
             </summary>
         </member>
         <member name="M:Godot.Control.GetIcon(System.String,System.String)">
@@ -17870,6 +17899,7 @@
         <member name="P:Godot.FileDialog.Access">
             <summary>
             <para>The file system access scope. See enum <c>Access</c> constants.</para>
+            <para>Warning: Currently, in sandboxed environments such as HTML5 builds or sandboxed macOS apps, FileDialog cannot access the host file system. See <a href="https://github.com/godotengine/godot-proposals/issues/1123">godot-proposals#1123</a>.</para>
             </summary>
         </member>
         <member name="P:Godot.FileDialog.Filters">
@@ -19108,7 +19138,7 @@
         </member>
         <member name="P:Godot.GridMap.CollisionMask">
             <summary>
-            <para>The physics layers this GridMap detects collisions in.</para>
+            <para>The physics layers this GridMap detects collisions in. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.GridMap.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -19217,7 +19247,7 @@
         </member>
         <member name="T:Godot.HTTPClient">
             <summary>
-            <para>Hyper-text transfer protocol client (sometimes called "User Agent"). Used to make HTTP requests to download web content, upload files and other data or to communicate with various services, among other use cases. See <see cref="T:Godot.HTTPRequest"/> for an higher-level alternative.</para>
+            <para>Hyper-text transfer protocol client (sometimes called "User Agent"). Used to make HTTP requests to download web content, upload files and other data or to communicate with various services, among other use cases. See the <see cref="T:Godot.HTTPRequest"/> node for an higher-level alternative.</para>
             <para>Note: This client only needs to connect to a host once (see <see cref="M:Godot.HTTPClient.ConnectToHost(System.String,System.Int32,System.Boolean,System.Boolean)"/>) to send multiple requests. Because of this, methods that take URLs usually take just the part after the host instead of the full URL, as the client is already connected to a host. See <see cref="M:Godot.HTTPClient.Request(Godot.HTTPClient.Method,System.String,System.String[],System.String)"/> for a full example and to get started.</para>
             <para>A <see cref="T:Godot.HTTPClient"/> should be reused between multiple requests or to connect to different hosts instead of creating one client per request. Supports SSL and SSL server certificate verification. HTTP status codes in the 2xx range indicate success, 3xx redirection (i.e. "try again, but over here"), 4xx something was wrong with the request, and 5xx something went wrong on the server's side.</para>
             <para>For more information on HTTP, see https://developer.mozilla.org/en-US/docs/Web/HTTP (or read RFC 2616 to get it straight from the source: https://tools.ietf.org/html/rfc2616).</para>
@@ -19670,6 +19700,7 @@
             var headers = ["Content-Type: application/x-www-form-urlencoded", "Content-Length: " + str(query_string.length())]
             var result = http_client.request(http_client.METHOD_POST, "index.php", headers, query_string)
             </code></para>
+            <para>Note: The <c>request_data</c> parameter is ignored if <c>method</c> is . This is because GET methods can't contain request data. As a workaround, you can pass request data as a query string in the URL. See <c>String.http_escape</c> for an example.</para>
             </summary>
         </member>
         <member name="M:Godot.HTTPClient.Close">
@@ -19896,6 +19927,7 @@
             <summary>
             <para>Creates request on the underlying <see cref="T:Godot.HTTPClient"/>. If there is no configuration errors, it tries to connect using <see cref="M:Godot.HTTPClient.ConnectToHost(System.String,System.Int32,System.Boolean,System.Boolean)"/> and passes parameters onto <see cref="M:Godot.HTTPClient.Request(Godot.HTTPClient.Method,System.String,System.String[],System.String)"/>.</para>
             <para>Returns  if request is successfully created. (Does not imply that the server has responded),  if not in the tree,  if still processing previous request,  if given string is not a valid URL format, or  if not using thread and the <see cref="T:Godot.HTTPClient"/> cannot connect to host.</para>
+            <para>Note: The <c>request_data</c> parameter is ignored if <c>method</c> is . This is because GET methods can't contain request data. As a workaround, you can pass request data as a query string in the URL. See <c>String.http_escape</c> for an example.</para>
             </summary>
             <param name="customHeaders">If the parameter is null, then the default value is new string[] {}</param>
         </member>
@@ -20946,7 +20978,8 @@
         </member>
         <member name="F:Godot.Input.MouseMode.Captured">
             <summary>
-            <para>Captures the mouse. The mouse will be hidden and unable to leave the game window, but it will still register movement and mouse button presses. On Windows and Linux, the mouse will use raw input mode, which means the reported movement will be unaffected by the OS' mouse acceleration settings.</para>
+            <para>Captures the mouse. The mouse will be hidden and its position locked at the center of the screen.</para>
+            <para>Note: If you want to process the mouse's movement in this mode, you need to use <see cref="P:Godot.InputEventMouseMotion.Relative"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.Input.MouseMode.Confined">
@@ -21165,23 +21198,27 @@
         </member>
         <member name="M:Godot.Input.GetGravity">
             <summary>
-            <para>If the device has an accelerometer, this will return the gravity. Otherwise, it returns an empty <see cref="T:Godot.Vector3"/>.</para>
+            <para>Returns the gravity of the device's accelerometer, if the device has one. Otherwise, the method returns .</para>
+            <para>Note: This method only works on Android and iOS. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetAccelerometer">
             <summary>
-            <para>If the device has an accelerometer, this will return the acceleration. Otherwise, it returns an empty <see cref="T:Godot.Vector3"/>.</para>
+            <para>Returns the acceleration of the device's accelerometer, if the device has one. Otherwise, the method returns .</para>
             <para>Note this method returns an empty <see cref="T:Godot.Vector3"/> when running from the editor even when your device has an accelerometer. You must export your project to a supported device to read values from the accelerometer.</para>
+            <para>Note: This method only works on iOS, Android, and UWP. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetMagnetometer">
             <summary>
-            <para>If the device has a magnetometer, this will return the magnetic field strength in micro-Tesla for all axes.</para>
+            <para>Returns the the magnetic field strength in micro-Tesla for all axes of the device's magnetometer, if the device has one. Otherwise, the method returns .</para>
+            <para>Note: This method only works on Android and UWP. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetGyroscope">
             <summary>
-            <para>If the device has a gyroscope, this will return the rate of rotation in rad/s around a device's X, Y, and Z axes. Otherwise, it returns an empty <see cref="T:Godot.Vector3"/>.</para>
+            <para>Returns the rotation rate in rad/s around a device's X, Y, and Z axes of the gyroscope, if the device has one. Otherwise, the method returns .</para>
+            <para>Note: This method only works on Android. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetLastMouseSpeed">
@@ -27739,6 +27776,7 @@
         <member name="M:Godot.Physics2DServer.BodySetState(Godot.RID,Godot.Physics2DServer.BodyState,System.Object)">
             <summary>
             <para>Sets a body state using one of the <see cref="T:Godot.Physics2DServer.BodyState"/> constants.</para>
+            <para>Note that the method doesn't take effect immediately. The state will change on the next physics frame.</para>
             </summary>
         </member>
         <member name="M:Godot.Physics2DServer.BodyGetState(Godot.RID,Godot.Physics2DServer.BodyState)">
@@ -27868,7 +27906,7 @@
         </member>
         <member name="P:Godot.Physics2DShapeQueryParameters.CollisionLayer">
             <summary>
-            <para>The physics layer(s) the query will take into account (as a bitmask).</para>
+            <para>The physics layer(s) the query will take into account (as a bitmask). See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Physics2DShapeQueryParameters.Exclude">
@@ -27950,12 +27988,12 @@
             <summary>
             <para>The physics layers this area is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the <see cref="P:Godot.PhysicsBody.CollisionMask"/> property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.PhysicsBody.CollisionMask">
             <summary>
-            <para>The physics layers this area scans for collisions.</para>
+            <para>The physics layers this area scans for collisions. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.PhysicsBody.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -28007,12 +28045,12 @@
             <summary>
             <para>The physics layers this area is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the <see cref="P:Godot.PhysicsBody2D.CollisionMask"/> property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.PhysicsBody2D.CollisionMask">
             <summary>
-            <para>The physics layers this area scans for collisions.</para>
+            <para>The physics layers this area scans for collisions. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.PhysicsBody2D.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -29394,7 +29432,7 @@
         </member>
         <member name="P:Godot.PhysicsShapeQueryParameters.CollisionMask">
             <summary>
-            <para>The physics layer(s) the query will take into account (as a bitmask).</para>
+            <para>The physics layer(s) the query will take into account (as a bitmask). See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.PhysicsShapeQueryParameters.Exclude">
@@ -29689,6 +29727,7 @@
         <member name="P:Godot.Popup.PopupExclusive">
             <summary>
             <para>If <c>true</c>, the popup will not be hidden when a click event occurs outside of it, or when it receives the <c>ui_cancel</c> action event.</para>
+            <para>Note: Enabling this property doesn't affect the Close or Cancel buttons' behavior in dialogs that inherit from this class. As a workaround, you can use <see cref="M:Godot.WindowDialog.GetCloseButton"/> or <see cref="M:Godot.ConfirmationDialog.GetCancel"/> and hide the buttons in question by setting their <see cref="P:Godot.CanvasItem.Visible"/> property to <c>false</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.Popup.SetAsMinsize">
@@ -30508,7 +30547,7 @@
         </member>
         <member name="P:Godot.RayCast.CollisionMask">
             <summary>
-            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected.</para>
+            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.RayCast.CollideWithAreas">
@@ -30617,7 +30656,7 @@
         </member>
         <member name="P:Godot.RayCast2D.CollisionMask">
             <summary>
-            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected.</para>
+            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.RayCast2D.CollideWithAreas">
@@ -31546,6 +31585,7 @@
             <para>A RigidBody has 4 behavior <see cref="P:Godot.RigidBody.Mode"/>s: Rigid, Static, Character, and Kinematic.</para>
             <para>Note: Don't change a RigidBody's position every frame or very often. Sporadic changes work fine, but physics runs at a different granularity (fixed Hz) than usual rendering (process callback) and maybe even in a separate thread, so changing this from a process loop may result in strange behavior. If you need to directly affect the body's state, use <see cref="M:Godot.RigidBody._IntegrateForces(Godot.PhysicsDirectBodyState)"/>, which allows you to directly access the physics state.</para>
             <para>If you need to override the default physics behavior, you can write a custom force integration function. See <see cref="P:Godot.RigidBody.CustomIntegrator"/>.</para>
+            <para>With Bullet physics (the default), the center of mass is the RigidBody3D center. With GodotPhysics, the center of mass is the average of the <see cref="T:Godot.CollisionShape"/> centers.</para>
             </summary>
         </member>
         <member name="F:Godot.RigidBody.ModeEnum.Rigid">
@@ -31636,6 +31676,7 @@
         <member name="P:Godot.RigidBody.CanSleep">
             <summary>
             <para>If <c>true</c>, the body can enter sleep mode when there is no movement. See <see cref="P:Godot.RigidBody.Sleeping"/>.</para>
+            <para>Note: A RigidBody3D will never enter sleep mode automatically if its <see cref="P:Godot.RigidBody.Mode"/> is . It can still be put to sleep manually by setting its <see cref="P:Godot.RigidBody.Sleeping"/> property to <c>true</c>.</para>
             </summary>
         </member>
         <member name="P:Godot.RigidBody.AxisLockLinearX">
@@ -31759,6 +31800,7 @@
             <para>Note: You should not change a RigidBody2D's <c>position</c> or <c>linear_velocity</c> every frame or even very often. If you need to directly affect the body's state, use <see cref="M:Godot.RigidBody2D._IntegrateForces(Godot.Physics2DDirectBodyState)"/>, which allows you to directly access the physics state.</para>
             <para>Please also keep in mind that physics bodies manage their own transform which overwrites the ones you set. So any direct or indirect transformation (including scaling of the node or its parent) will be visible in the editor only, and immediately reset at runtime.</para>
             <para>If you need to override the default physics behavior or add a transformation at runtime, you can write a custom force integration. See <see cref="P:Godot.RigidBody2D.CustomIntegrator"/>.</para>
+            <para>The center of mass is always located at the node's origin without taking into account the <see cref="T:Godot.CollisionShape2D"/> centroid offsets.</para>
             </summary>
         </member>
         <member name="F:Godot.RigidBody2D.ModeEnum.Rigid">
@@ -31869,6 +31911,7 @@
         <member name="P:Godot.RigidBody2D.CanSleep">
             <summary>
             <para>If <c>true</c>, the body can enter sleep mode when there is no movement. See <see cref="P:Godot.RigidBody2D.Sleeping"/>.</para>
+            <para>Note: A RigidBody2D will never enter sleep mode automatically if its <see cref="P:Godot.RigidBody2D.Mode"/> is . It can still be put to sleep manually by setting its <see cref="P:Godot.RigidBody2D.Sleeping"/> property to <c>true</c>.</para>
             </summary>
         </member>
         <member name="P:Godot.RigidBody2D.LinearVelocity">
@@ -33101,12 +33144,12 @@
             <summary>
             <para>The physics layers this SoftBody is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the collision_mask property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.SoftBody.CollisionMask">
             <summary>
-            <para>The physics layers this SoftBody scans for collisions.</para>
+            <para>The physics layers this SoftBody scans for collisions. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.SoftBody.ParentCollisionIgnore">
@@ -34548,7 +34591,7 @@
         </member>
         <member name="P:Godot.SpringArm.CollisionMask">
             <summary>
-            <para>The layers against which the collision check shall be done.</para>
+            <para>The layers against which the collision check shall be done. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.SpringArm.Shape">
@@ -34816,6 +34859,7 @@
         <member name="T:Godot.SpriteFrames">
             <summary>
             <para>Sprite frame library for <see cref="T:Godot.AnimatedSprite"/>. Contains frames and animation data for playback.</para>
+            <para>Note: You can associate a set of normal maps by creating additional <see cref="T:Godot.SpriteFrames"/> resources with a <c>_normal</c> suffix. For example, having 2 <see cref="T:Godot.SpriteFrames"/> resources <c>run</c> and <c>run_normal</c> will make it so the <c>run</c> animation uses the normal map.</para>
             </summary>
         </member>
         <member name="P:Godot.SpriteFrames.Frames">
@@ -36704,7 +36748,7 @@
         </member>
         <member name="M:Godot.Texture.GetData">
             <summary>
-            <para>Returns an <see cref="T:Godot.Image"/> with the data from this <see cref="T:Godot.Texture"/>. <see cref="T:Godot.Image"/>s can be accessed and manipulated directly.</para>
+            <para>Returns an <see cref="T:Godot.Image"/> that is a copy of data from this <see cref="T:Godot.Texture"/>. <see cref="T:Godot.Image"/>s can be accessed and manipulated directly.</para>
             </summary>
         </member>
         <member name="T:Godot.Texture3D">
@@ -37387,12 +37431,12 @@
         </member>
         <member name="P:Godot.TileMap.CollisionLayer">
             <summary>
-            <para>The collision layer(s) for all colliders in the TileMap.</para>
+            <para>The collision layer(s) for all colliders in the TileMap. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.TileMap.CollisionMask">
             <summary>
-            <para>The collision mask(s) for all colliders in the TileMap.</para>
+            <para>The collision mask(s) for all colliders in the TileMap. See <a href="https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.TileMap.OccluderLightMask">
@@ -37429,7 +37473,7 @@
             <para>If you need these to be immediately updated, you can call <see cref="M:Godot.TileMap.UpdateDirtyQuadrants"/>.</para>
             <para>Overriding this method also overrides it internally, allowing custom logic to be implemented when tiles are placed/removed:</para>
             <para><code>
-            func set_cell(x, y, tile, flip_x, flip_y, transpose, autotile_coord)
+            func set_cell(x, y, tile, flip_x=false, flip_y=false, transpose=false, autotile_coord=Vector2())
                 # Write your custom logic here.
                 # To call the default method:
                 .set_cell(x, y, tile, flip_x, flip_y, transpose, autotile_coord)
@@ -37950,7 +37994,9 @@
         </member>
         <member name="T:Godot.TouchScreenButton">
             <summary>
-            <para>Button for touch screen devices. You can set it to be visible on all screens, or only on touch devices.</para>
+            <para>TouchScreenButton allows you to create on-screen buttons for touch devices. It's intended for gameplay use, such as a unit you have to touch to move.</para>
+            <para>This node inherits from <see cref="T:Godot.Node2D"/>. Unlike with <see cref="T:Godot.Control"/> nodes, you cannot set anchors on it. If you want to create menus or user interfaces, you may want to use <see cref="T:Godot.Button"/> nodes instead. To make button nodes react to touch events, you can enable the Emulate Mouse option in the Project Settings.</para>
+            <para>You can configure TouchScreenButton to be visible only on touch devices, helping you develop your game both for desktop and mobile devices.</para>
             </summary>
         </member>
         <member name="F:Godot.TouchScreenButton.VisibilityModeEnum.Always">
@@ -46956,22 +47002,22 @@
         </member>
         <member name="F:Godot.File.ModeFlags.Read">
             <summary>
-            <para>Opens the file for read operations.</para>
+            <para>Opens the file for read operations. The cursor is positioned at the beginning of the file.</para>
             </summary>
         </member>
         <member name="F:Godot.File.ModeFlags.Write">
             <summary>
-            <para>Opens the file for write operations. Create it if the file does not exist and truncate if it exists.</para>
+            <para>Opens the file for write operations. The file is created if it does not exist, and truncated if it does.</para>
             </summary>
         </member>
         <member name="F:Godot.File.ModeFlags.ReadWrite">
             <summary>
-            <para>Opens the file for read and write operations. Does not truncate the file.</para>
+            <para>Opens the file for read and write operations. Does not truncate the file. The cursor is positioned at the beginning of the file.</para>
             </summary>
         </member>
         <member name="F:Godot.File.ModeFlags.WriteRead">
             <summary>
-            <para>Opens the file for read and write operations. Create it if the file does not exist and truncate if it exists.</para>
+            <para>Opens the file for read and write operations. The file is created if it does not exist, and truncated if it does. The cursor is positioned at the beginning of the file.</para>
             </summary>
         </member>
         <member name="P:Godot.File.EndianSwap">
@@ -48684,6 +48730,7 @@
         <member name="T:Godot.Thread">
             <summary>
             <para>A unit of execution in a process. Can run methods on <see cref="T:Godot.Object"/>s simultaneously. The use of synchronization via <see cref="T:Godot.Mutex"/> or <see cref="T:Godot.Semaphore"/> is advised if working with shared objects.</para>
+            <para>Note: Breakpoints won't break on code if it's running in a thread. This is a current limitation of the GDScript debugger.</para>
             </summary>
         </member>
         <member name="F:Godot.Thread.Priority.Low">
@@ -48709,7 +48756,7 @@
         </member>
         <member name="M:Godot.Thread.GetId">
             <summary>
-            <para>Returns the current <see cref="T:Godot.Thread"/>'s ID, uniquely identifying it among all threads.</para>
+            <para>Returns the current <see cref="T:Godot.Thread"/>'s ID, uniquely identifying it among all threads. If the <see cref="T:Godot.Thread"/> is not running this returns an empty string.</para>
             </summary>
         </member>
         <member name="M:Godot.Thread.IsActive">
