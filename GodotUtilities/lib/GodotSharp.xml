@@ -1411,7 +1411,7 @@
                 ┠╴Menu
                 ┃  ┠╴Label
                 ┃  ┖╴Camera2D
-                ┖-SplashScreen
+                ┖╴SplashScreen
                    ┖╴Camera2D
             </code></para>
             </summary>
@@ -1826,12 +1826,13 @@
         </member>
         <member name="M:Godot.Object.SetMeta(System.String,System.Object)">
             <summary>
-            <para>Adds or changes a given entry in the object's metadata. Metadata are serialized, and can take any <c>Variant</c> value.</para>
+            <para>Adds, changes or removes a given entry in the object's metadata. Metadata are serialized and can take any <c>Variant</c> value.</para>
+            <para>To remove a given entry from the object's metadata, use <see cref="M:Godot.Object.RemoveMeta(System.String)"/>. Metadata is also removed if its value is set to <c>null</c>. This means you can also use <c>set_meta("name", null)</c> to remove metadata for <c>"name"</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.Object.RemoveMeta(System.String)">
             <summary>
-            <para>Removes a given entry from the object's metadata.</para>
+            <para>Removes a given entry from the object's metadata. See also <see cref="M:Godot.Object.SetMeta(System.String,System.Object)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Object.GetMeta(System.String)">
@@ -9172,8 +9173,9 @@
         </member>
         <member name="T:Godot.AnimationTreePlayer">
             <summary>
-            <para>A node graph tool for blending multiple animations bound to an <see cref="T:Godot.AnimationPlayer"/>. Especially useful for animating characters or other skeleton-based rigs. It can combine several animations to form a desired pose.</para>
+            <para>Deprecated. A node graph tool for blending multiple animations bound to an <see cref="T:Godot.AnimationPlayer"/>. Especially useful for animating characters or other skeleton-based rigs. It can combine several animations to form a desired pose.</para>
             <para>It takes <see cref="T:Godot.Animation"/>s from an <see cref="T:Godot.AnimationPlayer"/> node and mixes them depending on the graph.</para>
+            <para>See <see cref="T:Godot.AnimationTree"/> for a more full-featured replacement of this node.</para>
             </summary>
         </member>
         <member name="F:Godot.AnimationTreePlayer.AnimationProcessMode.Physics">
@@ -10396,7 +10398,7 @@
         </member>
         <member name="T:Godot.AudioEffectDistortion">
             <summary>
-            <para>Modify the sound and make it dirty. Different types are available: clip, tan, lo-fi (bit crushing), overdrive, or waveshape.</para>
+            <para>Different types are available: clip, tan, lo-fi (bit crushing), overdrive, or waveshape.</para>
             <para>By distorting the waveform the frequency content change, which will often make the sound "crunchy" or "abrasive". For games, it can simulate sound coming from some saturated device or speaker very efficiently.</para>
             </summary>
         </member>
@@ -10532,7 +10534,7 @@
         </member>
         <member name="P:Godot.AudioEffectFilter.Resonance">
             <summary>
-            <para>Amount of boost in the overtones near the cutoff frequency.</para>
+            <para>Amount of boost in the frequency range near the cutoff frequency.</para>
             </summary>
         </member>
         <member name="P:Godot.AudioEffectFilter.Gain">
@@ -17039,7 +17041,7 @@
         </member>
         <member name="T:Godot.DynamicFont">
             <summary>
-            <para>DynamicFont renders vector font files (such as TTF or OTF) dynamically at runtime instead of using a prerendered texture atlas like <see cref="T:Godot.BitmapFont"/>. This trades the faster loading time of <see cref="T:Godot.BitmapFont"/>s for the ability to change font parameters like size and spacing during runtime. <see cref="T:Godot.DynamicFontData"/> is used for referencing the font file paths. DynamicFont also supports defining one or more fallbacks fonts, which will be used when displaying a character not supported by the main font.</para>
+            <para>DynamicFont renders vector font files (such as TTF or OTF) dynamically at runtime instead of using a prerendered texture atlas like <see cref="T:Godot.BitmapFont"/>. This trades the faster loading time of <see cref="T:Godot.BitmapFont"/>s for the ability to change font parameters like size and spacing during runtime. <see cref="T:Godot.DynamicFontData"/> is used for referencing the font file paths. DynamicFont also supports defining one or more fallback fonts, which will be used when displaying a character not supported by the main font.</para>
             <para>DynamicFont uses the <a href="https://www.freetype.org/">FreeType</a> library for rasterization.</para>
             <para><code>
             var dynamic_font = DynamicFont.new()
@@ -17960,6 +17962,8 @@
         <member name="T:Godot.Font">
             <summary>
             <para>Font contains a Unicode-compatible character set, as well as the ability to draw it with variable width, ascent, descent and kerning. For creating fonts from TTF files (or other font formats), see the editor support for fonts.</para>
+            <para>Note: If a DynamicFont doesn't contain a character used in a string, the character in question will be replaced with codepoint <c>0xfffd</c> if it's available in the DynamicFont. If this replacement character isn't available in the DynamicFont, the character will be hidden without displaying any replacement character in the string.</para>
+            <para>Note: If a BitmapFont doesn't contain a character used in a string, the character in question will be hidden without displaying any replacement character in the string.</para>
             </summary>
         </member>
         <member name="M:Godot.Font.Draw(Godot.RID,Godot.Vector2,System.String,System.Nullable{Godot.Color},System.Int32,System.Nullable{Godot.Color})">
@@ -19071,13 +19075,14 @@
         </member>
         <member name="T:Godot.GridContainer">
             <summary>
-            <para>Grid container will arrange its children in a grid like structure, the grid columns are specified using the <see cref="P:Godot.GridContainer.Columns"/> property and the number of rows will be equal to the number of children in the container divided by the number of columns. For example, if the container has 5 children, and 2 columns, there will be 3 rows in the container.</para>
+            <para>GridContainer will arrange its Control-derived children in a grid like structure, the grid columns are specified using the <see cref="P:Godot.GridContainer.Columns"/> property and the number of rows will be equal to the number of children in the container divided by the number of columns. For example, if the container has 5 children, and 2 columns, there will be 3 rows in the container.</para>
             <para>Notice that grid layout will preserve the columns and rows for every size of the container, and that empty columns will be expanded automatically.</para>
+            <para>Note: GridContainer only works with child nodes inheriting from Control. It won't rearrange child nodes inheriting from Node2D.</para>
             </summary>
         </member>
         <member name="P:Godot.GridContainer.Columns">
             <summary>
-            <para>The number of columns in the <see cref="T:Godot.GridContainer"/>. If modified, <see cref="T:Godot.GridContainer"/> reorders its children to accommodate the new layout.</para>
+            <para>The number of columns in the <see cref="T:Godot.GridContainer"/>. If modified, <see cref="T:Godot.GridContainer"/> reorders its Control-derived children to accommodate the new layout.</para>
             </summary>
         </member>
         <member name="T:Godot.GridMap">
@@ -20591,7 +20596,7 @@
         </member>
         <member name="M:Godot.Image.GetData">
             <summary>
-            <para>Returns the image's raw data.</para>
+            <para>Returns a copy of the image's raw data.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.Convert(Godot.Image.Format)">
@@ -21689,7 +21694,7 @@
         </member>
         <member name="T:Godot.InterpolatedCamera">
             <summary>
-            <para>InterpolatedCamera is a <see cref="T:Godot.Camera"/> which smoothly moves to match a target node's position and rotation.</para>
+            <para>Deprecated (will be removed in Godot 4.0). InterpolatedCamera is a <see cref="T:Godot.Camera"/> which smoothly moves to match a target node's position and rotation.</para>
             <para>If it is not <see cref="P:Godot.InterpolatedCamera.Enabled"/> or does not have a valid target set, InterpolatedCamera acts like a normal Camera.</para>
             </summary>
         </member>
@@ -23857,7 +23862,7 @@
         </member>
         <member name="M:Godot.Mesh.GetAabb">
             <summary>
-            <para>Returns the smallest <see cref="T:Godot.AABB"/> enclosing this mesh. Not affected by <c>custom_aabb</c>.</para>
+            <para>Returns the smallest <see cref="T:Godot.AABB"/> enclosing this mesh in local space. Not affected by <c>custom_aabb</c>. See also <see cref="M:Godot.VisualInstance.GetTransformedAabb"/>.</para>
             <para>Note: This is only implemented for <see cref="T:Godot.ArrayMesh"/> and <see cref="T:Godot.PrimitiveMesh"/>.</para>
             </summary>
         </member>
@@ -24491,7 +24496,7 @@
         </member>
         <member name="M:Godot.MultiMesh.GetAabb">
             <summary>
-            <para>Returns the visibility axis-aligned bounding box.</para>
+            <para>Returns the visibility axis-aligned bounding box in local space. See also <see cref="M:Godot.VisualInstance.GetTransformedAabb"/>.</para>
             </summary>
         </member>
         <member name="T:Godot.MultiMeshInstance">
@@ -40011,6 +40016,7 @@
         <member name="P:Godot.Viewport.RenderTargetClearMode">
             <summary>
             <para>The clear mode when viewport used as a render target.</para>
+            <para>Note: This property is intended for 2D usage.</para>
             </summary>
         </member>
         <member name="P:Godot.Viewport.RenderTargetUpdateMode">
@@ -40426,12 +40432,12 @@
         <member name="M:Godot.VisualInstance.GetTransformedAabb">
             <summary>
             <para>Returns the transformed <see cref="T:Godot.AABB"/> (also known as the bounding box) for this <see cref="T:Godot.VisualInstance"/>.</para>
-            <para>Transformed in this case means the <see cref="T:Godot.AABB"/> plus the position, rotation, and scale of the <see cref="T:Godot.Spatial"/>'s <see cref="T:Godot.Transform"/>.</para>
+            <para>Transformed in this case means the <see cref="T:Godot.AABB"/> plus the position, rotation, and scale of the <see cref="T:Godot.Spatial"/>'s <see cref="T:Godot.Transform"/>. See also <see cref="M:Godot.VisualInstance.GetAabb"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.VisualInstance.GetAabb">
             <summary>
-            <para>Returns the <see cref="T:Godot.AABB"/> (also known as the bounding box) for this <see cref="T:Godot.VisualInstance"/>.</para>
+            <para>Returns the <see cref="T:Godot.AABB"/> (also known as the bounding box) for this <see cref="T:Godot.VisualInstance"/>. See also <see cref="M:Godot.VisualInstance.GetTransformedAabb"/>.</para>
             </summary>
         </member>
         <member name="T:Godot.VisualScript">
@@ -46109,7 +46115,7 @@
                     {
                         "urls": [ "turn:turn.example.com:3478" ], # One or more TURN servers.
                         "username": "a_username", # Optional username for the TURN server.
-                        "credentials": "a_password", # Optional password for the TURN server.
+                        "credential": "a_password", # Optional password for the TURN server.
                     }
                 ]
             }
