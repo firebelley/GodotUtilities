@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtilities.Util;
 
-namespace GodotUtilities.Extension
+namespace GodotUtilities
 {
     public static class Physics2DDirectSpaceStateExtensions
     {
@@ -19,7 +19,7 @@ namespace GodotUtilities.Extension
         public static RaycastResult Raycast(this Physics2DDirectSpaceState state, Vector2 from, Vector2 to, Godot.Collections.Array exclude = null, uint collisionLayer = uint.MaxValue, bool collideWithBodies = true, bool collideWithAreas = false)
         {
             var raycastDict = state.IntersectRay(from, to, exclude, collisionLayer, collideWithBodies, collideWithAreas);
-            if (raycastDict != null && raycastDict.Count > 0)
+            if (raycastDict?.Count > 0)
             {
                 return new RaycastResult(from, to, raycastDict);
             }

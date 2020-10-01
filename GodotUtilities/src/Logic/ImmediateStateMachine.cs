@@ -12,9 +12,9 @@ namespace GodotUtilities.Logic
 
         public T CurrentState { get; private set; }
 
-        private Dictionary<T, StateDelegate> _states = new Dictionary<T, StateDelegate>();
-        private Dictionary<StateDelegate, T> _delegates = new Dictionary<StateDelegate, T>();
-        private Dictionary<T, StateDelegate> _leaveStates = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<T, StateDelegate> _states = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<StateDelegate, T> _delegates = new Dictionary<StateDelegate, T>();
+        private readonly Dictionary<T, StateDelegate> _leaveStates = new Dictionary<T, StateDelegate>();
 
         public void AddState(T state, StateDelegate del)
         {

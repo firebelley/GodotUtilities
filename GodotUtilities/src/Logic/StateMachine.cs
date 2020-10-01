@@ -8,12 +8,12 @@ namespace GodotUtilities.Logic
 
         private T _currentState;
         private T _nextState;
-        private bool _forceNew = false;
-        private bool _isStateNew = false;
+        private bool _forceNew;
+        private bool _isStateNew;
 
-        private Dictionary<T, StateDelegate> _states = new Dictionary<T, StateDelegate>();
-        private Dictionary<StateDelegate, T> _delegates = new Dictionary<StateDelegate, T>();
-        private Dictionary<T, StateDelegate> _leaveStates = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<T, StateDelegate> _states = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<StateDelegate, T> _delegates = new Dictionary<StateDelegate, T>();
+        private readonly Dictionary<T, StateDelegate> _leaveStates = new Dictionary<T, StateDelegate>();
 
         public void AddState(T state, StateDelegate del)
         {
@@ -51,6 +51,11 @@ namespace GodotUtilities.Logic
             _currentState = state;
             _nextState = state;
             _forceNew = true;
+        }
+
+        public void SetInitialState(StateDelegate del)
+        {
+            SetInitialState(_delegates[del]);
         }
 
         public T GetCurrentState()

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtilities.Extension
+namespace GodotUtilities
 {
     public static class AnimationTreeExtension
     {

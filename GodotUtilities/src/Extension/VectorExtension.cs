@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtilities.Extension
+namespace GodotUtilities
 {
     public static class VectorExtension
     {
@@ -12,7 +12,7 @@ namespace GodotUtilities.Extension
             var absVec = vec.Abs();
             var min = Mathf.Min(absVec.x, absVec.y);
             var max = Mathf.Max(absVec.x, absVec.y);
-            return ALPHA * max + BETA * min;
+            return (ALPHA * max) + (BETA * min);
         }
     }
 }

@@ -35,8 +35,7 @@ namespace GodotUtilities.Util
                     path = path.Replace(".remap", "");
                     var fullPath = dirPath + path;
 
-                    var packedScene = GD.Load(fullPath) as PackedScene;
-                    if (packedScene != null)
+                    if (GD.Load(fullPath) is PackedScene packedScene)
                     {
                         var scene = packedScene.Instance();
                         if (scene is T node)

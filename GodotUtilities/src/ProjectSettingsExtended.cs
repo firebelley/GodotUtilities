@@ -6,11 +6,12 @@ namespace GodotUtilities
     {
         public static T GetSettingOrDefault<T>(string name)
         {
-            if (ProjectSettings.HasSetting(name))
-            {
-                return (T) ProjectSettings.GetSetting(name);
-            }
-            return default(T);
+            return ProjectSettings.HasSetting(name) ? (T) ProjectSettings.GetSetting(name) : default;
+        }
+
+        public static T GetDebugSettingOrDefault<T>(string name)
+        {
+            return OS.IsDebugBuild() ? GetSettingOrDefault<T>(name) : default;
         }
     }
 }

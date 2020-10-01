@@ -5,8 +5,8 @@ namespace GodotUtilities.Collections
 {
     public class DoubleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private Dictionary<TKey, TValue> _keyToValue = new Dictionary<TKey, TValue>();
-        private Dictionary<TValue, TKey> _valueToKey = new Dictionary<TValue, TKey>();
+        private readonly Dictionary<TKey, TValue> _keyToValue = new Dictionary<TKey, TValue>();
+        private readonly Dictionary<TValue, TKey> _valueToKey = new Dictionary<TValue, TKey>();
 
         public TValue this [TKey key]
         {
@@ -85,10 +85,7 @@ namespace GodotUtilities.Collections
             return _valueToKey.ContainsKey(value);
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-
-        }
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) { }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -131,7 +128,7 @@ namespace GodotUtilities.Collections
                 value = _keyToValue[key];
                 return true;
             }
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -142,7 +139,7 @@ namespace GodotUtilities.Collections
                 key = _valueToKey[value];
                 return true;
             }
-            key = default(TKey);
+            key = default;
             return false;
         }
 

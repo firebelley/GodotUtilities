@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Godot;
 
-namespace GodotUtilities.Extension
+namespace GodotUtilities
 {
     public static class NodeExtension
     {
+        /// <summary>
+        /// Adds the Node to a group with a name equal to the Node's type name.
+        /// </summary>
+        /// <param name="node"></param>
+        public static void AddToGroup(this Node node)
+        {
+            node.AddToGroup(node.GetType().Name);
+        }
+
         public static T GetSibling<T>(this Node node, int idx) where T : Node
         {
             return (T) node.GetParent().GetChild(idx);
@@ -22,14 +29,6 @@ namespace GodotUtilities.Extension
         {
             var children = node.GetChildren() as IEnumerable<Node>;
             return children.Select(x => x as T).ToList();
-        }
-
-        public static void QueueFree(this IEnumerable<Node> nodes)
-        {
-            foreach (var n in nodes)
-            {
-                n.QueueFree();
-            }
         }
 
         public static T GetFirstNodeOfType<T>(this Node node)
@@ -63,8 +62,7 @@ namespace GodotUtilities.Extension
         /// <typeparam name="T"></typeparam>
         public static void RemoveAndQueueFreeChildren(this Node n)
         {
-            var children = n.GetChildren();
-            foreach (var child in children)
+            foreach (var child in n.GetChildren())
             {
                 if (child is Node childNode)
                 {
@@ -81,14 +79,24 @@ namespace GodotUtilities.Extension
         /// <typeparam name="T"></typeparam>
         public static void QueueFreeChildren(this Node n)
         {
-            var children = n.GetChildren();
-            foreach (var child in children)
+            foreach (var child in n.GetChildren())
             {
                 if (child is Node childNode)
                 {
                     childNode.QueueFree();
                 }
             }
+        }
+
+        public static T GetAncestor<T>(this Node n) where T : Node
+        {
+            Node currentNode = n;
+            while (currentNode != n.GetTree().Root && !(currentNode is T))
+            {
+                currentNode = currentNode.GetParent();
+            }
+
+            return currentNode is T ancestor ? ancestor : null;
         }
     }
 }

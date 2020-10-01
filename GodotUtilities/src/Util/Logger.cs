@@ -6,7 +6,6 @@ namespace GodotUtilities.Util
     {
         public static void Error(params object[] what)
         {
-
             GD.PrintErr(what);
             GD.PrintStack();
         }

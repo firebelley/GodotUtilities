@@ -4,11 +4,12 @@ using Godot;
 
 namespace GodotUtilities
 {
-    public class ChildNodeAttribute : Attribute
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
+    public class NodeAttribute : Attribute
     {
-        public string NodePath { get; private set; }
+        public string NodePath { get; }
 
-        public ChildNodeAttribute(string nodePath = null)
+        public NodeAttribute(string nodePath = null)
         {
             NodePath = nodePath;
         }
@@ -16,13 +17,15 @@ namespace GodotUtilities
 
     public static class ChildNodeAttributeExtension
     {
-        public static void WireChildNodes(this Node n)
+        public static void WireNodes(this Node n)
         {
-            var fieldsAndProperties = GetFieldsAndProperties(n);
-            foreach (var memberInfo in fieldsAndProperties)
+            foreach (var memberInfo in GetFieldsAndProperties(n))
             {
-                var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(ChildNodeAttribute));
-                if (!(attribute is ChildNodeAttribute childNodeAttribute)) continue;
+                var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(NodeAttribute));
+                if (!(attribute is NodeAttribute childNodeAttribute))
+                {
+                    continue;
+                }
 
                 var nodePath = GetNodePath(childNodeAttribute, memberInfo);
                 var childNode = n.GetNodeOrNull(nodePath);
@@ -39,7 +42,7 @@ namespace GodotUtilities
 
         private static MemberInfo[] GetFieldsAndProperties(Node n)
         {
-            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             var properties = n.GetType().GetProperties(flags);
             var fields = n.GetType().GetFields(flags);
             var memberInfo = new MemberInfo[properties.Length + fields.Length];
@@ -48,7 +51,7 @@ namespace GodotUtilities
             return memberInfo;
         }
 
-        private static string GetNodePath(ChildNodeAttribute childNodeAttribute, MemberInfo memberInfo)
+        private static string GetNodePath(NodeAttribute childNodeAttribute, MemberInfo memberInfo)
         {
             if (childNodeAttribute.NodePath != null) return childNodeAttribute.NodePath;
 
@@ -59,7 +62,7 @@ namespace GodotUtilities
                 if (part.Length == 0) continue;
                 parts[i] = char.ToUpper(part[0]) + (part.Length > 1 ? part.Substring(1) : string.Empty);
             }
-            return string.Join(string.Empty, parts);
+            return string.Concat(parts);
         }
     }
 }

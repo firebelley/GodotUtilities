@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtilities.Util;
 
-namespace GodotUtilities.Extension
+namespace GodotUtilities
 {
     public static class ResourcePreloaderExtension
     {
@@ -20,8 +20,7 @@ namespace GodotUtilities.Extension
                 return null;
             }
 
-            var resource = preloader.GetResource(name) as PackedScene;
-            if (resource == null)
+            if (!(preloader.GetResource(name) is PackedScene resource))
             {
                 Logger.Error("Resource with name " + name + " was not a " + nameof(PackedScene));
                 return null;
