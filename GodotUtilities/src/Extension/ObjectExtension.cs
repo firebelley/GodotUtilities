@@ -28,7 +28,7 @@ namespace GodotUtilities
             }
         }
 
-        public static T InstanceOrDefault<T>(this Object _, Object obj) where T : class
+        public static T GetValidInstanceOrDefault<T>(this Object _, Object obj) where T : class
         {
             return Object.IsInstanceValid(obj) ? obj as T : default;
         }
