@@ -17,7 +17,7 @@ namespace GodotUtilities
 
         public static T GetSibling<T>(this Node node, int idx) where T : Node
         {
-            return (T) node.GetParent().GetChild(idx);
+            return (T)node.GetParent().GetChild(idx);
         }
 
         public static T GetNode<T>(this Node node) where T : Node
@@ -42,6 +42,20 @@ namespace GodotUtilities
                 }
             }
             return default;
+        }
+
+        public static List<T> GetNodesOfType<T>(this Node node)
+        {
+            var result = new List<T>();
+            var children = node.GetChildren();
+            foreach (var child in children)
+            {
+                if (child is T t)
+                {
+                    result.Add(t);
+                }
+            }
+            return result;
         }
 
         public static void AddChildDeferred(this Node node, Node child)
