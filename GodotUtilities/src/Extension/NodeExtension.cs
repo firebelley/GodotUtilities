@@ -27,7 +27,7 @@ namespace GodotUtilities
 
         public static List<T> GetChildren<T>(this Node node) where T : class
         {
-            var children = node.GetChildren() as IEnumerable<Node>;
+            var children = node.GetChildren().Cast<Node>();
             return children.Select(x => x as T).ToList();
         }
 
@@ -111,6 +111,13 @@ namespace GodotUtilities
             }
 
             return currentNode is T ancestor ? ancestor : null;
+        }
+
+        public static Node GetLastChild(this Node n)
+        {
+            var count = n.GetChildCount();
+            if (count == 0) return null;
+            return n.GetChild(count - 1);
         }
     }
 }
