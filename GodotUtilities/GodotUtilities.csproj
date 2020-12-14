@@ -49,6 +49,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)GodotUtilities\nuget.exe pack $(SolutionDir)GodotUtilities\GodotUtilities.nuspec</PostBuildEvent>
+    <PostBuildEvent>nuget.exe pack $(SolutionDir)GodotUtilities\GodotUtilities.nuspec</PostBuildEvent>
   </PropertyGroup>
 </Project>
