@@ -1,0 +1,72 @@
+using System;
+using Godot;
+
+namespace GodotUtilities.StateManagement
+{
+    public abstract class StateManager : Node
+    {
+        private static StateManager _instance;
+
+        public override void _EnterTree()
+        {
+            _instance = this;
+            Initialize();
+        }
+
+        protected abstract void Initialize();
+
+        public static void SendEffect(BaseAction action)
+        {
+            var signalName = GetEffectSignalName(action);
+            if (_instance.HasUserSignal(signalName))
+            {
+                _instance.EmitSignal(signalName, action);
+            }
+        }
+
+        public static void SendStateUpdated<T>() where T : IState
+        {
+            var signalName = GetStateUpdateSignalName(typeof(T));
+            if (_instance.HasUserSignal(signalName))
+            {
+                _instance.EmitSignal(signalName);
+            }
+        }
+
+        public static void CreateEffect<T>(Node node, string methodName) where T : BaseAction
+        {
+            var signalName = GetEffectSignalName(typeof(T));
+            ConnectCustomSignal(signalName, node, methodName);
+        }
+
+        public static void ConnectStateUpdate<T>(Node node, string methodName) where T : IState
+        {
+            var signalName = GetStateUpdateSignalName(typeof(T));
+            ConnectCustomSignal(signalName, node, methodName);
+        }
+
+        private static void ConnectCustomSignal(string signalName, Node node, string methodName)
+        {
+            if (!_instance.HasSignal(signalName))
+            {
+                _instance.AddUserSignal(signalName);
+            }
+            _instance.Connect(signalName, node, methodName);
+        }
+
+        private static string GetEffectSignalName(BaseAction action)
+        {
+            return GetEffectSignalName(action.GetType());
+        }
+
+        private static string GetEffectSignalName(Type actionType)
+        {
+            return $"{actionType}Effect";
+        }
+
+        private static string GetStateUpdateSignalName(Type stateType)
+        {
+            return $"{stateType}Updated";
+        }
+    }
+}
