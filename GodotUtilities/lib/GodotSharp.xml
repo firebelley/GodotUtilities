@@ -11054,6 +11054,26 @@
             <para>Returns the length of the audio stream in seconds.</para>
             </summary>
         </member>
+        <member name="T:Godot.AudioStreamMP3">
+            <summary>
+            <para>MP3 audio stream driver.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AudioStreamMP3.Data">
+            <summary>
+            <para>Contains the audio data in bytes.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AudioStreamMP3.Loop">
+            <summary>
+            <para>If <c>true</c>, the stream will automatically loop when it reaches the end.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AudioStreamMP3.LoopOffset">
+            <summary>
+            <para>Time in seconds at which the stream starts after being looped.</para>
+            </summary>
+        </member>
         <member name="T:Godot.AudioStreamOGGVorbis">
             <summary>
             <para>OGG Vorbis audio stream driver.</para>
@@ -16869,7 +16889,7 @@
         </member>
         <member name="M:Godot.Curve3D.InterpolateBaked(System.Single,System.Boolean)">
             <summary>
-            <para>Returns a point within the curve at position <c>offset</c>, where <c>offset</c> is measured as a pixel distance along the curve.</para>
+            <para>Returns a point within the curve at position <c>offset</c>, where <c>offset</c> is measured as a distance in 3D units along the curve.</para>
             <para>To do that, it finds the two cached points where the <c>offset</c> lies between, then interpolates the values. This interpolation is cubic if <c>cubic</c> is set to <c>true</c>, or linear if set to <c>false</c>.</para>
             <para>Cubic interpolation tends to follow the curves better, but linear is faster (and often, precise enough).</para>
             </summary>
@@ -21341,32 +21361,32 @@
         <member name="M:Godot.Input.VibrateHandheld(System.Int32)">
             <summary>
             <para>Vibrate Android and iOS devices.</para>
-            <para>Note: It needs VIBRATE permission for Android at export settings. iOS does not support duration.</para>
+            <para>Note: It needs <c>VIBRATE</c> permission for Android at export settings. iOS does not support duration.</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetGravity">
             <summary>
-            <para>Returns the gravity of the device's accelerometer, if the device has one. Otherwise, the method returns .</para>
+            <para>Returns the gravity of the device's accelerometer sensor, if the device has one. Otherwise, the method returns .</para>
             <para>Note: This method only works on Android and iOS. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetAccelerometer">
             <summary>
-            <para>Returns the acceleration of the device's accelerometer, if the device has one. Otherwise, the method returns .</para>
+            <para>Returns the acceleration of the device's accelerometer sensor, if the device has one. Otherwise, the method returns .</para>
             <para>Note this method returns an empty <see cref="T:Godot.Vector3"/> when running from the editor even when your device has an accelerometer. You must export your project to a supported device to read values from the accelerometer.</para>
             <para>Note: This method only works on iOS, Android, and UWP. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetMagnetometer">
             <summary>
-            <para>Returns the the magnetic field strength in micro-Tesla for all axes of the device's magnetometer, if the device has one. Otherwise, the method returns .</para>
-            <para>Note: This method only works on Android and UWP. On other platforms, it always returns .</para>
+            <para>Returns the the magnetic field strength in micro-Tesla for all axes of the device's magnetometer sensor, if the device has one. Otherwise, the method returns .</para>
+            <para>Note: This method only works on Android, iOS and UWP. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetGyroscope">
             <summary>
-            <para>Returns the rotation rate in rad/s around a device's X, Y, and Z axes of the gyroscope, if the device has one. Otherwise, the method returns .</para>
-            <para>Note: This method only works on Android. On other platforms, it always returns .</para>
+            <para>Returns the rotation rate in rad/s around a device's X, Y, and Z axes of the gyroscope sensor, if the device has one. Otherwise, the method returns .</para>
+            <para>Note: This method only works on Android and iOS. On other platforms, it always returns .</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetLastMouseSpeed">
@@ -24774,9 +24794,9 @@
             <para>The peer object to handle the RPC system (effectively enabling networking when set). Depending on the peer itself, the MultiplayerAPI will become a network server (check with <see cref="M:Godot.MultiplayerAPI.IsNetworkServer"/>) and will set root node's network mode to master, or it will become a regular peer with root node set to puppet. All child nodes are set to inherit the network mode by default. Handling of networking-related events (connection, disconnection, new clients) is done by connecting to MultiplayerAPI's signals.</para>
             </summary>
         </member>
-        <member name="M:Godot.MultiplayerAPI.SetRootNode(Godot.Node)">
+        <member name="P:Godot.MultiplayerAPI.RootNode">
             <summary>
-            <para>Sets the base root node to use for RPCs. Instead of an absolute path, a relative path will be used to find the node upon which the RPC should be executed.</para>
+            <para>The root node to use for RPCs. Instead of an absolute path, a relative path will be used to find the node upon which the RPC should be executed.</para>
             <para>This effectively allows to have different branches of the scene tree to be managed by different MultiplayerAPI, allowing for example to run both client and server in the same scene.</para>
             </summary>
         </member>
@@ -30261,6 +30281,7 @@
         <member name="M:Godot.PopupMenu.AddSeparator(System.String)">
             <summary>
             <para>Adds a separator between items. Separators also occupy an index.</para>
+            <para>A <c>label</c> can optionally be provided, which will appear at the center of the separator.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.Clear">
@@ -30553,12 +30574,26 @@
         </member>
         <member name="M:Godot.ProjectSettings.LocalizePath(System.String)">
             <summary>
-            <para>Convert a path to a localized path (<c>res://</c> path).</para>
+            <para>Returns the localized path (starting with <c>res://</c>) corresponding to the absolute, native OS <c>path</c>. See also <see cref="M:Godot.ProjectSettings.GlobalizePath(System.String)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.GlobalizePath(System.String)">
             <summary>
-            <para>Converts a localized path (<c>res://</c>) to a full native OS path.</para>
+            <para>Returns the absolute, native OS path corresponding to the localized <c>path</c> (starting with <c>res://</c> or <c>user://</c>). The returned path will vary depending on the operating system and user preferences. See <a href="https://docs.godotengine.org/en/latest/tutorials/io/data_paths.html">File paths in Godot projects</a> to see what those paths convert to. See also <see cref="M:Godot.ProjectSettings.LocalizePath(System.String)"/>.</para>
+            <para>Note: <see cref="M:Godot.ProjectSettings.GlobalizePath(System.String)"/> with <c>res://</c> will not work in an exported project. Instead, prepend the executable's base directory to the path when running from an exported project:</para>
+            <para><code>
+            var path = ""
+            if OS.has_feature("editor"):
+                # Running from an editor binary.
+                # `path` will contain the absolute path to `hello.txt` located in the project root.
+                path = ProjectSettings.globalize_path("res://hello.txt")
+            else:
+                # Running from an exported project.
+                # `path` will contain the absolute path to `hello.txt` next to the executable.
+                # This is *not* identical to using `ProjectSettings.globalize_path()` with a `res://` path,
+                # but is close enough in spirit.
+                path = OS.get_executable_path().get_base_dir().plus_file("hello.txt")
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.Save">
@@ -36187,6 +36222,11 @@
             <para>If <c>true</c>, tabs are visible. If <c>false</c>, tabs' content and titles are hidden.</para>
             </summary>
         </member>
+        <member name="P:Godot.TabContainer.AllTabsInFront">
+            <summary>
+            <para>If <c>true</c>, all tabs are drawn in front of the panel. If <c>false</c>, inactive tabs are drawn behind the panel.</para>
+            </summary>
+        </member>
         <member name="P:Godot.TabContainer.DragToRearrangeEnabled">
             <summary>
             <para>If <c>true</c>, tabs can be rearranged with mouse drag.</para>
@@ -39838,6 +39878,7 @@
             <summary>
             <para>Control node for playing video streams using <see cref="T:Godot.VideoStream"/> resources.</para>
             <para>Supported video formats are <a href="https://www.webmproject.org/">WebM</a> (<c>.webm</c>, <see cref="T:Godot.VideoStreamWebm"/>), <a href="https://www.theora.org/">Ogg Theora</a> (<c>.ogv</c>, <see cref="T:Godot.VideoStreamTheora"/>), and any format exposed via a GDNative plugin using <see cref="T:Godot.VideoStreamGDNative"/>.</para>
+            <para>Note: Due to a bug, VideoPlayer does not support localization remapping yet.</para>
             </summary>
         </member>
         <member name="P:Godot.VideoPlayer.AudioTrack">
