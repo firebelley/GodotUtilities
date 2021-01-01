@@ -39,19 +39,30 @@ namespace GodotUtilities.StateManagement
             ConnectCustomSignal(signalName, node, methodName);
         }
 
+        public static void CreateDeferredEffect<T>(Node node, string methodName) where T : BaseAction
+        {
+            var signalName = GetEffectSignalName(typeof(T));
+            ConnectCustomSignal(signalName, node, methodName, true);
+        }
+
         public static void ConnectStateUpdate<T>(Node node, string methodName) where T : IState
         {
             var signalName = GetStateUpdateSignalName(typeof(T));
             ConnectCustomSignal(signalName, node, methodName);
         }
 
-        private static void ConnectCustomSignal(string signalName, Node node, string methodName)
+        private static void ConnectCustomSignal(string signalName, Node node, string methodName, bool deferred = false)
         {
             if (!_instance.HasSignal(signalName))
             {
                 _instance.AddUserSignal(signalName);
             }
-            _instance.Connect(signalName, node, methodName);
+            uint flags = 0;
+            if (deferred)
+            {
+                flags |= (uint)ConnectFlags.Deferred;
+            }
+            _instance.Connect(signalName, node, methodName, null, flags);
         }
 
         private static string GetEffectSignalName(BaseAction action)
