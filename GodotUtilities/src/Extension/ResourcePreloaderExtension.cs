@@ -12,7 +12,7 @@ namespace GodotUtilities
         /// <param name="name"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T InstanceScene<T>(this ResourcePreloader preloader, string name) where T : Node
+        public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader, string name) where T : Node
         {
             if (!preloader.HasResource(name))
             {
@@ -26,12 +26,12 @@ namespace GodotUtilities
                 return null;
             }
 
-            return resource.Instance() as T;
+            return resource.InstanceOrNull<T>();
         }
 
-        public static T InstanceScene<T>(this ResourcePreloader preloader) where T : Node
+        public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader) where T : Node
         {
-            return preloader.InstanceScene<T>(typeof(T).Name);
+            return preloader.InstanceSceneOrNull<T>(typeof(T).Name);
         }
     }
 }

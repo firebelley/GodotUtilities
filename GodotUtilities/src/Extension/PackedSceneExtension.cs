@@ -12,6 +12,7 @@ namespace GodotUtilities
                 return t;
             }
             node.QueueFree();
+            GD.PushWarning($"Could not instance PackedScene {scene} as {typeof(T).Name}");
             return null;
         }
     }
