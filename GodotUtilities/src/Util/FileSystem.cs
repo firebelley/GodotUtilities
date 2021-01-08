@@ -52,5 +52,41 @@ namespace GodotUtilities.Util
 
             return scenes;
         }
+
+        public static List<T> LoadResourcesInPath<T>(string path) where T : Resource
+        {
+            var dir = new Directory();
+            var err = dir.Open(path);
+            var results = new List<T>();
+            if (err == Error.Ok)
+            {
+                dir.ListDirBegin();
+                var fileName = dir.GetNext();
+                while (fileName != string.Empty)
+                {
+                    if (!dir.CurrentIsDir())
+                    {
+                        if (fileName.EndsWith(".converted.res") || fileName.EndsWith(".tres"))
+                        {
+                            fileName = fileName.Replace(".converted.res", string.Empty);
+                            var fullPath = $"{path}/{fileName}";
+                            var resource = GD.Load(fullPath);
+                            if (!(resource is T res))
+                            {
+                                GD.PushWarning($"Could not load resource at {fullPath} with type {typeof(T).Name}");
+                                continue;
+                            }
+                            results.Add(res);
+                        }
+                    }
+                    fileName = dir.GetNext();
+                }
+            }
+            else
+            {
+                GD.PushWarning($"Could load resources in path {path}: {err}");
+            }
+            return results;
+        }
     }
 }

@@ -893,7 +893,7 @@
             <para>Scene tree: The <see cref="T:Godot.SceneTree"/> contains the active tree of nodes. When a node is added to the scene tree, it receives the  notification and its <see cref="M:Godot.Node._EnterTree"/> callback is triggered. Child nodes are always added after their parent node, i.e. the <see cref="M:Godot.Node._EnterTree"/> callback of a parent node will be triggered before its child's.</para>
             <para>Once all nodes have been added in the scene tree, they receive the  notification and their respective <see cref="M:Godot.Node._Ready"/> callbacks are triggered. For groups of nodes, the <see cref="M:Godot.Node._Ready"/> callback is called in reverse order, starting with the children and moving up to the parent nodes.</para>
             <para>This means that when adding a node to the scene tree, the following order will be used for the callbacks: <see cref="M:Godot.Node._EnterTree"/> of the parent, <see cref="M:Godot.Node._EnterTree"/> of the children, <see cref="M:Godot.Node._Ready"/> of the children and finally <see cref="M:Godot.Node._Ready"/> of the parent (recursively for the entire scene tree).</para>
-            <para>Processing: Nodes can override the "process" state, so that they receive a callback on each frame requesting them to process (do something). Normal processing (callback <see cref="M:Godot.Node._Process(System.Single)"/>, toggled with <see cref="M:Godot.Node.SetProcess(System.Boolean)"/>) happens as fast as possible and is dependent on the frame rate, so the processing time delta is passed as an argument. Physics processing (callback <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>, toggled with <see cref="M:Godot.Node.SetPhysicsProcess(System.Boolean)"/>) happens a fixed number of times per second (60 by default) and is useful for code related to the physics engine.</para>
+            <para>Processing: Nodes can override the "process" state, so that they receive a callback on each frame requesting them to process (do something). Normal processing (callback <see cref="M:Godot.Node._Process(System.Single)"/>, toggled with <see cref="M:Godot.Node.SetProcess(System.Boolean)"/>) happens as fast as possible and is dependent on the frame rate, so the processing time delta (in seconds) is passed as an argument. Physics processing (callback <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>, toggled with <see cref="M:Godot.Node.SetPhysicsProcess(System.Boolean)"/>) happens a fixed number of times per second (60 by default) and is useful for code related to the physics engine.</para>
             <para>Nodes can also process input events. When present, the <see cref="M:Godot.Node._Input(Godot.InputEvent)"/> function will be called for each input that the program receives. In many cases, this can be overkill (unless used for simple projects), and the <see cref="M:Godot.Node._UnhandledInput(Godot.InputEvent)"/> function might be preferred; it is called when the input event was not handled by anyone else (typically, GUI <see cref="T:Godot.Control"/> nodes), ensuring that the node only receives the events that were meant for it.</para>
             <para>To keep track of the scene hierarchy (especially when instancing scenes into other scenes), an "owner" can be set for the node with the <see cref="P:Godot.Node.Owner"/> property. This keeps track of who instanced what. This is mostly useful when writing editors and tools, though.</para>
             <para>Finally, when a node is freed with <see cref="M:Godot.Object.Free"/> or <see cref="M:Godot.Node.QueueFree"/>, it will also free all its children.</para>
@@ -1172,7 +1172,7 @@
         </member>
         <member name="M:Godot.Node._PhysicsProcess(System.Single)">
             <summary>
-            <para>Called during the physics processing step of the main loop. Physics processing means that the frame rate is synced to the physics, i.e. the <c>delta</c> variable should be constant.</para>
+            <para>Called during the physics processing step of the main loop. Physics processing means that the frame rate is synced to the physics, i.e. the <c>delta</c> variable should be constant. <c>delta</c> is in seconds.</para>
             <para>It is only called if physics processing is enabled, which is done automatically if this method is overridden, and can be toggled with <see cref="M:Godot.Node.SetPhysicsProcess(System.Boolean)"/>.</para>
             <para>Corresponds to the  notification in <see cref="M:Godot.Object._Notification(System.Int32)"/>.</para>
             <para>Note: This method is only called if the node is present in the scene tree (i.e. if it's not orphan).</para>
@@ -1180,7 +1180,7 @@
         </member>
         <member name="M:Godot.Node._Process(System.Single)">
             <summary>
-            <para>Called during the processing step of the main loop. Processing happens at every frame and as fast as possible, so the <c>delta</c> time since the previous frame is not constant.</para>
+            <para>Called during the processing step of the main loop. Processing happens at every frame and as fast as possible, so the <c>delta</c> time since the previous frame is not constant. <c>delta</c> is in seconds.</para>
             <para>It is only called if processing is enabled, which is done automatically if this method is overridden, and can be toggled with <see cref="M:Godot.Node.SetProcess(System.Boolean)"/>.</para>
             <para>Corresponds to the  notification in <see cref="M:Godot.Object._Notification(System.Int32)"/>.</para>
             <para>Note: This method is only called if the node is present in the scene tree (i.e. if it's not orphan).</para>
@@ -1376,7 +1376,7 @@
         </member>
         <member name="M:Godot.Node.Raise">
             <summary>
-            <para>Moves this node to the bottom of parent node's children hierarchy. This is often useful in GUIs (<see cref="T:Godot.Control"/> nodes), because their order of drawing depends on their order in the tree, i.e. the further they are on the node list, the higher they are drawn. After using <c>raise</c>, a Control will be drawn on top of their siblings.</para>
+            <para>Moves this node to the bottom of parent node's children hierarchy. This is often useful in GUIs (<see cref="T:Godot.Control"/> nodes), because their order of drawing depends on their order in the tree. The top Node is drawn first, then any siblings below the top Node in the hierarchy are successively drawn on top of it. After using <c>raise</c>, a Control will be drawn on top of its siblings.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.RemoveAndSkip">
@@ -1435,7 +1435,7 @@
         </member>
         <member name="M:Godot.Node.GetPhysicsProcessDeltaTime">
             <summary>
-            <para>Returns the time elapsed since the last physics-bound frame (see <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>). This is always a constant value in physics processing unless the frames per second is changed via <see cref="P:Godot.Engine.IterationsPerSecond"/>.</para>
+            <para>Returns the time elapsed (in seconds) since the last physics-bound frame (see <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>). This is always a constant value in physics processing unless the frames per second is changed via <see cref="P:Godot.Engine.IterationsPerSecond"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.IsPhysicsProcessing">
@@ -2011,14 +2011,14 @@
         <member name="M:Godot.ResourceLoader.LoadInteractive(System.String,System.String)">
             <summary>
             <para>Starts loading a resource interactively. The returned <see cref="T:Godot.ResourceInteractiveLoader"/> object allows to load with high granularity, calling its <see cref="M:Godot.ResourceInteractiveLoader.Poll"/> method successively to load chunks.</para>
-            <para>An optional <c>type_hint</c> can be used to further specify the <see cref="T:Godot.Resource"/> type that should be handled by the <see cref="T:Godot.ResourceFormatLoader"/>.</para>
+            <para>An optional <c>type_hint</c> can be used to further specify the <see cref="T:Godot.Resource"/> type that should be handled by the <see cref="T:Godot.ResourceFormatLoader"/>. Anything that inherits from <see cref="T:Godot.Resource"/> can be used as a type hint, for example <see cref="T:Godot.Image"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.ResourceLoader.Load(System.String,System.String,System.Boolean)">
             <summary>
             <para>Loads a resource at the given <c>path</c>, caching the result for further access.</para>
             <para>The registered <see cref="T:Godot.ResourceFormatLoader"/>s are queried sequentially to find the first one which can handle the file's extension, and then attempt loading. If loading fails, the remaining ResourceFormatLoaders are also attempted.</para>
-            <para>An optional <c>type_hint</c> can be used to further specify the <see cref="T:Godot.Resource"/> type that should be handled by the <see cref="T:Godot.ResourceFormatLoader"/>.</para>
+            <para>An optional <c>type_hint</c> can be used to further specify the <see cref="T:Godot.Resource"/> type that should be handled by the <see cref="T:Godot.ResourceFormatLoader"/>. Anything that inherits from <see cref="T:Godot.Resource"/> can be used as a type hint, for example <see cref="T:Godot.Image"/>.</para>
             <para>If <c>no_cache</c> is <c>true</c>, the resource cache will be bypassed and the resource will be loaded anew. Otherwise, the cached resource will be returned if it exists.</para>
             <para>Returns an empty resource if no <see cref="T:Godot.ResourceFormatLoader"/> could handle the file.</para>
             <para>GDScript has a simplified <c>@GDScript.load</c> built-in method which can be used in most situations, leaving the use of <see cref="T:Godot.ResourceLoader"/> for more advanced scenarios.</para>
@@ -7318,6 +7318,7 @@
                     return min(0, abs(u - v) - 1)
             </code></para>
             <para><see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/> should return a lower bound of the distance, i.e. <c>_estimate_cost(u, v) &lt;= _compute_cost(u, v)</c>. This serves as a hint to the algorithm because the custom <c>_compute_cost</c> might be computation-heavy. If this is not the case, make <see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/> return the same value as <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> to provide the algorithm with the most accurate information.</para>
+            <para>If the default <see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/> and <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> methods are used, or if the supplied <see cref="M:Godot.AStar._EstimateCost(System.Int32,System.Int32)"/> method returns a lower bound of the cost, then the paths returned by A* will be the lowest cost paths. Here, the cost of a path equals to the sum of the <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> results of all segments in the path multiplied by the <c>weight_scale</c>s of the end points of the respective segments. If the default methods are used and the <c>weight_scale</c>s of all points are set to <c>1.0</c>, then this equals to the sum of Euclidean distances of all segments in the path.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)">
@@ -7339,7 +7340,8 @@
         </member>
         <member name="M:Godot.AStar.AddPoint(System.Int32,Godot.Vector3,System.Single)">
             <summary>
-            <para>Adds a new point at the given position with the given identifier. The algorithm prefers points with lower <c>weight_scale</c> to form a path. The <c>id</c> must be 0 or larger, and the <c>weight_scale</c> must be 1 or larger.</para>
+            <para>Adds a new point at the given position with the given identifier. The <c>id</c> must be 0 or larger, and the <c>weight_scale</c> must be 1 or larger.</para>
+            <para>The <c>weight_scale</c> is multiplied by the result of <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> when determining the overall cost of traveling across a segment from a neighboring point to this point. Thus, all else being equal, the algorithm prefers points with lower <c>weight_scale</c>s to form a path.</para>
             <para><code>
             var astar = AStar.new()
             astar.add_point(1, Vector3(1, 0, 0), 4) # Adds the point (1, 0, 0) with weight_scale 4 and id 1
@@ -7364,7 +7366,7 @@
         </member>
         <member name="M:Godot.AStar.SetPointWeightScale(System.Int32,System.Single)">
             <summary>
-            <para>Sets the <c>weight_scale</c> for the point with the given <c>id</c>.</para>
+            <para>Sets the <c>weight_scale</c> for the point with the given <c>id</c>. The <c>weight_scale</c> is multiplied by the result of <see cref="M:Godot.AStar._ComputeCost(System.Int32,System.Int32)"/> when determining the overall cost of traveling across a segment from a neighboring point to this point.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar.RemovePoint(System.Int32)">
@@ -7518,7 +7520,8 @@
         </member>
         <member name="M:Godot.AStar2D.AddPoint(System.Int32,Godot.Vector2,System.Single)">
             <summary>
-            <para>Adds a new point at the given position with the given identifier. The algorithm prefers points with lower <c>weight_scale</c> to form a path. The <c>id</c> must be 0 or larger, and the <c>weight_scale</c> must be 1 or larger.</para>
+            <para>Adds a new point at the given position with the given identifier. The <c>id</c> must be 0 or larger, and the <c>weight_scale</c> must be 1 or larger.</para>
+            <para>The <c>weight_scale</c> is multiplied by the result of <see cref="M:Godot.AStar2D._ComputeCost(System.Int32,System.Int32)"/> when determining the overall cost of traveling across a segment from a neighboring point to this point. Thus, all else being equal, the algorithm prefers points with lower <c>weight_scale</c>s to form a path.</para>
             <para><code>
             var astar = AStar2D.new()
             astar.add_point(1, Vector2(1, 0), 4) # Adds the point (1, 0) with weight_scale 4 and id 1
@@ -7543,7 +7546,7 @@
         </member>
         <member name="M:Godot.AStar2D.SetPointWeightScale(System.Int32,System.Single)">
             <summary>
-            <para>Sets the <c>weight_scale</c> for the point with the given <c>id</c>.</para>
+            <para>Sets the <c>weight_scale</c> for the point with the given <c>id</c>. The <c>weight_scale</c> is multiplied by the result of <see cref="M:Godot.AStar2D._ComputeCost(System.Int32,System.Int32)"/> when determining the overall cost of traveling across a segment from a neighboring point to this point.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar2D.RemovePoint(System.Int32)">
@@ -8912,6 +8915,11 @@
         <member name="M:Godot.AnimationNodeStateMachinePlayback.GetCurrentNode">
             <summary>
             <para>Returns the currently playing animation state.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AnimationNodeStateMachinePlayback.GetCurrentPlayPosition">
+            <summary>
+            <para>Returns the playback position within the current animation state.</para>
             </summary>
         </member>
         <member name="M:Godot.AnimationNodeStateMachinePlayback.GetTravelPath">
@@ -12213,12 +12221,13 @@
         </member>
         <member name="P:Godot.CPUParticles.Amount">
             <summary>
-            <para>Number of particles emitted in one emission cycle.</para>
+            <para>The number of particles emitted in one emission cycle (corresponding to the <see cref="P:Godot.CPUParticles.Lifetime"/>).</para>
+            <para>Note: Changing <see cref="P:Godot.CPUParticles.Amount"/> will reset the particle emission, therefore removing all particles that were already emitted before changing <see cref="P:Godot.CPUParticles.Amount"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.CPUParticles.Lifetime">
             <summary>
-            <para>Amount of time each particle will exist.</para>
+            <para>The amount of time each particle will exist (in seconds).</para>
             </summary>
         </member>
         <member name="P:Godot.CPUParticles.OneShot">
@@ -12715,12 +12724,13 @@
         </member>
         <member name="P:Godot.CPUParticles2D.Amount">
             <summary>
-            <para>Number of particles emitted in one emission cycle.</para>
+            <para>The number of particles emitted in one emission cycle (corresponding to the <see cref="P:Godot.CPUParticles2D.Lifetime"/>).</para>
+            <para>Note: Changing <see cref="P:Godot.CPUParticles2D.Amount"/> will reset the particle emission, therefore removing all particles that were already emitted before changing <see cref="P:Godot.CPUParticles2D.Amount"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.CPUParticles2D.Lifetime">
             <summary>
-            <para>Amount of time each particle will exist.</para>
+            <para>The amount of time each particle will exist (in seconds).</para>
             </summary>
         </member>
         <member name="P:Godot.CPUParticles2D.OneShot">
@@ -15142,7 +15152,7 @@
             <summary>
             <para>The joint can rotate the bodies across an axis defined by the local x-axes of the <see cref="T:Godot.Joint"/>.</para>
             <para>The twist axis is initiated as the X axis of the <see cref="T:Godot.Joint"/>.</para>
-            <para>Once the Bodies swing, the twist axis is calculated as the middle of the x-axes of the Joint in the local space of the two Bodies.</para>
+            <para>Once the Bodies swing, the twist axis is calculated as the middle of the x-axes of the Joint in the local space of the two Bodies. See also <see cref="T:Godot.Generic6DOFJoint"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.ConeTwistJoint.Param.SwingSpan">
@@ -16527,6 +16537,7 @@
             <summary>
             <para>Generate an axis-aligned cuboid <see cref="T:Godot.PrimitiveMesh"/>.</para>
             <para>The cube's UV layout is arranged in a 3×2 layout that allows texturing each face individually. To apply the same texture on all faces, change the material's UV property to <c>Vector3(3, 2, 1)</c>.</para>
+            <para>Note: When using a large textured <see cref="T:Godot.CubeMesh"/> (e.g. as a floor), you may stumble upon UV jittering issues depending on the camera angle. To solve this, increase <see cref="P:Godot.CubeMesh.SubdivideDepth"/>, <see cref="P:Godot.CubeMesh.SubdivideHeight"/> and <see cref="P:Godot.CubeMesh.SubdivideWidth"/> until you no longer notice UV jittering.</para>
             </summary>
         </member>
         <member name="P:Godot.CubeMesh.Size">
@@ -18896,7 +18907,7 @@
         </member>
         <member name="M:Godot.Gradient.RemovePoint(System.Int32)">
             <summary>
-            <para>Removes the color at the index <c>offset</c>.</para>
+            <para>Removes the color at the index <c>point</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.Gradient.SetOffset(System.Int32,System.Single)">
@@ -18973,6 +18984,21 @@
         <member name="P:Godot.GraphEdit.Zoom">
             <summary>
             <para>The current zoom value.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GraphEdit.MinimapEnabled">
+            <summary>
+            <para>If <c>true</c>, the minimap is visible.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GraphEdit.MinimapSize">
+            <summary>
+            <para>The size of the minimap rectangle. The map itself is based on the size of the grid area and is scaled to fit this rectangle.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GraphEdit.MinimapOpacity">
+            <summary>
+            <para>The opacity of the minimap rectangle.</para>
             </summary>
         </member>
         <member name="M:Godot.GraphEdit.ConnectNode(System.String,System.Int32,System.String,System.Int32)">
@@ -20167,7 +20193,7 @@
         </member>
         <member name="T:Godot.HingeJoint">
             <summary>
-            <para>A HingeJoint normally uses the Z axis of body A as the hinge axis, another axis can be specified when adding it manually though.</para>
+            <para>A HingeJoint normally uses the Z axis of body A as the hinge axis, another axis can be specified when adding it manually though. See also <see cref="T:Godot.Generic6DOFJoint"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.HingeJoint.Param.Bias">
@@ -20740,14 +20766,14 @@
             <para>Returns the offset where the image's mipmap with index <c>mipmap</c> is stored in the <c>data</c> dictionary.</para>
             </summary>
         </member>
-        <member name="M:Godot.Image.ResizeToPo2(System.Boolean)">
+        <member name="M:Godot.Image.ResizeToPo2(System.Boolean,Godot.Image.Interpolation)">
             <summary>
-            <para>Resizes the image to the nearest power of 2 for the width and height. If <c>square</c> is <c>true</c> then set width and height to be the same.</para>
+            <para>Resizes the image to the nearest power of 2 for the width and height. If <c>square</c> is <c>true</c> then set width and height to be the same. New pixels are calculated using the <c>interpolation</c> mode defined via <see cref="T:Godot.Image.Interpolation"/> constants.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.Resize(System.Int32,System.Int32,Godot.Image.Interpolation)">
             <summary>
-            <para>Resizes the image to the given <c>width</c> and <c>height</c>. New pixels are calculated using <c>interpolation</c>. See <c>interpolation</c> constants.</para>
+            <para>Resizes the image to the given <c>width</c> and <c>height</c>. New pixels are calculated using the <c>interpolation</c> mode defined via <see cref="T:Godot.Image.Interpolation"/> constants.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.ShrinkX2">
@@ -23725,7 +23751,7 @@
         </member>
         <member name="M:Godot.MainLoop._Iteration(System.Single)">
             <summary>
-            <para>Called each physics frame with the time since the last physics frame as argument (in seconds). Equivalent to <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>.</para>
+            <para>Called each physics frame with the time since the last physics frame as argument (<c>delta</c>, in seconds). Equivalent to <see cref="M:Godot.Node._PhysicsProcess(System.Single)"/>.</para>
             <para>If implemented, the method must return a boolean value. <c>true</c> ends the main loop, while <c>false</c> lets it proceed to the next frame.</para>
             </summary>
         </member>
@@ -26194,12 +26220,13 @@
         </member>
         <member name="P:Godot.Particles.Amount">
             <summary>
-            <para>Number of particles to emit.</para>
+            <para>The number of particles emitted in one emission cycle (corresponding to the <see cref="P:Godot.Particles.Lifetime"/>).</para>
+            <para>Note: Changing <see cref="P:Godot.Particles.Amount"/> will reset the particle emission, therefore removing all particles that were already emitted before changing <see cref="P:Godot.Particles.Amount"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.Particles.Lifetime">
             <summary>
-            <para>Amount of time each particle will exist.</para>
+            <para>The amount of time each particle will exist (in seconds).</para>
             </summary>
         </member>
         <member name="P:Godot.Particles.OneShot">
@@ -26326,12 +26353,13 @@
         </member>
         <member name="P:Godot.Particles2D.Amount">
             <summary>
-            <para>Number of particles emitted in one emission cycle.</para>
+            <para>The number of particles emitted in one emission cycle (corresponding to the <see cref="P:Godot.Particles2D.Lifetime"/>).</para>
+            <para>Note: Changing <see cref="P:Godot.Particles2D.Amount"/> will reset the particle emission, therefore removing all particles that were already emitted before changing <see cref="P:Godot.Particles2D.Amount"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.Particles2D.Lifetime">
             <summary>
-            <para>Amount of time each particle will exist.</para>
+            <para>The amount of time each particle will exist (in seconds).</para>
             </summary>
         </member>
         <member name="P:Godot.Particles2D.OneShot">
@@ -29717,7 +29745,7 @@
         </member>
         <member name="T:Godot.PinJoint">
             <summary>
-            <para>Pin joint for 3D rigid bodies. It pins 2 bodies (rigid or static) together.</para>
+            <para>Pin joint for 3D rigid bodies. It pins 2 bodies (rigid or static) together. See also <see cref="T:Godot.Generic6DOFJoint"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.PinJoint.Param.Bias">
@@ -29773,6 +29801,7 @@
         <member name="T:Godot.PlaneMesh">
             <summary>
             <para>Class representing a planar <see cref="T:Godot.PrimitiveMesh"/>. This flat mesh does not have a thickness. By default, this mesh is aligned on the X and Z axes; this default rotation isn't suited for use with billboarded materials. For billboarded materials, use <see cref="T:Godot.QuadMesh"/> instead.</para>
+            <para>Note: When using a large textured <see cref="T:Godot.PlaneMesh"/> (e.g. as a floor), you may stumble upon UV jittering issues depending on the camera angle. To solve this, increase <see cref="P:Godot.PlaneMesh.SubdivideDepth"/> and <see cref="P:Godot.PlaneMesh.SubdivideWidth"/> until you no longer notice UV jittering.</para>
             </summary>
         </member>
         <member name="P:Godot.PlaneMesh.Size">
@@ -30237,7 +30266,7 @@
         </member>
         <member name="M:Godot.PopupMenu.IsItemSeparator(System.Int32)">
             <summary>
-            <para>Returns <c>true</c> if the item is a separator. If it is, it will be displayed as a line. See <see cref="M:Godot.PopupMenu.AddSeparator(System.String)"/> for more info on how to add a separator.</para>
+            <para>Returns <c>true</c> if the item is a separator. If it is, it will be displayed as a line. See <see cref="M:Godot.PopupMenu.AddSeparator(System.String,System.Int32)"/> for more info on how to add a separator.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.IsItemCheckable(System.Int32)">
@@ -30278,9 +30307,9 @@
             <para>Note: The indices of items after the removed item will be shifted by one.</para>
             </summary>
         </member>
-        <member name="M:Godot.PopupMenu.AddSeparator(System.String)">
+        <member name="M:Godot.PopupMenu.AddSeparator(System.String,System.Int32)">
             <summary>
-            <para>Adds a separator between items. Separators also occupy an index.</para>
+            <para>Adds a separator between items. Separators also occupy an index, which you can set by using the <c>id</c> parameter.</para>
             <para>A <c>label</c> can optionally be provided, which will appear at the center of the separator.</para>
             </summary>
         </member>
@@ -31546,6 +31575,7 @@
             <summary>
             <para>Rich text can contain custom text, fonts, images and some basic formatting. The label manages these as an internal tag stack. It also adapts itself to given width/heights.</para>
             <para>Note: Assignments to <see cref="P:Godot.RichTextLabel.BbcodeText"/> clear the tag stack and reconstruct it from the property's contents. Any edits made to <see cref="P:Godot.RichTextLabel.BbcodeText"/> will erase previous edits made from other manual sources such as <see cref="M:Godot.RichTextLabel.AppendBbcode(System.String)"/> and the <c>push_*</c> / <see cref="M:Godot.RichTextLabel.Pop"/> methods.</para>
+            <para>Note: RichTextLabel doesn't support entangled BBCode tags. For example, instead of using <c>[b]bold[i]bold italic[/b]italic[/i]</c>, use <c>[b]bold[i]bold italic[/i][/b][i]italic[/i]</c>.</para>
             <para>Note: Unlike <see cref="T:Godot.Label"/>, RichTextLabel doesn't have a property to horizontally align text to the center. Instead, enable <see cref="P:Godot.RichTextLabel.BbcodeEnabled"/> and surround the text in a <c>[center]</c> tag as follows: <c>[center]Example[/center]</c>. There is currently no built-in way to vertically align text either, but this can be emulated by relying on anchors/containers and the <see cref="P:Godot.RichTextLabel.FitContentHeight"/> property.</para>
             </summary>
         </member>
@@ -32557,7 +32587,8 @@
         </member>
         <member name="M:Godot.SceneTree.CallGroupFlags(System.Int32,System.String,System.String,System.Object[])">
             <summary>
-            <para>Calls <c>method</c> on each member of the given group, respecting the given <see cref="T:Godot.SceneTree.GroupCallFlags"/>.</para>
+            <para>Calls <c>method</c> on each member of the given group, respecting the given <see cref="T:Godot.SceneTree.GroupCallFlags"/>. You can pass arguments to <c>method</c> by specifying them at the end of the method call.</para>
+            <para>Note: <c>method</c> may only have 5 arguments at most (8 arguments passed to this method in total).</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.NotifyGroupFlags(System.UInt32,System.String,System.Int32)">
@@ -32572,7 +32603,8 @@
         </member>
         <member name="M:Godot.SceneTree.CallGroup(System.String,System.String,System.Object[])">
             <summary>
-            <para>Calls <c>method</c> on each member of the given group.</para>
+            <para>Calls <c>method</c> on each member of the given group. You can pass arguments to <c>method</c> by specifying them at the end of the method call.</para>
+            <para>Note: <c>method</c> may only have 5 arguments at most (7 arguments passed to this method in total).</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.NotifyGroup(System.String,System.Int32)">
@@ -32594,12 +32626,14 @@
             <summary>
             <para>Changes the running scene to the one at the given <c>path</c>, after loading it into a <see cref="T:Godot.PackedScene"/> and creating a new instance.</para>
             <para>Returns  on success,  if the <c>path</c> cannot be loaded into a <see cref="T:Godot.PackedScene"/>, or  if that scene cannot be instantiated.</para>
+            <para>Note: The scene change is deferred, which means that the new scene node is added on the next idle frame. You won't be able to access it immediately after the <see cref="M:Godot.SceneTree.ChangeScene(System.String)"/> call.</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.ChangeSceneTo(Godot.PackedScene)">
             <summary>
             <para>Changes the running scene to a new instance of the given <see cref="T:Godot.PackedScene"/>.</para>
             <para>Returns  on success or  if the scene cannot be instantiated.</para>
+            <para>Note: The scene change is deferred, which means that the new scene node is added on the next idle frame. You won't be able to access it immediately after the <see cref="M:Godot.SceneTree.ChangeSceneTo(Godot.PackedScene)"/> call.</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.ReloadCurrentScene">
@@ -33148,7 +33182,7 @@
         </member>
         <member name="T:Godot.SliderJoint">
             <summary>
-            <para>Slides across the X axis of the pivot object.</para>
+            <para>Slides across the X axis of the pivot object. See also <see cref="T:Godot.Generic6DOFJoint"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.SliderJoint.Param.LinearLimitUpper">
@@ -40322,7 +40356,7 @@
         </member>
         <member name="P:Godot.Viewport.GuiDisableInput">
             <summary>
-            <para>If <c>true</c>, the viewport will not receive input event.</para>
+            <para>If <c>true</c>, the viewport will not receive input events.</para>
             </summary>
         </member>
         <member name="P:Godot.Viewport.GuiSnapControlsToPixels">
@@ -46683,6 +46717,161 @@
             <para>Disconnects the peer identified by <c>id</c> from the server. See <see cref="M:Godot.WebSocketPeer.Close(System.Int32,System.String)"/> for more information.</para>
             </summary>
         </member>
+        <member name="T:Godot.WebXRInterface">
+            <summary>
+            <para>WebXR is an open standard that allows creating VR and AR applications that run in the web browser.</para>
+            <para>As such, this interface is only available when running in an HTML5 export.</para>
+            <para>WebXR supports a wide range of devices, from the very capable (like Valve Index, HTC Vive, Oculus Rift and Quest) down to the much less capable (like Google Cardboard, Oculus Go, GearVR, or plain smartphones).</para>
+            <para>Since WebXR is based on Javascript, it makes extensive use of callbacks, which means that <see cref="T:Godot.WebXRInterface"/> is forced to use signals, where other AR/VR interfaces would instead use functions that return a result immediately. This makes <see cref="T:Godot.WebXRInterface"/> quite a bit more complicated to intialize than other AR/VR interfaces.</para>
+            <para>Here's the minimum code required to start an immersive VR session:</para>
+            <para><code>
+                    var webxr_interface
+                    var vr_supported = false
+            
+                    func _ready():
+                        # We assume this node has a canvas layer with a button on it as a child.
+                        # This button is for the user to consent to entering immersive VR mode.
+                        $CanvasLayer/Button.connect("pressed", self, "_on_Button_pressed")
+            
+                        webxr_interface = ARVRServer.find_interface("WebXR")
+                        if webxr_interface:
+                            # WebXR uses a lot of asynchronous callbacks, so we connect to various
+                            # signals in order to receive them.
+                            webxr_interface.connect("session_supported", self, "_webxr_session_supported")
+                            webxr_interface.connect("session_started", self, "_webxr_session_started")
+                            webxr_interface.connect("session_ended", self, "_webxr_session_ended")
+                            webxr_interface.connect("session_failed", self, "_webxr_session_failed")
+            
+                            # This returns immediately - our _webxr_session_supported() method
+                            # (which we connected to the "session_supported" signal above) will
+                            # be called sometime later to let us know if it's supported or not.
+                            webxr_interface.is_session_supported("immersive-vr")
+            
+                    func _webxr_session_supported(session_mode, supported):
+                        if session_mode == 'immersive-vr':
+                            vr_supported = supported
+            
+                    func _on_Button_pressed():
+                        if not vr_supported:
+                            OS.alert("Your browser doesn't support VR")
+                            return
+            
+                        # We want an immersive VR session, as opposed to AR ('immersive-ar') or a
+                        # simple 3DoF viewer ('viewer').
+                        webxr_interface.session_mode = 'immersive-vr'
+                        # 'bounded-floor' is room scale, 'local-floor' is a standing or sitting
+                        # experience (it puts you 1.6m above the ground if you have 3DoF headset),
+                        # whereas as 'local' puts you down at the ARVROrigin.
+                        # This list means it'll first try to request 'bounded-floor', then
+                        # fallback on 'local-floor' and ultimately 'local', if nothing else is
+                        # supported.
+                        webxr_interface.requested_reference_space_types = 'bounded-floor, local-floor, local'
+                        # In order to use 'local-floor' or 'bounded-floor' we must also
+                        # mark the features as required or optional.
+                        webxr_interface.required_features = 'local-floor'
+                        webxr_interface.optional_features = 'bounded-floor'
+            
+                        # This will return false if we're unable to even request the session,
+                        # however, it can still fail asynchronously later in the process, so we
+                        # only know if it's really succeeded or failed when our
+                        # _webxr_session_started() or _webxr_session_failed() methods are called.
+                        if not webxr_interface.initialize():
+                            OS.alert("Failed to initialize")
+                            return
+            
+                    func _webxr_session_started():
+                        # This tells Godot to start rendering to the headset.
+                        get_viewport().arvr = true
+                        # This will be the reference space type you ultimately got, out of the
+                        # types that you requested above. This is useful if you want the game to
+                        # work a little differently in 'bounded-floor' versus 'local-floor'.
+                        print ("Reference space type: " + webxr_interface.reference_space_type)
+            
+                    func _webxr_session_ended():
+                        # If the user exits immersive mode, then we tell Godot to render to the web
+                        # page again.
+                        get_viewport().arvr = false
+            
+                    func _webxr_session_failed(message):
+                        OS.alert("Failed to initialize: " + message)
+            </code></para>
+            <para>There are several ways to handle "controller" input:</para>
+            <para>- Using <see cref="T:Godot.ARVRController"/> nodes and their <c>ARVRController.button_pressed</c> and <c>ARVRController.button_release</c> signals. This is how controllers are typically handled in AR/VR apps in Godot, however, this will only work with advanced VR controllers like the Oculus Touch or Index controllers, for example. The buttons codes are defined by <a href="https://immersive-web.github.io/webxr-gamepads-module/#xr-standard-gamepad-mapping">Section 3.3 of the WebXR Gamepads Module</a>.</para>
+            <para>- Using <see cref="M:Godot.Node._UnhandledInput(Godot.InputEvent)"/> and <see cref="T:Godot.InputEventJoypadButton"/> or <see cref="T:Godot.InputEventJoypadMotion"/>. This works the same as normal joypads, except the <see cref="P:Godot.InputEvent.Device"/> starts at 100, so the left controller is 100 and the right controller is 101, and the button codes are also defined by <a href="https://immersive-web.github.io/webxr-gamepads-module/#xr-standard-gamepad-mapping">Section 3.3 of the WebXR Gamepads Module</a>.</para>
+            <para>- Using the <c>select</c>, <c>squeeze</c> and related signals. This method will work for both advanced VR controllers, and non-traditional "controllers" like a tap on the screen, a spoken voice command or a button press on the device itself. The <c>controller_id</c> passed to these signals is the same id as used in <see cref="P:Godot.ARVRController.ControllerId"/>.</para>
+            <para>You can use one or all of these methods to allow your game or app to support a wider or narrower set of devices and input methods, or to allow more advanced interations with more advanced devices.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.SessionMode">
+            <summary>
+            <para>The session mode used by <see cref="M:Godot.ARVRInterface.Initialize"/> when setting up the WebXR session.</para>
+            <para>This doesn't have any effect on the interface when already initialized.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRSessionMode">WebXR's XRSessionMode</a>, including: <c>"immersive-vr"</c>, <c>"immersive-ar"</c>, and <c>"inline"</c>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.RequiredFeatures">
+            <summary>
+            <para>A comma-seperated list of required features used by <see cref="M:Godot.ARVRInterface.Initialize"/> when setting up the WebXR session.</para>
+            <para>If a user's browser or device doesn't support one of the given features, initialization will fail and <c>session_failed</c> will be emitted.</para>
+            <para>This doesn't have any effect on the interface when already initialized.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRReferenceSpaceType">WebXR's XRReferenceSpaceType</a>. If you want to use a particular reference space type, it must be listed in either <see cref="P:Godot.WebXRInterface.RequiredFeatures"/> or <see cref="P:Godot.WebXRInterface.OptionalFeatures"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.OptionalFeatures">
+            <summary>
+            <para>A comma-seperated list of optional features used by <see cref="M:Godot.ARVRInterface.Initialize"/> when setting up the WebXR session.</para>
+            <para>If a user's browser or device doesn't support one of the given features, initialization will continue, but you won't be able to use the requested feature.</para>
+            <para>This doesn't have any effect on the interface when already initialized.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRReferenceSpaceType">WebXR's XRReferenceSpaceType</a>. If you want to use a particular reference space type, it must be listed in either <see cref="P:Godot.WebXRInterface.RequiredFeatures"/> or <see cref="P:Godot.WebXRInterface.OptionalFeatures"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.RequestedReferenceSpaceTypes">
+            <summary>
+            <para>A comma-seperated list of reference space types used by <see cref="M:Godot.ARVRInterface.Initialize"/> when setting up the WebXR session.</para>
+            <para>The reference space types are requested in order, and the first on supported by the users device or browser will be used. The <see cref="P:Godot.WebXRInterface.ReferenceSpaceType"/> property contains the reference space type that was ultimately used.</para>
+            <para>This doesn't have any effect on the interface when already initialized.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRReferenceSpaceType">WebXR's XRReferenceSpaceType</a>. If you want to use a particular reference space type, it must be listed in either <see cref="P:Godot.WebXRInterface.RequiredFeatures"/> or <see cref="P:Godot.WebXRInterface.OptionalFeatures"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.ReferenceSpaceType">
+            <summary>
+            <para>The reference space type (from the list of requested types set in the <see cref="P:Godot.WebXRInterface.RequestedReferenceSpaceTypes"/> property), that was ultimately used by <see cref="M:Godot.ARVRInterface.Initialize"/> when setting up the WebXR session.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRReferenceSpaceType">WebXR's XRReferenceSpaceType</a>. If you want to use a particular reference space type, it must be listed in either <see cref="P:Godot.WebXRInterface.RequiredFeatures"/> or <see cref="P:Godot.WebXRInterface.OptionalFeatures"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.VisibilityState">
+            <summary>
+            <para>Indicates if the WebXR session's imagery is visible to the user.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRVisibilityState">WebXR's XRVisibilityState</a>, including <c>"hidden"</c>, <c>"visible"</c>, and <c>"visible-blurred"</c>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.WebXRInterface.BoundsGeometry">
+            <summary>
+            <para>The vertices of a polygon which defines the boundaries of the user's play area.</para>
+            <para>This will only be available if <see cref="P:Godot.WebXRInterface.ReferenceSpaceType"/> is <c>"bounded-floor"</c> and only on certain browsers and devices that support it.</para>
+            <para>The <c>reference_space_reset</c> signal may indicate when this changes.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.WebXRInterface.IsSessionSupported(System.String)">
+            <summary>
+            <para>Checks if the given <c>session_mode</c> is supported by the user's browser.</para>
+            <para>Possible values come from <a href="https://developer.mozilla.org/en-US/docs/Web/API/XRSessionMode">WebXR's XRSessionMode</a>, including: <c>"immersive-vr"</c>, <c>"immersive-ar"</c>, and <c>"inline"</c>.</para>
+            <para>This method returns nothing, instead it emits the <c>session_supported</c> signal with the result.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.WebXRInterface.GetController(System.Int32)">
+            <summary>
+            <para>Gets an <see cref="T:Godot.ARVRPositionalTracker"/> for the given <c>controller_id</c>.</para>
+            <para>In the context of WebXR, a "controller" can be an advanced VR controller like the Oculus Touch or Index controllers, or even a tap on the screen, a spoken voice command or a button press on the device itself. When a non-traditional controller is used, interpret the position and orientation of the <see cref="T:Godot.ARVRPositionalTracker"/> as a ray pointing at the object the user wishes to interact with.</para>
+            <para>Use this method to get information about the controller that triggered one of these signals:</para>
+            <para>- <c>selectstart</c></para>
+            <para>- <c>select</c></para>
+            <para>- <c>selectend</c></para>
+            <para>- <c>squeezestart</c></para>
+            <para>- <c>squeeze</c></para>
+            <para>- <c>squeezestart</c></para>
+            </summary>
+        </member>
         <member name="T:Godot.WindowDialog">
             <summary>
             <para>Windowdialog is the base class for all window-based dialogs. It's a by-default toplevel <see cref="T:Godot.Control"/> that draws a window decoration and allows motion and resizing.</para>
@@ -47700,7 +47889,7 @@
         </member>
         <member name="M:Godot.Geometry.GetClosestPointsBetweenSegments2d(Godot.Vector2,Godot.Vector2,Godot.Vector2,Godot.Vector2)">
             <summary>
-            <para>Given the two 2D segments (<c>p1</c>, <c>p2</c>) and (<c>q1</c>, <c>q2</c>), finds those two points on the two segments that are closest to each other. Returns a <see cref="T:Godot.Vector2"/> that contains this point on (<c>p1</c>, <c>p2</c>) as well the accompanying point on (<c>q1</c>, <c>q2</c>).</para>
+            <para>Given the two 2D segments (<c>p1</c>, <c>q1</c>) and (<c>p2</c>, <c>q2</c>), finds those two points on the two segments that are closest to each other. Returns a <see cref="T:Godot.Vector2"/> that contains this point on (<c>p1</c>, <c>q1</c>) as well the accompanying point on (<c>p2</c>, <c>q2</c>).</para>
             </summary>
         </member>
         <member name="M:Godot.Geometry.GetClosestPointsBetweenSegments(Godot.Vector3,Godot.Vector3,Godot.Vector3,Godot.Vector3)">
@@ -48685,6 +48874,7 @@
         <member name="M:Godot.OS.GetUnixTime">
             <summary>
             <para>Returns the current UNIX epoch timestamp.</para>
+            <para>Important: This is the system clock that the user can manully set. Never use this method for precise time calculation since its results are also subject to automatic adjustments by the operating system. Always use <see cref="M:Godot.OS.GetTicksUsec"/> or <see cref="M:Godot.OS.GetTicksMsec"/> for precise time calculation instead, since they are guaranteed to be monotonic (i.e. never decrease).</para>
             </summary>
         </member>
         <member name="M:Godot.OS.GetDatetimeFromUnixTime(System.Int64)">

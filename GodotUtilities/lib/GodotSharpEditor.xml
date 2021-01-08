@@ -4,14 +4,40 @@
         <name>GodotSharpEditor</name>
     </assembly>
     <members>
+        <member name="T:Godot.EditorExportPlugin">
+            <summary>
+            <para>Editor export plugins are automatically activated whenever the user exports the project. Their most common use is to determine what files are being included in the exported project. For each plugin, <see cref="M:Godot.EditorExportPlugin._ExportBegin(System.String[],System.Boolean,System.String,System.Int32)"/> is called at the beginning of the export process and then <see cref="M:Godot.EditorExportPlugin._ExportFile(System.String,System.String,System.String[])"/> is called for each exported file.</para>
+            </summary>
+        </member>
         <member name="M:Godot.EditorExportPlugin._ExportBegin(System.String[],System.Boolean,System.String,System.Int32)">
             <summary>
-            <para>Virtual method to be overridden by the user. It is called when the export starts and provides all information about the export.</para>
+            <para>Virtual method to be overridden by the user. It is called when the export starts and provides all information about the export. <c>features</c> is the list of features for the export, <c>is_debug</c> is <c>true</c> for debug builds, <c>path</c> is the target path for the exported project. <c>flags</c> is only used when running a runnable profile, e.g. when using native run on Android.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorExportPlugin._ExportEnd">
             <summary>
             <para>Virtual method to be overridden by the user. Called when the export is finished.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin._ExportFile(System.String,System.String,System.String[])">
+            <summary>
+            <para>Virtual method to be overridden by the user. Called for each exported file, providing arguments that can be used to identify the file. <c>path</c> is the path of the file, <c>type</c> is the <see cref="T:Godot.Resource"/> represented by the file (e.g. <see cref="T:Godot.PackedScene"/>) and <c>features</c> is the list of features for the export.</para>
+            <para>Calling <see cref="M:Godot.EditorExportPlugin.Skip"/> inside this callback will make the file not included in the export.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddSharedObject(System.String,System.String[])">
+            <summary>
+            <para>Adds a shared object with the given <c>tags</c> and destination <c>path</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddIosProjectStaticLib(System.String)">
+            <summary>
+            <para>Adds a static lib from the given <c>path</c> to the iOS project.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddFile(System.String,System.Byte[],System.Boolean)">
+            <summary>
+            <para>Adds a custom file to be exported. <c>path</c> is the virtual path that can be used to load the file, <c>file</c> is the binary data of the file. If <c>remap</c> is <c>true</c>, file will not be exported, but instead remapped to the given <c>path</c>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorExportPlugin.AddIosFramework(System.String)">
@@ -24,6 +50,31 @@
             <para>Adds a dynamic library (*.dylib, *.framework) to Linking Phase in iOS's Xcode project and embeds it into resulting binary.</para>
             <para>Note: For static libraries (*.a) works in same way as <see cref="M:Godot.EditorExportPlugin.AddIosFramework(System.String)"/>.</para>
             <para>This method should not be used for System libraries as they are already present on the device.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddIosPlistContent(System.String)">
+            <summary>
+            <para>Adds content for iOS Property List files.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddIosLinkerFlags(System.String)">
+            <summary>
+            <para>Adds linker flags for the iOS export.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddIosBundleFile(System.String)">
+            <summary>
+            <para>Adds an iOS bundle file from the given <c>path</c> to the exported project.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.AddIosCppCode(System.String)">
+            <summary>
+            <para>Adds a C++ code to the iOS export. The final code is created from the code appended by each active export plugin.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorExportPlugin.Skip">
+            <summary>
+            <para>To be called inside <see cref="M:Godot.EditorExportPlugin._ExportFile(System.String,System.String,System.String[])"/>. Skips the current file, so it's not included in the export.</para>
             </summary>
         </member>
         <member name="T:Godot.EditorFeatureProfile">
@@ -979,6 +1030,11 @@
         <member name="M:Godot.EditorPlugin.QueueSaveLayout">
             <summary>
             <para>Queue save the project's editor layout.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorPlugin.AddExportPlugin(Godot.EditorExportPlugin)">
+            <summary>
+            <para>Registers a new export plugin. Export plugins are used when the project is being exported. See <see cref="T:Godot.EditorExportPlugin"/> for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.SetInputEventForwardingAlwaysEnabled">
