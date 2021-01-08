@@ -10,6 +10,10 @@ namespace GodotUtilities.StateManagement
         public override void _EnterTree()
         {
             _instance = this;
+        }
+
+        public override void _Ready()
+        {
             Initialize();
         }
 
