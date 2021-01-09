@@ -37,25 +37,25 @@ namespace GodotUtilities.StateManagement
             }
         }
 
-        public static void CreateEffect<T>(Node node, string methodName) where T : BaseAction
+        public static void CreateEffect<T>(Godot.Object obj, string methodName) where T : BaseAction
         {
             var signalName = GetEffectSignalName(typeof(T));
-            ConnectCustomSignal(signalName, node, methodName);
+            ConnectCustomSignal(signalName, obj, methodName);
         }
 
-        public static void CreateDeferredEffect<T>(Node node, string methodName) where T : BaseAction
+        public static void CreateDeferredEffect<T>(Godot.Object obj, string methodName) where T : BaseAction
         {
             var signalName = GetEffectSignalName(typeof(T));
-            ConnectCustomSignal(signalName, node, methodName, true);
+            ConnectCustomSignal(signalName, obj, methodName, true);
         }
 
-        public static void ConnectStateUpdate<T>(Node node, string methodName) where T : IState
+        public static void ConnectStateUpdate<T>(Godot.Object obj, string methodName) where T : IState
         {
             var signalName = GetStateUpdateSignalName(typeof(T));
-            ConnectCustomSignal(signalName, node, methodName);
+            ConnectCustomSignal(signalName, obj, methodName);
         }
 
-        private static void ConnectCustomSignal(string signalName, Node node, string methodName, bool deferred = false)
+        private static void ConnectCustomSignal(string signalName, Godot.Object obj, string methodName, bool deferred = false)
         {
             if (!_instance.HasSignal(signalName))
             {
@@ -66,7 +66,7 @@ namespace GodotUtilities.StateManagement
             {
                 flags |= (uint)ConnectFlags.Deferred;
             }
-            _instance.Connect(signalName, node, methodName, null, flags);
+            _instance.Connect(signalName, obj, methodName, null, flags);
         }
 
         private static string GetEffectSignalName(BaseAction action)
