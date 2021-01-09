@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Godot;
 
@@ -19,6 +21,7 @@ namespace GodotUtilities
     {
         public static void WireNodes(this Node n)
         {
+            var lowerCaseChildNameToChild = n.GetChildren().Cast<Node>().ToDictionary(x => x.Name.ToLower(), x => x);
             foreach (var memberInfo in GetFieldsAndProperties(n))
             {
                 var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(NodeAttribute));
@@ -27,8 +30,20 @@ namespace GodotUtilities
                     continue;
                 }
 
-                var nodePath = GetNodePath(childNodeAttribute, memberInfo);
-                var childNode = n.GetNodeOrNull(nodePath);
+                Node childNode = null;
+                if (childNodeAttribute.NodePath != null)
+                {
+                    childNode = n.GetNodeOrNull(childNodeAttribute.NodePath);
+                }
+                else
+                {
+                    var lowerCaseName = InferNodeName(lowerCaseChildNameToChild.Keys, memberInfo);
+                    if (lowerCaseName != null)
+                    {
+                        childNode = lowerCaseChildNameToChild[lowerCaseName];
+                    }
+                }
+
                 if (memberInfo is PropertyInfo propertyInfo)
                 {
                     propertyInfo.SetValue(n, childNode);
@@ -51,18 +66,9 @@ namespace GodotUtilities
             return memberInfo;
         }
 
-        private static string GetNodePath(NodeAttribute childNodeAttribute, MemberInfo memberInfo)
+        private static string InferNodeName(IEnumerable<string> lowerCaseChildNames, MemberInfo memberInfo)
         {
-            if (childNodeAttribute.NodePath != null) return childNodeAttribute.NodePath;
-
-            var parts = memberInfo.Name.Split('_');
-            for (int i = 0; i < parts.Length; i++)
-            {
-                var part = parts[i];
-                if (part.Length == 0) continue;
-                parts[i] = char.ToUpper(part[0]) + (part.Length > 1 ? part.Substring(1) : string.Empty);
-            }
-            return string.Concat(parts);
+            return lowerCaseChildNames.Where(x => memberInfo.Name.ToLower().Contains(x)).OrderByDescending(x => x.Length).FirstOrDefault();
         }
     }
 }
