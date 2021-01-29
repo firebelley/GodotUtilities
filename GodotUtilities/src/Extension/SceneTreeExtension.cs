@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace GodotUtilities
@@ -27,6 +29,17 @@ namespace GodotUtilities
         {
             var name = typeof(T).Name;
             return GetFirstNodeInGroup<T>(sceneTree, name);
+        }
+
+        public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree, string group) where T : Node
+        {
+            return sceneTree.GetNodesInGroup(group).Cast<T>();
+        }
+
+        public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree) where T : Node
+        {
+            var name = typeof(T).Name;
+            return GetNodesInGroup<T>(sceneTree, name);
         }
     }
 }
