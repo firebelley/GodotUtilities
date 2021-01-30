@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 
 namespace GodotUtilities
@@ -40,6 +41,11 @@ namespace GodotUtilities
         {
             var name = typeof(T).Name;
             return GetNodesInGroup<T>(sceneTree, name);
+        }
+
+        public static async Task NextIdle(this SceneTree sceneTree)
+        {
+            await sceneTree.ToSignal(sceneTree, "idle_frame");
         }
     }
 }
