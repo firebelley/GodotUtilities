@@ -19,51 +19,59 @@ namespace GodotUtilities
 
     public static class ChildNodeAttributeExtension
     {
+        private const BindingFlags BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
         public static void WireNodes(this Node n)
         {
             var lowerCaseChildNameToChild = n.GetChildren().Cast<Node>().ToDictionary(x => x.Name.ToLower(), x => x);
-            foreach (var memberInfo in GetFieldsAndProperties(n))
+
+            var fields = n.GetType().GetFields(BINDING_FLAGS);
+            foreach (var memberInfo in fields)
             {
-                var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(NodeAttribute));
-                if (!(attribute is NodeAttribute childNodeAttribute))
-                {
-                    continue;
-                }
+                SetChildNode(n, memberInfo, lowerCaseChildNameToChild);
+            }
 
-                Node childNode = null;
-                if (childNodeAttribute.NodePath != null)
-                {
-                    childNode = n.GetNodeOrNull(childNodeAttribute.NodePath);
-                }
-                else
-                {
-                    var lowerCaseName = InferNodeName(lowerCaseChildNameToChild.Keys, memberInfo);
-                    if (lowerCaseName != null)
-                    {
-                        childNode = lowerCaseChildNameToChild[lowerCaseName];
-                    }
-                }
-
-                if (memberInfo is PropertyInfo propertyInfo)
-                {
-                    propertyInfo.SetValue(n, childNode);
-                }
-                if (memberInfo is FieldInfo fieldInfo)
-                {
-                    fieldInfo.SetValue(n, childNode);
-                }
+            var properties = n.GetType().GetProperties(BINDING_FLAGS);
+            foreach (var memberInfo in properties)
+            {
+                SetChildNode(n, memberInfo, lowerCaseChildNameToChild);
             }
         }
 
-        private static MemberInfo[] GetFieldsAndProperties(Node n)
+        private static void SetChildNode(Node node, MemberInfo memberInfo, Dictionary<string, Node> lowerCaseChildNameToChild)
         {
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            var properties = n.GetType().GetProperties(flags);
-            var fields = n.GetType().GetFields(flags);
-            var memberInfo = new MemberInfo[properties.Length + fields.Length];
-            properties.CopyTo(memberInfo, 0);
-            fields.CopyTo(memberInfo, properties.Length);
-            return memberInfo;
+            var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(NodeAttribute));
+            if (!(attribute is NodeAttribute childNodeAttribute))
+            {
+                return;
+            }
+
+            Node childNode = null;
+            if (childNodeAttribute.NodePath != null)
+            {
+                childNode = node.GetNodeOrNull(childNodeAttribute.NodePath);
+            }
+            else
+            {
+                var lowerCaseName = InferNodeName(lowerCaseChildNameToChild.Keys, memberInfo);
+                if (lowerCaseName != null)
+                {
+                    childNode = lowerCaseChildNameToChild[lowerCaseName];
+                }
+            }
+            SetMemberValue(node, memberInfo, childNode);
+        }
+
+        private static void SetMemberValue(Node node, MemberInfo memberInfo, Node childNode)
+        {
+            if (memberInfo is PropertyInfo propertyInfo)
+            {
+                propertyInfo.SetValue(node, childNode);
+            }
+            else if (memberInfo is FieldInfo fieldInfo)
+            {
+                fieldInfo.SetValue(node, childNode);
+            }
         }
 
         private static string InferNodeName(IEnumerable<string> lowerCaseChildNames, MemberInfo memberInfo)
