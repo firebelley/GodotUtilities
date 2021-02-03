@@ -10,10 +10,7 @@ namespace GodotUtilities.StateManagement
         public override void _EnterTree()
         {
             _instance = this;
-            Initialize();
         }
-
-        protected abstract void Initialize();
 
         public static void SendEffect(BaseAction action)
         {
