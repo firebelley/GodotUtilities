@@ -22,5 +22,11 @@ namespace GodotUtilities.StateManagement
             StateManager.SendStateUpdated<T>();
             StateManager.SendEffect(action);
         }
+
+        public void SetState(T state)
+        {
+            State = state;
+            StateManager.SendStateUpdated<T>();
+        }
     }
 }
