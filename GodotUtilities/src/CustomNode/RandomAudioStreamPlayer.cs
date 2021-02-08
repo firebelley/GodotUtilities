@@ -21,7 +21,7 @@ namespace Game.CustomNode
             if (childCount == 0) return;
             var childIdx = MathUtil.RNG.RandiRange(0, childCount - 1);
 
-            var child = GetChild<AudioStreamPlayer>(childIdx);
+            var child = validChildren.ElementAt(childIdx);
             if (randomPitch)
             {
                 child.PlayWithPitchRange(minPitch, maxPitch);
