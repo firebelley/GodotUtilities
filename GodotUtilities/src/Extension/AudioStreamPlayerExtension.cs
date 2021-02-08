@@ -6,7 +6,7 @@ namespace GodotUtilities
     {
         public static void PlayWithPitchRange(this AudioStreamPlayer audioStreamPlayer, float minPitchScale, float maxPitchScale)
         {
-            audioStreamPlayer.PitchScale = (float) GD.RandRange(minPitchScale, maxPitchScale);
+            audioStreamPlayer.PitchScale = MathUtil.RNG.RandfRange(minPitchScale, maxPitchScale);
             audioStreamPlayer.Play();
         }
 
@@ -24,7 +24,7 @@ namespace GodotUtilities
 
         public static void PlayWithPitchRange(this AudioStreamPlayer2D audioStreamPlayer, float minPitchScale, float maxPitchScale)
         {
-            audioStreamPlayer.PitchScale = (float) GD.RandRange(minPitchScale, maxPitchScale);
+            audioStreamPlayer.PitchScale = MathUtil.RNG.RandfRange(minPitchScale, maxPitchScale);
             audioStreamPlayer.Play();
         }
     }
