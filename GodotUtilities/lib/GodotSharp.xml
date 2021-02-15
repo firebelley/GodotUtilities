@@ -1665,6 +1665,7 @@
             <para>The <c>in</c> operator will evaluate to <c>true</c> as long as the key exists, even if the value is <c>null</c>.</para>
             <para>Objects also receive notifications. Notifications are a simple way to notify the object about different events, so they can all be handled together. See <see cref="M:Godot.Object._Notification(System.Int32)"/>.</para>
             <para>Note: Unlike references to a <see cref="T:Godot.Reference"/>, references to an Object stored in a variable can become invalid without warning. Therefore, it's recommended to use <see cref="T:Godot.Reference"/> for data classes instead of <see cref="T:Godot.Object"/>.</para>
+            <para>Note: Due to a bug, you can't create a "plain" Object using <c>Object.new()</c>. Instead, use <c>ClassDB.instance("Object")</c>. This bug only applies to Object itself, not any of its descendents like <see cref="T:Godot.Reference"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Object.ToSignal(Godot.Object,System.String)">
@@ -3097,6 +3098,15 @@
             <param name="other">The other rect to compare.</param>
             <returns>Whether or not the rects are approximately equal.</returns>
         </member>
+        <member name="M:Godot.StringExtensions.BinToInt(System.String)">
+            <summary>
+            Converts a string containing a binary number into an integer.
+            Binary strings can either be prefixed with `0b` or not,
+            and they can also start with a `-` before the optional prefix.
+            </summary>
+            <param name="instance">The string to convert.</param>
+            <returns>The converted string.</returns>
+        </member>
         <member name="M:Godot.StringExtensions.Find(System.String,System.String,System.Int32,System.Boolean)">
             <summary>Find the first occurrence of a substring. Optionally, the search starting position can be passed.</summary>
             <returns>The starting position of the substring, or -1 if not found.</returns>
@@ -3144,7 +3154,7 @@
             <summary>
             Returns a hexadecimal representation of this byte as a string.
             </summary>
-            <param name="bytes">The byte to encode.</param>
+            <param name="b">The byte to encode.</param>
             <returns>The hexadecimal representation of this byte.</returns>
         </member>
         <member name="M:Godot.StringExtensions.HexEncode(System.Byte[])">
@@ -3153,6 +3163,15 @@
             </summary>
             <param name="bytes">The byte array to encode.</param>
             <returns>The hexadecimal representation of this byte array.</returns>
+        </member>
+        <member name="M:Godot.StringExtensions.HexToInt(System.String)">
+            <summary>
+            Converts a string containing a hexadecimal number into an integer.
+            Hexadecimal strings can either be prefixed with `0x` or not,
+            and they can also start with a `-` before the optional prefix.
+            </summary>
+            <param name="instance">The string to convert.</param>
+            <returns>The converted string.</returns>
         </member>
         <member name="M:Godot.StringExtensions.Length(System.String)">
             <summary>
@@ -5958,6 +5977,36 @@
             <para>Gamepad right stick click.</para>
             </summary>
         </member>
+        <member name="F:Godot.JoystickList.Misc1">
+            <summary>
+            <para>Gamepad SDL miscellaneous button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Paddle1">
+            <summary>
+            <para>Gamepad SDL paddle 1 button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Paddle2">
+            <summary>
+            <para>Gamepad SDL paddle 2 button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Paddle3">
+            <summary>
+            <para>Gamepad SDL paddle 3 button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Paddle4">
+            <summary>
+            <para>Gamepad SDL paddle 4 button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Touchpad">
+            <summary>
+            <para>Gamepad SDL touchpad button.</para>
+            </summary>
+        </member>
         <member name="F:Godot.JoystickList.Axis0">
             <summary>
             <para>Gamepad left stick horizontal axis.</para>
@@ -8239,7 +8288,7 @@
         </member>
         <member name="M:Godot.Animation.AudioTrackSetKeyStream(System.Int32,System.Int32,Godot.Resource)">
             <summary>
-            <para>Sets the stream of the key identified by <c>key_idx</c> to value <c>offset</c>. The <c>track_idx</c> must be the index of an Audio Track.</para>
+            <para>Sets the stream of the key identified by <c>key_idx</c> to value <c>stream</c>. The <c>track_idx</c> must be the index of an Audio Track.</para>
             </summary>
         </member>
         <member name="M:Godot.Animation.AudioTrackSetKeyStartOffset(System.Int32,System.Int32,System.Single)">
@@ -10178,6 +10227,67 @@
             <para>Will perform a UV unwrap on the <see cref="T:Godot.ArrayMesh"/> to prepare the mesh for lightmapping.</para>
             </summary>
         </member>
+        <member name="T:Godot.AspectRatioContainer">
+            <summary>
+            <para>Arranges child controls in a way to preserve their aspect ratio automatically whenever the container is resized. Solves the problem where the container size is dynamic and the contents' size needs to adjust accordingly without losing proportions.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.AlignMode.Begin">
+            <summary>
+            <para>Aligns child controls with the beginning (left or top) of the container.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.AlignMode.Center">
+            <summary>
+            <para>Aligns child controls with the center of the container.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.AlignMode.End">
+            <summary>
+            <para>Aligns child controls with the end (right or bottom) of the container.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.StretchModeEnum.WidthControlsHeight">
+            <summary>
+            <para>The height of child controls is automatically adjusted based on the width of the container.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.StretchModeEnum.HeightControlsWidth">
+            <summary>
+            <para>The width of child controls is automatically adjusted based on the height of the container.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.StretchModeEnum.Fit">
+            <summary>
+            <para>The bounding rectangle of child controls is automatically adjusted to fit inside the container while keeping the aspect ratio.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.AspectRatioContainer.StretchModeEnum.Cover">
+            <summary>
+            <para>The width and height of child controls is automatically adjusted to make their bounding rectangle cover the entire area of the container while keeping the aspect ratio.</para>
+            <para>When the bounding rectangle of child controls exceed the container's size and <see cref="P:Godot.Control.RectClipContent"/> is enabled, this allows to show only the container's area restricted by its own bounding rectangle.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AspectRatioContainer.Ratio">
+            <summary>
+            <para>The aspect ratio to enforce on child controls. This is the width divided by the height. The ratio depends on the <see cref="P:Godot.AspectRatioContainer.StretchMode"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AspectRatioContainer.StretchMode">
+            <summary>
+            <para>The stretch mode used to align child controls.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AspectRatioContainer.AlignmentHorizontal">
+            <summary>
+            <para>Specifies the horizontal relative position of child controls.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AspectRatioContainer.AlignmentVertical">
+            <summary>
+            <para>Specifies the vertical relative position of child controls.</para>
+            </summary>
+        </member>
         <member name="T:Godot.AtlasTexture">
             <summary>
             <para><see cref="T:Godot.Texture"/> resource aimed at managing big textures files that pack multiple smaller textures. Consists of a <see cref="T:Godot.Texture"/>, a margin that defines the border width, and a region that defines the actual area of the AtlasTexture.</para>
@@ -11578,19 +11688,24 @@
             <para>Note: This node has many known bugs and will be <a href="https://godotengine.org/article/godot-40-will-get-new-modernized-lightmapper">rewritten for Godot 4.0</a>. See <a href="https://github.com/godotengine/godot/issues/30929">GitHub issue #30929</a>.</para>
             </summary>
         </member>
-        <member name="F:Godot.BakedLightmap.BakeQualityEnum.Low">
+        <member name="F:Godot.BakedLightmap.BakeQuality.Low">
             <summary>
             <para>The lowest bake quality mode. Fastest to calculate.</para>
             </summary>
         </member>
-        <member name="F:Godot.BakedLightmap.BakeQualityEnum.Medium">
+        <member name="F:Godot.BakedLightmap.BakeQuality.Medium">
             <summary>
             <para>The default bake quality mode.</para>
             </summary>
         </member>
-        <member name="F:Godot.BakedLightmap.BakeQualityEnum.High">
+        <member name="F:Godot.BakedLightmap.BakeQuality.High">
             <summary>
-            <para>The highest bake quality mode. Takes longer to calculate.</para>
+            <para>A higher bake quality mode. Takes longer to calculate.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.BakedLightmap.BakeQuality.Ultra">
+            <summary>
+            <para>The highest bake quality mode. Takes the longest to calculate.</para>
             </summary>
         </member>
         <member name="F:Godot.BakedLightmap.BakeError.Ok">
@@ -11613,69 +11728,129 @@
             <para>Returns when the baker cannot save per-mesh textures to file.</para>
             </summary>
         </member>
+        <member name="F:Godot.BakedLightmap.BakeError.LightmapSize">
+            <summary>
+            <para>The size of the generated lightmaps is too large.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.BakedLightmap.BakeError.InvalidMesh">
+            <summary>
+            <para>Some mesh contains UV2 values outside the <c>[0,1]</c> range.</para>
+            </summary>
+        </member>
         <member name="F:Godot.BakedLightmap.BakeError.UserAborted">
             <summary>
             <para>Returns if user cancels baking.</para>
             </summary>
         </member>
-        <member name="F:Godot.BakedLightmap.BakeModeEnum.ConeTrace">
+        <member name="F:Godot.BakedLightmap.EnvironmentModeEnum.Disabled">
             <summary>
-            <para>Less precise but faster bake mode.</para>
+            <para>No environment is used during baking.</para>
             </summary>
         </member>
-        <member name="F:Godot.BakedLightmap.BakeModeEnum.RayTrace">
+        <member name="F:Godot.BakedLightmap.EnvironmentModeEnum.Scene">
             <summary>
-            <para>More precise bake mode but can take considerably longer to bake.</para>
+            <para>The baked environment is automatically picked from the current scene.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeCellSize">
+        <member name="F:Godot.BakedLightmap.EnvironmentModeEnum.CustomSky">
             <summary>
-            <para>Grid subdivision size for lightmapper calculation. The default value will work for most cases. Increase for better lighting on small details or if your scene is very large.</para>
+            <para>A custom sky is used as environment during baking.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeQuality">
+        <member name="F:Godot.BakedLightmap.EnvironmentModeEnum.CustomColor">
             <summary>
-            <para>Three quality modes are available. Higher quality requires more rendering time. See <see cref="T:Godot.BakedLightmap.BakeQualityEnum"/>.</para>
+            <para>A custom solid color is used as environment during baking.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeMode">
+        <member name="P:Godot.BakedLightmap.Extents">
             <summary>
-            <para>Lightmapping mode. See <see cref="T:Godot.BakedLightmap.BakeModeEnum"/>.</para>
+            <para>Size of the baked lightmap. Only meshes inside this region will be included in the baked lightmap, also used as the bounds of the captured region for dynamic lighting.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakePropagation">
+        <member name="P:Godot.BakedLightmap.Quality">
             <summary>
-            <para>Defines how far the light will travel before it is no longer effective. The higher the number, the farther the light will travel. For instance, if the value is set to 2, the light will go twice as far. If the value is set to 0.5, the light will only go half as far.</para>
+            <para>Determines the amount of samples per texel used in indrect light baking. The amount of samples for each quality level can be configured in the project settings.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeEnergy">
+        <member name="P:Godot.BakedLightmap.Bounces">
             <summary>
-            <para>Multiplies the light sources' intensity by this value. For instance, if the value is set to 2, lights will be twice as bright. If the value is set to 0.5, lights will be half as bright.</para>
+            <para>Number of light bounces that are taken into account during baking.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeHdr">
+        <member name="P:Godot.BakedLightmap.UseDenoiser">
             <summary>
-            <para>If <c>true</c>, the lightmap can capture light values greater than <c>1.0</c>. Turning this off will result in a smaller file size.</para>
+            <para>When enabled, a lightmap denoiser will be used to reduce the noise inherent to Monte Carlo based global illumination.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeExtents">
+        <member name="P:Godot.BakedLightmap.Bias">
             <summary>
-            <para>The size of the affected area.</para>
+            <para>Raycasting bias used during baking to avoid floating point precission issues.</para>
             </summary>
         </member>
-        <member name="P:Godot.BakedLightmap.BakeDefaultTexelsPerUnit">
+        <member name="P:Godot.BakedLightmap.DefaultTexelsPerUnit">
             <summary>
-            <para>If a <see cref="P:Godot.Mesh.LightmapSizeHint"/> isn't specified, the lightmap baker will dynamically set the lightmap size using this value. This value is measured in texels per world unit. The maximum lightmap texture size is 4096x4096.</para>
+            <para>If a baked mesh doesn't have a UV2 size hint, this value will be used to roughly compute a suitable lightmap size.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.AtlasGenerate">
+            <summary>
+            <para>When enabled, the lightmapper will merge the textures for all meshes into a single large layered texture. Not supported in GLES2.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.AtlasMaxSize">
+            <summary>
+            <para>Maximum size of each lightmap layer, only used when <see cref="P:Godot.BakedLightmap.AtlasGenerate"/> is enabled.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.EnvironmentMode">
+            <summary>
+            <para>Decides which environment to use during baking.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.EnvironmentCustomSky">
+            <summary>
+            <para>The <see cref="T:Godot.Sky"/> resource to use when <see cref="P:Godot.BakedLightmap.EnvironmentMode"/> is set o .</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.EnvironmentCustomSkyRotationDegrees">
+            <summary>
+            <para>The rotation of the baked custom sky.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.EnvironmentCustomColor">
+            <summary>
+            <para>The environment color when <see cref="P:Godot.BakedLightmap.EnvironmentMode"/> is set to .</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.EnvironmentCustomEnergy">
+            <summary>
+            <para>The energy scaling factor when when <see cref="P:Godot.BakedLightmap.EnvironmentMode"/> is set to  or .</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.CaptureEnabled">
+            <summary>
+            <para>When enabled, an octree containing the scene's lighting information will be computed. This octree will then be used to light dynamic objects in the scene.</para>
             </summary>
         </member>
         <member name="P:Godot.BakedLightmap.CaptureCellSize">
             <summary>
-            <para>Grid size used for real-time capture information on dynamic objects. Cannot be larger than <see cref="P:Godot.BakedLightmap.BakeCellSize"/>.</para>
+            <para>Grid size used for real-time capture information on dynamic objects.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.CaptureQuality">
+            <summary>
+            <para>Bake quality of the capture data.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.CapturePropagation">
+            <summary>
+            <para>Bias value to reduce the amount of light proagation in the captured octree.</para>
             </summary>
         </member>
         <member name="P:Godot.BakedLightmap.ImagePath">
             <summary>
-            <para>The location where lightmaps will be saved.</para>
+            <para>Deprecated, in previous versions it determined the location where lightmaps were be saved.</para>
             </summary>
         </member>
         <member name="P:Godot.BakedLightmap.LightData">
@@ -11683,14 +11858,9 @@
             <para>The calculated light data.</para>
             </summary>
         </member>
-        <member name="M:Godot.BakedLightmap.Bake(Godot.Node,System.Boolean)">
+        <member name="M:Godot.BakedLightmap.Bake(Godot.Node,System.String)">
             <summary>
-            <para>Bakes the lightmaps within the currently edited scene. Returns a <see cref="T:Godot.BakedLightmap.BakeError"/> to signify if the bake was successful, or if unsuccessful, how the bake failed.</para>
-            </summary>
-        </member>
-        <member name="M:Godot.BakedLightmap.DebugBake">
-            <summary>
-            <para>Executes a dry run bake of lightmaps within the currently edited scene.</para>
+            <para>Bakes the lightmap, scanning from the given <c>from_node</c> root and saves the resulting <see cref="T:Godot.BakedLightmapData"/> in <c>data_save_path</c>. If no save path is provided it will try to match the path from the current <see cref="P:Godot.BakedLightmap.LightData"/>.</para>
             </summary>
         </member>
         <member name="T:Godot.BaseButton">
@@ -12082,6 +12252,7 @@
             <summary>
             <para>CPU-based 3D particle node used to create a variety of particle systems and effects.</para>
             <para>See also <see cref="T:Godot.Particles"/>, which provides the same functionality with hardware acceleration, but may not run on older devices.</para>
+            <para>Note: Unlike <see cref="T:Godot.Particles"/>, the visibility rect is generated on-the-fly and doesn't need to be configured by the user.</para>
             </summary>
         </member>
         <member name="F:Godot.CPUParticles.Flags.AlignYToVelocity">
@@ -12590,6 +12761,7 @@
             <summary>
             <para>CPU-based 2D particle node used to create a variety of particle systems and effects.</para>
             <para>See also <see cref="T:Godot.Particles2D"/>, which provides the same functionality with hardware acceleration, but may not run on older devices.</para>
+            <para>Note: Unlike <see cref="T:Godot.Particles2D"/>, the visibility rect is generated on-the-fly and doesn't need to be configured by the user.</para>
             </summary>
         </member>
         <member name="F:Godot.CPUParticles2D.Flags.AlignYToVelocity">
@@ -16103,6 +16275,16 @@
             <para>Give up the focus. No other control will be able to receive keyboard input.</para>
             </summary>
         </member>
+        <member name="M:Godot.Control.FindPrevValidFocus">
+            <summary>
+            <para>Finds the previous (above in the tree) <see cref="T:Godot.Control"/> that can receive the focus.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Control.FindNextValidFocus">
+            <summary>
+            <para>Finds the next (below in the tree) <see cref="T:Godot.Control"/> that can receive the focus.</para>
+            </summary>
+        </member>
         <member name="M:Godot.Control.GetFocusOwner">
             <summary>
             <para>Returns the control that has the keyboard focus or <c>null</c> if none.</para>
@@ -18278,6 +18460,7 @@
             <summary>
             <para><see cref="T:Godot.GIProbe"/>s are used to provide high-quality real-time indirect light to scenes. They precompute the effect of objects that emit light and the effect of static geometry to simulate the behavior of complex light in real-time. <see cref="T:Godot.GIProbe"/>s need to be baked before using, however, once baked, dynamic objects will receive light from them. Further, lights can be fully dynamic or baked.</para>
             <para>Having <see cref="T:Godot.GIProbe"/>s in a scene can be expensive, the quality of the probe can be turned down in exchange for better performance in the <see cref="T:Godot.ProjectSettings"/> using .</para>
+            <para>Note: Due to a renderer limitation, emissive <see cref="T:Godot.ShaderMaterial"/>s cannot emit light when used in a <see cref="T:Godot.GIProbe"/>. Only emissive <see cref="T:Godot.SpatialMaterial"/>s can emit light in a <see cref="T:Godot.GIProbe"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.GIProbe.SubdivEnum.Subdiv64">
@@ -18825,6 +19008,26 @@
             <para>In other words, the actual mesh will not be visible, only the shadows casted from the mesh will be.</para>
             </summary>
         </member>
+        <member name="F:Godot.GeometryInstance.LightmapScaleEnum.Scale1x">
+            <summary>
+            <para>The generated lightmap texture will have the original size.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.GeometryInstance.LightmapScaleEnum.Scale2x">
+            <summary>
+            <para>The generated lightmap texture will be twice as large, on each axis.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.GeometryInstance.LightmapScaleEnum.Scale4x">
+            <summary>
+            <para>The generated lightmap texture will be 4 times as large, on each axis.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.GeometryInstance.LightmapScaleEnum.Scale8x">
+            <summary>
+            <para>The generated lightmap texture will be 8 times as large, on each axis.</para>
+            </summary>
+        </member>
         <member name="P:Godot.GeometryInstance.MaterialOverride">
             <summary>
             <para>The material override for the whole geometry.</para>
@@ -18844,6 +19047,16 @@
         <member name="P:Godot.GeometryInstance.UseInBakedLight">
             <summary>
             <para>If <c>true</c>, this GeometryInstance will be used when baking lights using a <see cref="T:Godot.GIProbe"/> or <see cref="T:Godot.BakedLightmap"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GeometryInstance.GenerateLightmap">
+            <summary>
+            <para>When disabled, the mesh will be taken into account when computing indirect lighting, but the resulting lightmap will not be saved. Useful for emissive only materials or shadow casters.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.GeometryInstance.LightmapScale">
+            <summary>
+            <para>Scale factor for the generated baked lightmap. Useful for adding detail to certain mesh instances.</para>
             </summary>
         </member>
         <member name="P:Godot.GeometryInstance.LodMinDistance">
@@ -19245,6 +19458,7 @@
             <para>GridMaps use a <see cref="T:Godot.MeshLibrary"/> which contains a list of tiles. Each tile is a mesh with materials plus optional collision and navigation shapes.</para>
             <para>A GridMap contains a collection of cells. Each grid cell refers to a tile in the <see cref="T:Godot.MeshLibrary"/>. All cells in the map have the same dimensions.</para>
             <para>Internally, a GridMap is split into a sparse collection of octants for efficient rendering and physics processing. Every octant has the same dimensions and can contain several cells.</para>
+            <para>Note: GridMap doesn't extend <see cref="T:Godot.VisualInstance"/> and therefore can't be hidden or cull masked based on <see cref="P:Godot.VisualInstance.Layers"/>. If you make a light not affect the first layer, the whole GridMap won't be lit by the light in question.</para>
             </summary>
         </member>
         <member name="F:Godot.GridMap.InvalidCellItem">
@@ -24059,7 +24273,7 @@
         </member>
         <member name="P:Godot.Mesh.LightmapSizeHint">
             <summary>
-            <para>Sets a hint to be used for lightmap resolution in <see cref="T:Godot.BakedLightmap"/>. Overrides <see cref="P:Godot.BakedLightmap.BakeDefaultTexelsPerUnit"/>.</para>
+            <para>Sets a hint to be used for lightmap resolution in <see cref="T:Godot.BakedLightmap"/>. Overrides <see cref="P:Godot.BakedLightmap.DefaultTexelsPerUnit"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Mesh.GetAabb">
@@ -24754,9 +24968,10 @@
         </member>
         <member name="T:Godot.MultiplayerAPI">
             <summary>
-            <para>This class implements most of the logic behind the high-level multiplayer API.</para>
+            <para>This class implements most of the logic behind the high-level multiplayer API. See also <see cref="T:Godot.NetworkedMultiplayerPeer"/>.</para>
             <para>By default, <see cref="T:Godot.SceneTree"/> has a reference to this class that is used to provide multiplayer capabilities (i.e. RPC/RSET) across the whole scene.</para>
             <para>It is possible to override the MultiplayerAPI instance used by specific Nodes by setting the <see cref="P:Godot.Node.CustomMultiplayer"/> property, effectively allowing to run both client and server in the same scene.</para>
+            <para>Note: The high-level multiplayer API protocol is an implementation detail and isn't meant to be used by non-Godot servers. It may change without notice.</para>
             </summary>
         </member>
         <member name="F:Godot.MultiplayerAPI.RPCMode.Disabled">
@@ -25074,6 +25289,8 @@
         <member name="T:Godot.NetworkedMultiplayerENet">
             <summary>
             <para>A PacketPeer implementation that should be passed to <see cref="P:Godot.SceneTree.NetworkPeer"/> after being initialized as either a client or server. Events can then be handled by connecting to <see cref="T:Godot.SceneTree"/> signals.</para>
+            <para>ENet's purpose is to provide a relatively thin, simple and robust network communication layer on top of UDP (User Datagram Protocol).</para>
+            <para>Note: ENet only uses UDP, not TCP. When forwarding the server port to make your server accessible on the public Internet, you only need to forward the server port in UDP. You can use the <see cref="T:Godot.UPNP"/> class to try to forward the server port automatically when starting the server.</para>
             </summary>
         </member>
         <member name="F:Godot.NetworkedMultiplayerENet.CompressionModeEnum.None">
@@ -25194,7 +25411,8 @@
         </member>
         <member name="T:Godot.NetworkedMultiplayerPeer">
             <summary>
-            <para>Manages the connection to network peers. Assigns unique IDs to each client connected to the server.</para>
+            <para>Manages the connection to network peers. Assigns unique IDs to each client connected to the server. See also <see cref="T:Godot.MultiplayerAPI"/>.</para>
+            <para>Note: The high-level multiplayer API protocol is an implementation detail and isn't meant to be used by non-Godot servers. It may change without notice.</para>
             </summary>
         </member>
         <member name="F:Godot.NetworkedMultiplayerPeer.TargetPeerBroadcast">
@@ -25642,12 +25860,12 @@
         </member>
         <member name="M:Godot.OpenSimplexNoise.GetImage(System.Int32,System.Int32)">
             <summary>
-            <para>Generate a noise image with the requested <c>width</c> and <c>height</c>, based on the current noise parameters.</para>
+            <para>Generate a noise image in  format with the requested <c>width</c> and <c>height</c>, based on the current noise parameters.</para>
             </summary>
         </member>
         <member name="M:Godot.OpenSimplexNoise.GetSeamlessImage(System.Int32)">
             <summary>
-            <para>Generate a tileable noise image, based on the current noise parameters. Generated seamless images are always square (<c>size</c> × <c>size</c>).</para>
+            <para>Generate a tileable noise image in  format, based on the current noise parameters. Generated seamless images are always square (<c>size</c> × <c>size</c>).</para>
             </summary>
         </member>
         <member name="M:Godot.OpenSimplexNoise.GetNoise1d(System.Single)">
@@ -25838,7 +26056,7 @@
         <member name="T:Godot.PackedScene">
             <summary>
             <para>A simplified interface to a scene file. Provides access to operations and checks that can be performed on the scene resource itself.</para>
-            <para>Can be used to save a node to a file. When saving, the node as well as all the node it owns get saved (see <c>owner</c> property on <see cref="T:Godot.Node"/>).</para>
+            <para>Can be used to save a node to a file. When saving, the node as well as all the nodes it owns get saved (see <c>owner</c> property on <see cref="T:Godot.Node"/>).</para>
             <para>Note: The node doesn't need to own itself.</para>
             <para>Example of loading a saved scene:</para>
             <para><code>
@@ -26191,6 +26409,8 @@
             <summary>
             <para>3D particle node used to create a variety of particle systems and effects. <see cref="T:Godot.Particles"/> features an emitter that generates some number of particles at a given rate.</para>
             <para>Use the <c>process_material</c> property to add a <see cref="T:Godot.ParticlesMaterial"/> to configure particle appearance and behavior. Alternatively, you can add a <see cref="T:Godot.ShaderMaterial"/> which will be applied to all particles.</para>
+            <para>Note: <see cref="T:Godot.Particles"/> only work when using the GLES3 renderer. If using the GLES2 renderer, use <see cref="T:Godot.CPUParticles"/> instead. You can convert <see cref="T:Godot.Particles"/> to <see cref="T:Godot.CPUParticles"/> by selecting the node, clicking the Particles menu at the top of the 3D editor viewport then choosing Convert to CPUParticles.</para>
+            <para>Note: After working on a Particles node, remember to update its <see cref="P:Godot.Particles.VisibilityAabb"/> by selecting it, clicking the Particles menu at the top of the 3D editor viewport then choose Generate Visibility AABB. Otherwise, particles may suddenly disappear depending on the camera position and angle.</para>
             </summary>
         </member>
         <member name="F:Godot.Particles.MaxDrawPasses">
@@ -26266,7 +26486,8 @@
         </member>
         <member name="P:Godot.Particles.VisibilityAabb">
             <summary>
-            <para>The <see cref="T:Godot.AABB"/> that determines the area of the world part of which needs to be visible on screen for the particle system to be active.</para>
+            <para>The <see cref="T:Godot.AABB"/> that determines the node's region which needs to be visible on screen for the particle system to be active.</para>
+            <para>Grow the box if particles suddenly appear/disappear when the node enters/exits the screen. The <see cref="T:Godot.AABB"/> can be grown via code or with the Particles → Generate AABB editor tool.</para>
             <para>Note: If the <see cref="T:Godot.ParticlesMaterial"/> in use is configured to cast shadows, you may want to enlarge this AABB to ensure the shadow is updated when particles are off-screen.</para>
             </summary>
         </member>
@@ -26334,6 +26555,9 @@
             <summary>
             <para>2D particle node used to create a variety of particle systems and effects. <see cref="T:Godot.Particles2D"/> features an emitter that generates some number of particles at a given rate.</para>
             <para>Use the <c>process_material</c> property to add a <see cref="T:Godot.ParticlesMaterial"/> to configure particle appearance and behavior. Alternatively, you can add a <see cref="T:Godot.ShaderMaterial"/> which will be applied to all particles.</para>
+            <para>Note: <see cref="T:Godot.Particles2D"/> only work when using the GLES3 renderer. If using the GLES2 renderer, use <see cref="T:Godot.CPUParticles2D"/> instead. You can convert <see cref="T:Godot.Particles2D"/> to <see cref="T:Godot.CPUParticles2D"/> by selecting the node, clicking the Particles menu at the top of the 2D editor viewport then choosing Convert to CPUParticles2D.</para>
+            <para>Note: After working on a Particles node, remember to update its <see cref="P:Godot.Particles2D.VisibilityRect"/> by selecting it, clicking the Particles menu at the top of the 2D editor viewport then choose Generate Visibility Rect. Otherwise, particles may suddenly disappear depending on the camera position and angle.</para>
+            <para>Note: Unlike <see cref="T:Godot.CPUParticles2D"/>, <see cref="T:Godot.Particles2D"/> currently ignore the texture region defined in <see cref="T:Godot.AtlasTexture"/>s.</para>
             </summary>
         </member>
         <member name="F:Godot.Particles2D.DrawOrderEnum.Index">
@@ -26399,7 +26623,8 @@
         </member>
         <member name="P:Godot.Particles2D.VisibilityRect">
             <summary>
-            <para>Editor visibility helper.</para>
+            <para>The <see cref="T:Godot.Rect2"/> that determines the node's region which needs to be visible on screen for the particle system to be active.</para>
+            <para>Grow the rect if particles suddenly appear/disappear when the node enters/exits the screen. The <see cref="T:Godot.Rect2"/> can be grown via code or with the Particles → Generate Visibility Rect editor tool.</para>
             </summary>
         </member>
         <member name="P:Godot.Particles2D.LocalCoords">
@@ -27391,8 +27616,9 @@
         </member>
         <member name="M:Godot.Physics2DDirectSpaceState.CastMotion(Godot.Physics2DShapeQueryParameters)">
             <summary>
-            <para>Checks how far the shape can travel toward a point. If the shape can not move, the array will be empty.</para>
-            <para>Note: Both the shape and the motion are supplied through a <see cref="T:Godot.Physics2DShapeQueryParameters"/> object. The method will return an array with two floats between 0 and 1, both representing a fraction of <c>motion</c>. The first is how far the shape can move without triggering a collision, and the second is the point at which a collision will occur. If no collision is detected, the returned array will be <c>[1, 1]</c>.</para>
+            <para>Checks how far a <see cref="T:Godot.Shape2D"/> can move without colliding. All the parameters for the query, including the shape and the motion, are supplied through a <see cref="T:Godot.Physics2DShapeQueryParameters"/> object.</para>
+            <para>Returns an array with the safe and unsafe proportions (between 0 and 1) of the motion. The safe proportion is the maximum fraction of the motion that can be made without a collision. The unsafe proportion is the minimum fraction of the distance that must be moved for a collision. If no collision is detected a result of <c>[1.0, 1.0]</c> will be returned.</para>
+            <para>Note: Any <see cref="T:Godot.Shape2D"/>s that the shape is already colliding with e.g. inside of, will be ignored. Use <see cref="M:Godot.Physics2DDirectSpaceState.CollideShape(Godot.Physics2DShapeQueryParameters,System.Int32)"/> to determine the <see cref="T:Godot.Shape2D"/>s that the shape is already colliding with.</para>
             </summary>
         </member>
         <member name="M:Godot.Physics2DDirectSpaceState.CollideShape(Godot.Physics2DShapeQueryParameters,System.Int32)">
@@ -28515,8 +28741,9 @@
         </member>
         <member name="M:Godot.PhysicsDirectSpaceState.CastMotion(Godot.PhysicsShapeQueryParameters,Godot.Vector3)">
             <summary>
-            <para>Checks whether the shape can travel to a point. The method will return an array with two floats between 0 and 1, both representing a fraction of <c>motion</c>. The first is how far the shape can move without triggering a collision, and the second is the point at which a collision will occur. If no collision is detected, the returned array will be <c>[1, 1]</c>.</para>
-            <para>If the shape can not move, the returned array will be <c>[0, 0]</c> under Bullet, and empty under GodotPhysics.</para>
+            <para>Checks how far a <see cref="T:Godot.Shape"/> can move without colliding. All the parameters for the query, including the shape, are supplied through a <see cref="T:Godot.PhysicsShapeQueryParameters"/> object.</para>
+            <para>Returns an array with the safe and unsafe proportions (between 0 and 1) of the motion. The safe proportion is the maximum fraction of the motion that can be made without a collision. The unsafe proportion is the minimum fraction of the distance that must be moved for a collision. If no collision is detected a result of <c>[1.0, 1.0]</c> will be returned.</para>
+            <para>Note: Any <see cref="T:Godot.Shape"/>s that the shape is already colliding with e.g. inside of, will be ignored. Use <see cref="M:Godot.PhysicsDirectSpaceState.CollideShape(Godot.PhysicsShapeQueryParameters,System.Int32)"/> to determine the <see cref="T:Godot.Shape"/>s that the shape is already colliding with.</para>
             </summary>
         </member>
         <member name="M:Godot.PhysicsDirectSpaceState.CollideShape(Godot.PhysicsShapeQueryParameters,System.Int32)">
@@ -30678,13 +30905,34 @@
                 rng.randomize()
                 var my_random_number = rng.randf_range(-10.0, 10.0)
             </code></para>
+            <para>Note: The default values of <see cref="P:Godot.RandomNumberGenerator.Seed"/> and <see cref="P:Godot.RandomNumberGenerator.State"/> properties are pseudo-random, and changes when calling <see cref="M:Godot.RandomNumberGenerator.Randomize"/>. The <c>0</c> value documented here is a placeholder, and not the actual default seed.</para>
             </summary>
         </member>
         <member name="P:Godot.RandomNumberGenerator.Seed">
             <summary>
-            <para>The seed used by the random number generator. A given seed will give a reproducible sequence of pseudo-random numbers.</para>
+            <para>Initializes the random number generator state based on the given seed value. A given seed will give a reproducible sequence of pseudo-random numbers.</para>
             <para>Note: The RNG does not have an avalanche effect, and can output similar random streams given similar seeds. Consider using a hash function to improve your seed quality if they're sourced externally.</para>
-            <para>Note: The default value of this property is pseudo-random, and changes when calling <see cref="M:Godot.RandomNumberGenerator.Randomize"/>. The <c>0</c> value documented here is a placeholder, and not the actual default seed.</para>
+            <para>Note: Setting this property produces a side effect of changing the internal <see cref="P:Godot.RandomNumberGenerator.State"/>, so make sure to initialize the seed before modifying the <see cref="P:Godot.RandomNumberGenerator.State"/>:</para>
+            <para><code>
+            var rng = RandomNumberGenerator.new()
+            rng.seed = hash("Godot")
+            rng.state = 100 # Restore to some previously saved state.
+            </code></para>
+            <para>Warning: the getter of this property returns the previous <see cref="P:Godot.RandomNumberGenerator.State"/>, and not the initial seed value, which is going to be fixed in Godot 4.0.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.RandomNumberGenerator.State">
+            <summary>
+            <para>The current state of the random number generator. Save and restore this property to restore the generator to a previous state:</para>
+            <para><code>
+            var rng = RandomNumberGenerator.new()
+            print(rng.randf())
+            var saved_state = rng.state # Store current state.
+            print(rng.randf()) # Advance internal state.
+            rng.state = saved_state # Restore the state.
+            print(rng.randf()) # Prints the same value as in previous.
+            </code></para>
+            <para>Note: Do not set state to arbitrary values, since the random number generator requires the state to have certain qualities to behave properly. It should only be set to values that came from the state property itself. To initialize the random number generator with arbitrary input, use <see cref="P:Godot.RandomNumberGenerator.Seed"/> instead.</para>
             </summary>
         </member>
         <member name="M:Godot.RandomNumberGenerator.Randi">
@@ -31040,7 +31288,7 @@
         <member name="T:Godot.Reference">
             <summary>
             <para>Base class for any object that keeps a reference count. <see cref="T:Godot.Resource"/> and many other helper objects inherit this class.</para>
-            <para>Unlike <see cref="T:Godot.Object"/>s, References keep an internal reference counter so that they are automatically released when no longer in use, and only then. References therefore do not need to be freed manually with <see cref="M:Godot.Object.Free"/>.</para>
+            <para>Unlike other <see cref="T:Godot.Object"/> types, References keep an internal reference counter so that they are automatically released when no longer in use, and only then. References therefore do not need to be freed manually with <see cref="M:Godot.Object.Free"/>.</para>
             <para>In the vast majority of use cases, instantiating and using <see cref="T:Godot.Reference"/>-derived types is all you need to do. The methods provided in this class are only for advanced users, and can cause issues if misused.</para>
             <para>Note: In C#, references will not be freed instantly after they are no longer in use. Instead, garbage collection will run periodically and will free references that are no longer in use. This means that unused references will linger on for a while before being removed.</para>
             </summary>
@@ -31197,8 +31445,8 @@
             var regex = RegEx.new()
             regex.compile("\\S+") # Negated whitespace character class.
             var results = []
-            for match in regex.search_all("One  Two \n\tThree"):
-                results.push_back(match.get_string())
+            for result in regex.search_all("One  Two \n\tThree"):
+                results.push_back(result.get_string())
             # The `results` array now contains "One", "Two", "Three".
             </code></para>
             <para>Note: Godot's regex implementation is based on the <a href="https://www.pcre.org/">PCRE2</a> library. You can view the full pattern reference <a href="https://www.pcre.org/current/doc/html/pcre2pattern.html">here</a>.</para>
@@ -31370,7 +31618,7 @@
         </member>
         <member name="T:Godot.Resource">
             <summary>
-            <para>Resource is the base class for all Godot-specific resource types, serving primarily as data containers. Unlike <see cref="T:Godot.Object"/>s, they are reference-counted and freed when no longer in use. They are also cached once loaded from disk, so that any further attempts to load a resource from a given path will return the same reference (all this in contrast to a <see cref="T:Godot.Node"/>, which is not reference-counted and can be instanced from disk as many times as desired). Resources can be saved externally on disk or bundled into another object, such as a <see cref="T:Godot.Node"/> or another resource.</para>
+            <para>Resource is the base class for all Godot-specific resource types, serving primarily as data containers. Since they inherit from <see cref="T:Godot.Reference"/>, resources are reference-counted and freed when no longer in use. They are also cached once loaded from disk, so that any further attempts to load a resource from a given path will return the same reference (all this in contrast to a <see cref="T:Godot.Node"/>, which is not reference-counted and can be instanced from disk as many times as desired). Resources can be saved externally on disk or bundled into another object, such as a <see cref="T:Godot.Node"/> or another resource.</para>
             <para>Note: In C#, resources will not be freed instantly after they are no longer in use. Instead, garbage collection will run periodically and will free resources that are no longer in use. This means that unused resources will linger on for a while before being removed.</para>
             </summary>
         </member>
@@ -31386,7 +31634,7 @@
         </member>
         <member name="P:Godot.Resource.ResourceName">
             <summary>
-            <para>The name of the resource. This is an optional identifier.</para>
+            <para>The name of the resource. This is an optional identifier. If <see cref="P:Godot.Resource.ResourceName"/> is not empty, its value will be displayed to represent the current resource in the editor inspector. For built-in scripts, the <see cref="P:Godot.Resource.ResourceName"/> will be displayed as the tab name in the script editor.</para>
             </summary>
         </member>
         <member name="M:Godot.Resource._SetupLocalToScene">
@@ -31413,6 +31661,17 @@
             <summary>
             <para>This method is called when a resource with <see cref="P:Godot.Resource.ResourceLocalToScene"/> enabled is loaded from a <see cref="T:Godot.PackedScene"/> instantiation. Its behavior can be customized by overriding <see cref="M:Godot.Resource._SetupLocalToScene"/> from script.</para>
             <para>For most resources, this method performs no base logic. <see cref="T:Godot.ViewportTexture"/> performs custom logic to properly set the proxy texture and flags in the local viewport.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Resource.EmitChanged">
+            <summary>
+            <para>Emits the <c>changed</c> signal.</para>
+            <para>If external objects which depend on this resource should be updated, this method must be called manually whenever the state of this resource has changed (such as modification of properties).</para>
+            <para>The method is equivalent to:</para>
+            <para><code>
+            emit_signal("changed")
+            </code></para>
+            <para>Note: This method is called automatically for built-in resources.</para>
             </summary>
         </member>
         <member name="M:Godot.Resource.Duplicate(System.Boolean)">
@@ -31628,6 +31887,7 @@
         <member name="P:Godot.RichTextLabel.VisibleCharacters">
             <summary>
             <para>The restricted number of characters to display in the label. If <c>-1</c>, all characters will be displayed.</para>
+            <para>Note: Setting this property updates <see cref="P:Godot.RichTextLabel.PercentVisible"/> based on current <see cref="M:Godot.RichTextLabel.GetTotalCharacterCount"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.RichTextLabel.PercentVisible">
@@ -32558,6 +32818,7 @@
                 yield(get_tree().create_timer(1.0), "timeout")
                 print("end")
             </code></para>
+            <para>The timer will be automatically freed after its time elapses.</para>
             </summary>
         </member>
         <member name="M:Godot.SceneTree.GetNodeCount">
@@ -32887,6 +33148,7 @@
         <member name="T:Godot.ShaderMaterial">
             <summary>
             <para>A material that uses a custom <see cref="T:Godot.Shader"/> program to render either items to screen or process particles. You can create multiple materials for the same shader but configure different values for the uniforms defined in the shader.</para>
+            <para>Note: Due to a renderer limitation, emissive <see cref="T:Godot.ShaderMaterial"/>s cannot emit light when used in a <see cref="T:Godot.GIProbe"/>. Only emissive <see cref="T:Godot.SpatialMaterial"/>s can emit light in a <see cref="T:Godot.GIProbe"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.ShaderMaterial.Shader">
@@ -33495,7 +33757,7 @@
         <member name="F:Godot.Spatial.NotificationTransformChanged">
             <summary>
             <para>Spatial nodes receives this notification when their global transform changes. This means that either the current or a parent node changed its transform.</para>
-            <para>In order for  to work, users first need to ask for it, with <see cref="M:Godot.Spatial.SetNotifyTransform(System.Boolean)"/>.</para>
+            <para>In order for  to work, users first need to ask for it, with <see cref="M:Godot.Spatial.SetNotifyTransform(System.Boolean)"/>. The notification is also sent if the node is in the editor context and it has a valid gizmo.</para>
             </summary>
         </member>
         <member name="F:Godot.Spatial.NotificationEnterWorld">
@@ -33626,7 +33888,7 @@
         </member>
         <member name="M:Godot.Spatial.SetNotifyTransform(System.Boolean)">
             <summary>
-            <para>Sets whether the node notifies about its global and local transformation changes. <see cref="T:Godot.Spatial"/> will not propagate this by default.</para>
+            <para>Sets whether the node notifies about its global and local transformation changes. <see cref="T:Godot.Spatial"/> will not propagate this by default, unless it is in the editor context and it has a valid gizmo.</para>
             </summary>
         </member>
         <member name="M:Godot.Spatial.IsTransformNotificationEnabled">
@@ -36140,8 +36402,8 @@
         </member>
         <member name="M:Godot.SurfaceTool.GenerateNormals(System.Boolean)">
             <summary>
-            <para>Generates normals from vertices so you do not have to do it manually. If <c>flip</c> is <c>true</c>, the resulting normals will be inverted.</para>
-            <para>Requires the primitive type to be set to .</para>
+            <para>Generates normals from vertices so you do not have to do it manually. If <c>flip</c> is <c>true</c>, the resulting normals will be inverted. <see cref="M:Godot.SurfaceTool.GenerateNormals(System.Boolean)"/> should be called after generating geometry and before committing the mesh using <see cref="M:Godot.SurfaceTool.Commit(Godot.ArrayMesh,System.UInt32)"/> or <see cref="M:Godot.SurfaceTool.CommitToArrays"/>.</para>
+            <para>Note: <see cref="M:Godot.SurfaceTool.GenerateNormals(System.Boolean)"/> only works if the primitive type to be set to .</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.GenerateTangents">
@@ -36762,6 +37024,38 @@
         <member name="M:Godot.TextEdit.CursorGetLine">
             <summary>
             <para>Returns the line the editing cursor is at.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextEdit.IsLineSetAsSafe(System.Int32)">
+            <summary>
+            <para>Returns <c>true</c> when the specified <c>line</c> is marked as safe.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextEdit.SetLineAsSafe(System.Int32,System.Boolean)">
+            <summary>
+            <para>If <c>true</c>, marks the <c>line</c> as safe.</para>
+            <para>This will show the line number with the color provided in the <c>safe_line_number_color</c> theme property.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextEdit.IsLineSetAsBookmark(System.Int32)">
+            <summary>
+            <para>Returns <c>true</c> when the specified <c>line</c> is bookmarked.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextEdit.SetLineAsBookmark(System.Int32,System.Boolean)">
+            <summary>
+            <para>Bookmarks the <c>line</c> if <c>bookmark</c> is true. Deletes the bookmark if <c>bookmark</c> is false.</para>
+            <para>Bookmarks are shown in the <see cref="P:Godot.TextEdit.BreakpointGutter"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextEdit.SetLineAsBreakpoint(System.Int32,System.Boolean)">
+            <summary>
+            <para>Adds or removes the breakpoint in <c>line</c>. Breakpoints are shown in the <see cref="P:Godot.TextEdit.BreakpointGutter"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TextEdit.IsLineSetAsBreakpoint(System.Int32)">
+            <summary>
+            <para>Returns <c>true</c> when the specified <c>line</c> has a breakpoint.</para>
             </summary>
         </member>
         <member name="M:Godot.TextEdit.Cut">
@@ -37587,6 +37881,7 @@
         <member name="T:Godot.TileMap">
             <summary>
             <para>Node for 2D tile-based maps. Tilemaps use a <see cref="T:Godot.TileSet"/> which contain a list of tiles (textures plus optional collision, navigation, and/or occluder shapes) which are used to create grid-based maps.</para>
+            <para>When doing physics queries against the tilemap, the cell coordinates are encoded as <c>metadata</c> for each detected collision shape returned by methods such as <see cref="M:Godot.Physics2DDirectSpaceState.IntersectShape(Godot.Physics2DShapeQueryParameters,System.Int32)"/>, <see cref="M:Godot.Physics2DDirectBodyState.GetContactColliderShapeMetadata(System.Int32)"/>, etc.</para>
             </summary>
         </member>
         <member name="F:Godot.TileMap.InvalidCell">
@@ -37845,7 +38140,7 @@
         </member>
         <member name="M:Godot.TileMap.MapToWorld(Godot.Vector2,System.Boolean)">
             <summary>
-            <para>Returns the global position corresponding to the given tilemap (grid-based) coordinates.</para>
+            <para>Returns the local position corresponding to the given tilemap (grid-based) coordinates.</para>
             <para>Optionally, the tilemap's half offset can be ignored.</para>
             </summary>
         </member>
@@ -38672,7 +38967,7 @@
         </member>
         <member name="F:Godot.TreeItem.TreeCellMode.Check">
             <summary>
-            <para>Cell can be checked.</para>
+            <para>Cell contains a checkbox.</para>
             </summary>
         </member>
         <member name="F:Godot.TreeItem.TreeCellMode.Range">
@@ -38735,9 +39030,24 @@
             <para>Returns <c>true</c> if the given column is checked.</para>
             </summary>
         </member>
+        <member name="M:Godot.TreeItem.SetText(System.Int32,System.String)">
+            <summary>
+            <para>Sets the given column's text value.</para>
+            </summary>
+        </member>
         <member name="M:Godot.TreeItem.GetText(System.Int32)">
             <summary>
             <para>Returns the given column's text.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.SetSuffix(System.Int32,System.String)">
+            <summary>
+            <para>Sets a string to be shown after a column's value (for example, a unit abbreviation).</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.GetSuffix(System.Int32)">
+            <summary>
+            <para>Gets the suffix string shown after the column value.</para>
             </summary>
         </member>
         <member name="M:Godot.TreeItem.SetIcon(System.Int32,Godot.Texture)">
@@ -38778,6 +39088,37 @@
         <member name="M:Godot.TreeItem.GetIconModulate(System.Int32)">
             <summary>
             <para>Returns the <see cref="T:Godot.Color"/> modulating the column's icon.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.SetRange(System.Int32,System.Double)">
+            <summary>
+            <para>Sets the value of a  column.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.GetRange(System.Int32)">
+            <summary>
+            <para>Returns the value of a  column.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.SetRangeConfig(System.Int32,System.Double,System.Double,System.Double,System.Boolean)">
+            <summary>
+            <para>Sets the range of accepted values for a column. The column must be in the  mode.</para>
+            <para>If <c>expr</c> is <c>true</c>, the edit mode slider will use an exponential scale as with <see cref="P:Godot.Range.ExpEdit"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.GetRangeConfig(System.Int32)">
+            <summary>
+            <para>Returns a dictionary containing the range parameters for a given column. The keys are "min", "max", "step", and "expr".</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.SetMetadata(System.Int32,System.Object)">
+            <summary>
+            <para>Sets the metadata value for the given column, which can be retrieved later using <see cref="M:Godot.TreeItem.GetMetadata(System.Int32)"/>. This can be used, for example, to store a reference to the original data.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.TreeItem.GetMetadata(System.Int32)">
+            <summary>
+            <para>Returns the metadata value that was set for the given column using <see cref="M:Godot.TreeItem.SetMetadata(System.Int32,System.Object)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.TreeItem.SetCustomDraw(System.Int32,Godot.Object,System.String)">
@@ -39913,6 +40254,7 @@
             <para>Control node for playing video streams using <see cref="T:Godot.VideoStream"/> resources.</para>
             <para>Supported video formats are <a href="https://www.webmproject.org/">WebM</a> (<c>.webm</c>, <see cref="T:Godot.VideoStreamWebm"/>), <a href="https://www.theora.org/">Ogg Theora</a> (<c>.ogv</c>, <see cref="T:Godot.VideoStreamTheora"/>), and any format exposed via a GDNative plugin using <see cref="T:Godot.VideoStreamGDNative"/>.</para>
             <para>Note: Due to a bug, VideoPlayer does not support localization remapping yet.</para>
+            <para>Warning: On HTML5, video playback will perform poorly due to missing architecture-specific assembly optimizations, especially for VP8/VP9.</para>
             </summary>
         </member>
         <member name="P:Godot.VideoPlayer.AudioTrack">
@@ -44343,10 +44685,11 @@
             <para>Sets whether an instance is drawn or not. Equivalent to <see cref="P:Godot.Spatial.Visible"/>.</para>
             </summary>
         </member>
-        <member name="M:Godot.VisualServer.InstanceSetUseLightmap(Godot.RID,Godot.RID,Godot.RID)">
+        <member name="M:Godot.VisualServer.InstanceSetUseLightmap(Godot.RID,Godot.RID,Godot.RID,System.Int32,System.Nullable{Godot.Rect2})">
             <summary>
             <para>Sets the lightmap to use with this instance.</para>
             </summary>
+            <param name="lightmapUvRect">If the parameter is null, then the default value is new Rect2(0, 0, 1, 1)</param>
         </member>
         <member name="M:Godot.VisualServer.InstanceSetCustomAabb(Godot.RID,Godot.AABB)">
             <summary>
@@ -46725,75 +47068,79 @@
             <para>Since WebXR is based on Javascript, it makes extensive use of callbacks, which means that <see cref="T:Godot.WebXRInterface"/> is forced to use signals, where other AR/VR interfaces would instead use functions that return a result immediately. This makes <see cref="T:Godot.WebXRInterface"/> quite a bit more complicated to intialize than other AR/VR interfaces.</para>
             <para>Here's the minimum code required to start an immersive VR session:</para>
             <para><code>
-                    var webxr_interface
-                    var vr_supported = false
+            extends Spatial
             
-                    func _ready():
-                        # We assume this node has a canvas layer with a button on it as a child.
-                        # This button is for the user to consent to entering immersive VR mode.
-                        $CanvasLayer/Button.connect("pressed", self, "_on_Button_pressed")
+            var webxr_interface
+            var vr_supported = false
             
-                        webxr_interface = ARVRServer.find_interface("WebXR")
-                        if webxr_interface:
-                            # WebXR uses a lot of asynchronous callbacks, so we connect to various
-                            # signals in order to receive them.
-                            webxr_interface.connect("session_supported", self, "_webxr_session_supported")
-                            webxr_interface.connect("session_started", self, "_webxr_session_started")
-                            webxr_interface.connect("session_ended", self, "_webxr_session_ended")
-                            webxr_interface.connect("session_failed", self, "_webxr_session_failed")
+            func _ready():
+                # We assume this node has a button as a child.
+                # This button is for the user to consent to entering immersive VR mode.
+                $Button.connect("pressed", self, "_on_Button_pressed")
             
-                            # This returns immediately - our _webxr_session_supported() method
-                            # (which we connected to the "session_supported" signal above) will
-                            # be called sometime later to let us know if it's supported or not.
-                            webxr_interface.is_session_supported("immersive-vr")
+                webxr_interface = ARVRServer.find_interface("WebXR")
+                if webxr_interface:
+                    # WebXR uses a lot of asynchronous callbacks, so we connect to various
+                    # signals in order to receive them.
+                    webxr_interface.connect("session_supported", self, "_webxr_session_supported")
+                    webxr_interface.connect("session_started", self, "_webxr_session_started")
+                    webxr_interface.connect("session_ended", self, "_webxr_session_ended")
+                    webxr_interface.connect("session_failed", self, "_webxr_session_failed")
             
-                    func _webxr_session_supported(session_mode, supported):
-                        if session_mode == 'immersive-vr':
-                            vr_supported = supported
+                    # This returns immediately - our _webxr_session_supported() method
+                    # (which we connected to the "session_supported" signal above) will
+                    # be called sometime later to let us know if it's supported or not.
+                    webxr_interface.is_session_supported("immersive-vr")
             
-                    func _on_Button_pressed():
-                        if not vr_supported:
-                            OS.alert("Your browser doesn't support VR")
-                            return
+            func _webxr_session_supported(session_mode, supported):
+                if session_mode == 'immersive-vr':
+                    vr_supported = supported
             
-                        # We want an immersive VR session, as opposed to AR ('immersive-ar') or a
-                        # simple 3DoF viewer ('viewer').
-                        webxr_interface.session_mode = 'immersive-vr'
-                        # 'bounded-floor' is room scale, 'local-floor' is a standing or sitting
-                        # experience (it puts you 1.6m above the ground if you have 3DoF headset),
-                        # whereas as 'local' puts you down at the ARVROrigin.
-                        # This list means it'll first try to request 'bounded-floor', then
-                        # fallback on 'local-floor' and ultimately 'local', if nothing else is
-                        # supported.
-                        webxr_interface.requested_reference_space_types = 'bounded-floor, local-floor, local'
-                        # In order to use 'local-floor' or 'bounded-floor' we must also
-                        # mark the features as required or optional.
-                        webxr_interface.required_features = 'local-floor'
-                        webxr_interface.optional_features = 'bounded-floor'
+            func _on_Button_pressed():
+                if not vr_supported:
+                    OS.alert("Your browser doesn't support VR")
+                    return
             
-                        # This will return false if we're unable to even request the session,
-                        # however, it can still fail asynchronously later in the process, so we
-                        # only know if it's really succeeded or failed when our
-                        # _webxr_session_started() or _webxr_session_failed() methods are called.
-                        if not webxr_interface.initialize():
-                            OS.alert("Failed to initialize")
-                            return
+                # We want an immersive VR session, as opposed to AR ('immersive-ar') or a
+                # simple 3DoF viewer ('viewer').
+                webxr_interface.session_mode = 'immersive-vr'
+                # 'bounded-floor' is room scale, 'local-floor' is a standing or sitting
+                # experience (it puts you 1.6m above the ground if you have 3DoF headset),
+                # whereas as 'local' puts you down at the ARVROrigin.
+                # This list means it'll first try to request 'bounded-floor', then
+                # fallback on 'local-floor' and ultimately 'local', if nothing else is
+                # supported.
+                webxr_interface.requested_reference_space_types = 'bounded-floor, local-floor, local'
+                # In order to use 'local-floor' or 'bounded-floor' we must also
+                # mark the features as required or optional.
+                webxr_interface.required_features = 'local-floor'
+                webxr_interface.optional_features = 'bounded-floor'
             
-                    func _webxr_session_started():
-                        # This tells Godot to start rendering to the headset.
-                        get_viewport().arvr = true
-                        # This will be the reference space type you ultimately got, out of the
-                        # types that you requested above. This is useful if you want the game to
-                        # work a little differently in 'bounded-floor' versus 'local-floor'.
-                        print ("Reference space type: " + webxr_interface.reference_space_type)
+                # This will return false if we're unable to even request the session,
+                # however, it can still fail asynchronously later in the process, so we
+                # only know if it's really succeeded or failed when our
+                # _webxr_session_started() or _webxr_session_failed() methods are called.
+                if not webxr_interface.initialize():
+                    OS.alert("Failed to initialize")
+                    return
             
-                    func _webxr_session_ended():
-                        # If the user exits immersive mode, then we tell Godot to render to the web
-                        # page again.
-                        get_viewport().arvr = false
+            func _webxr_session_started():
+                $Button.visible = false
+                # This tells Godot to start rendering to the headset.
+                get_viewport().arvr = true
+                # This will be the reference space type you ultimately got, out of the
+                # types that you requested above. This is useful if you want the game to
+                # work a little differently in 'bounded-floor' versus 'local-floor'.
+                print ("Reference space type: " + webxr_interface.reference_space_type)
             
-                    func _webxr_session_failed(message):
-                        OS.alert("Failed to initialize: " + message)
+            func _webxr_session_ended():
+                $Button.visible = true
+                # If the user exits immersive mode, then we tell Godot to render to the web
+                # page again.
+                get_viewport().arvr = false
+            
+            func _webxr_session_failed(message):
+                OS.alert("Failed to initialize: " + message)
             </code></para>
             <para>There are several ways to handle "controller" input:</para>
             <para>- Using <see cref="T:Godot.ARVRController"/> nodes and their <c>ARVRController.button_pressed</c> and <c>ARVRController.button_release</c> signals. This is how controllers are typically handled in AR/VR apps in Godot, however, this will only work with advanced VR controllers like the Oculus Touch or Index controllers, for example. The buttons codes are defined by <a href="https://immersive-web.github.io/webxr-gamepads-module/#xr-standard-gamepad-mapping">Section 3.3 of the WebXR Gamepads Module</a>.</para>
@@ -47185,6 +47532,7 @@
         <member name="M:Godot.ClassDB.ClassGetMethodList(System.String,System.Boolean)">
             <summary>
             <para>Returns an array with all the methods of <c>class</c> or its ancestry if <c>no_inheritance</c> is <c>false</c>. Every element of the array is a <see cref="T:Godot.Collections.Dictionary"/> with the following keys: <c>args</c>, <c>default_args</c>, <c>flags</c>, <c>id</c>, <c>name</c>, <c>return: (class_name, hint, hint_string, name, type, usage)</c>.</para>
+            <para>Note:[/code] In exported release builds the debug info is not available, so the returned dictionaries will contain only method names.</para>
             </summary>
         </member>
         <member name="M:Godot.ClassDB.ClassGetIntegerConstantList(System.String,System.Boolean)">
@@ -47526,8 +47874,9 @@
         </member>
         <member name="P:Godot.File.EndianSwap">
             <summary>
-            <para>If <c>true</c>, the file's endianness is swapped. Use this if you're dealing with files written on big-endian machines.</para>
-            <para>Note: This is about the file format, not CPU type. This is always reset to <c>false</c> whenever you open the file.</para>
+            <para>If <c>true</c>, the file is read with big-endian <a href="https://en.wikipedia.org/wiki/Endianness">endianness</a>. If <c>false</c>, the file is read with little-endian endianness. If in doubt, leave this to <c>false</c> as most files are written with little-endian endianness.</para>
+            <para>Note: <see cref="P:Godot.File.EndianSwap"/> is only about the file format, not the CPU type. The CPU endianness doesn't affect the default endianness for files written.</para>
+            <para>Note: This is always reset to <c>false</c> whenever you open the file. Therefore, you must set <see cref="P:Godot.File.EndianSwap"/> after opening the file, not before.</para>
             </summary>
         </member>
         <member name="M:Godot.File.OpenEncrypted(System.String,Godot.File.ModeFlags,System.Byte[])">
@@ -49170,6 +49519,12 @@
         <member name="M:Godot.OS.SetThreadName(System.String)">
             <summary>
             <para>Sets the name of the current thread.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.OS.GetThreadCallerId">
+            <summary>
+            <para>Returns the ID of the current thread. This can be used in logs to ease debugging of multi-threaded applications.</para>
+            <para>Note: Thread IDs are not deterministic and may be reused across application restarts.</para>
             </summary>
         </member>
         <member name="M:Godot.OS.HasFeature(System.String)">
