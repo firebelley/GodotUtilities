@@ -232,7 +232,7 @@
              orthogonal to each other, but are not necessarily normalized (due to scaling).
             
              For more information, read this documentation article:
-             https://docs.godotengine.org/en/latest/tutorials/math/matrices_and_transforms.html
+             https://docs.godotengine.org/en/3.3/tutorials/math/matrices_and_transforms.html
              </summary>
         </member>
         <member name="P:Godot.Basis.x">
@@ -1215,13 +1215,13 @@
         <member name="M:Godot.Node.AddChildBelowNode(Godot.Node,Godot.Node,System.Boolean)">
             <summary>
             <para>Adds <c>child_node</c> as a child. The child is placed below the given <c>node</c> in the list of children.</para>
-            <para>If <c>legible_unique_name</c> is <c>true</c>, the child node will have an human-readable name based on the name of the node being instanced instead of its type.</para>
+            <para>If <c>legible_unique_name</c> is <c>true</c>, the child node will have a human-readable name based on the name of the node being instanced instead of its type.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.AddChild(Godot.Node,System.Boolean)">
             <summary>
             <para>Adds a child node. Nodes can have any number of children, but every child must have a unique name. Child nodes are automatically deleted when the parent node is deleted, so an entire scene can be removed by deleting its topmost node.</para>
-            <para>If <c>legible_unique_name</c> is <c>true</c>, the child node will have an human-readable name based on the name of the node being instanced instead of its type.</para>
+            <para>If <c>legible_unique_name</c> is <c>true</c>, the child node will have a human-readable name based on the name of the node being instanced instead of its type.</para>
             <para>Note: If the child node already has a parent, the function will fail. Use <see cref="M:Godot.Node.RemoveChild(Godot.Node)"/> first to remove the node from its current parent. For example:</para>
             <para><code>
             if child_node.get_parent():
@@ -1570,6 +1570,7 @@
         <member name="M:Godot.Node.QueueFree">
             <summary>
             <para>Queues a node for deletion at the end of the current frame. When deleted, all of its child nodes will be deleted as well. This method ensures it's safe to delete the node, contrary to <see cref="M:Godot.Object.Free"/>. Use <see cref="M:Godot.Object.IsQueuedForDeletion"/> to check whether a node will be deleted at the end of the frame.</para>
+            <para>Important: If you have a variable pointing to a node, it will not be assigned to <c>null</c> once the node is freed. Instead, it will point to a previously freed instance and you should validate it with <c>@GDScript.is_instance_valid</c> before attempting to call its methods or access its properties.</para>
             </summary>
         </member>
         <member name="M:Godot.Node.RequestReady">
@@ -1754,7 +1755,8 @@
         </member>
         <member name="M:Godot.Object.Free">
             <summary>
-            <para>Deletes the object from memory. Any pre-existing reference to the freed object will become invalid, e.g. <c>is_instance_valid(object)</c> will return <c>false</c>.</para>
+            <para>Deletes the object from memory immediately. For <see cref="T:Godot.Node"/>s, you may want to use <see cref="M:Godot.Node.QueueFree"/> to queue the node for safe deletion at the end of the current frame.</para>
+            <para>Important: If you have a variable pointing to an object, it will not be assigned to <c>null</c> once the object is freed. Instead, it will point to a previously freed instance and you should validate it with <c>@GDScript.is_instance_valid</c> before attempting to call its methods or access its properties.</para>
             </summary>
         </member>
         <member name="M:Godot.Object.GetClass">
@@ -2003,6 +2005,101 @@
             <para>Returns <c>true</c> if the <see cref="M:Godot.Node.QueueFree"/> method was called for the object.</para>
             </summary>
         </member>
+        <member name="T:Godot.PackedScene">
+            <summary>
+            <para>A simplified interface to a scene file. Provides access to operations and checks that can be performed on the scene resource itself.</para>
+            <para>Can be used to save a node to a file. When saving, the node as well as all the nodes it owns get saved (see <c>owner</c> property on <see cref="T:Godot.Node"/>).</para>
+            <para>Note: The node doesn't need to own itself.</para>
+            <para>Example of loading a saved scene:</para>
+            <para><code>
+            # Use `load()` instead of `preload()` if the path isn't known at compile-time.
+            var scene = preload("res://scene.tscn").instance()
+            # Add the node as a child of the node the script is attached to.
+            add_child(scene)
+            </code></para>
+            <para>Example of saving a node with different owners: The following example creates 3 objects: <c>Node2D</c> (<c>node</c>), <c>RigidBody2D</c> (<c>rigid</c>) and <c>CollisionObject2D</c> (<c>collision</c>). <c>collision</c> is a child of <c>rigid</c> which is a child of <c>node</c>. Only <c>rigid</c> is owned by <c>node</c> and <c>pack</c> will therefore only save those two nodes, but not <c>collision</c>.</para>
+            <para><code>
+            # Create the objects.
+            var node = Node2D.new()
+            var rigid = RigidBody2D.new()
+            var collision = CollisionShape2D.new()
+            
+            # Create the object hierarchy.
+            rigid.add_child(collision)
+            node.add_child(rigid)
+            
+            # Change owner of `rigid`, but not of `collision`.
+            rigid.owner = node
+            
+            var scene = PackedScene.new()
+            # Only `node` and `rigid` are now packed.
+            var result = scene.pack(node)
+            if result == OK:
+                var error = ResourceSaver.save("res://path/name.scn", scene)  # Or "user://..."
+                if error != OK:
+                    push_error("An error occurred while saving the scene to disk.")
+            </code></para>
+            </summary>
+        </member>
+        <member name="M:Godot.PackedScene.Instance``1(Godot.PackedScene.GenEditState)">
+            <summary>
+            Instantiates the scene's node hierarchy, erroring on failure.
+            Triggers child scene instantiation(s). Triggers a
+            `Node.NotificationInstanced` notification on the root node.
+            </summary>
+            <typeparam name="T">The type to cast to. Should be a descendant of Node.</typeparam>
+        </member>
+        <member name="M:Godot.PackedScene.InstanceOrNull``1(Godot.PackedScene.GenEditState)">
+            <summary>
+            Instantiates the scene's node hierarchy, returning null on failure.
+            Triggers child scene instantiation(s). Triggers a
+            `Node.NotificationInstanced` notification on the root node.
+            </summary>
+            <typeparam name="T">The type to cast to. Should be a descendant of Node.</typeparam>
+        </member>
+        <member name="F:Godot.PackedScene.GenEditState.Disabled">
+            <summary>
+            <para>If passed to <see cref="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)"/>, blocks edits to the scene state.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.PackedScene.GenEditState.Instance">
+            <summary>
+            <para>If passed to <see cref="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)"/>, provides local scene resources to the local scene.</para>
+            <para>Note: Only available in editor builds.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.PackedScene.GenEditState.Main">
+            <summary>
+            <para>If passed to <see cref="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)"/>, provides local scene resources to the local scene. Only the main scene should receive the main edit state.</para>
+            <para>Note: Only available in editor builds.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.PackedScene._Bundled">
+            <summary>
+            <para>A dictionary representation of the scene contents.</para>
+            <para>Available keys include "rnames" and "variants" for resources, "node_count", "nodes", "node_paths" for nodes, "editable_instances" for base scene children overrides, "conn_count" and "conns" for signal connections, and "version" for the format style of the PackedScene.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PackedScene.Pack(Godot.Node)">
+            <summary>
+            <para>Pack will ignore any sub-nodes not owned by given node. See <see cref="P:Godot.Node.Owner"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)">
+            <summary>
+            <para>Instantiates the scene's node hierarchy. Triggers child scene instantiation(s). Triggers a  notification on the root node.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PackedScene.CanInstance">
+            <summary>
+            <para>Returns <c>true</c> if the scene file has nodes.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.PackedScene.GetState">
+            <summary>
+            <para>Returns the <c>SceneState</c> representing the scene file contents.</para>
+            </summary>
+        </member>
         <member name="T:Godot.ResourceLoader">
             <summary>
             <para>Singleton used to load resource files from the filesystem.</para>
@@ -2055,6 +2152,11 @@
         <member name="M:Godot.ResourceLoader.Has(System.String)">
             <summary>
             <para>Deprecated method. Use <see cref="M:Godot.ResourceLoader.HasCached(System.String)"/> or <see cref="M:Godot.ResourceLoader.Exists(System.String,System.String)"/> instead.</para>
+            </summary>
+        </member>
+        <member name="E:Godot.GD.UnhandledException">
+            <summary>
+            Fires when an unhandled exception occurs, regardless of project settings.
             </summary>
         </member>
         <member name="F:Godot.GD.Spkey">
@@ -3217,7 +3319,7 @@
              <see cref="T:Godot.Vector3"/> for the origin (last column).
             
              For more information, read this documentation article:
-             https://docs.godotengine.org/en/latest/tutorials/math/matrices_and_transforms.html
+             https://docs.godotengine.org/en/3.3/tutorials/math/matrices_and_transforms.html
              </summary>
         </member>
         <member name="F:Godot.Transform.basis">
@@ -3397,7 +3499,7 @@
              It consists of a three <see cref="T:Godot.Vector2"/> values: x, y, and the origin.
             
              For more information, read this documentation article:
-             https://docs.godotengine.org/en/latest/tutorials/math/matrices_and_transforms.html
+             https://docs.godotengine.org/en/3.3/tutorials/math/matrices_and_transforms.html
              </summary>
         </member>
         <member name="F:Godot.Transform2D.x">
@@ -3595,6 +3697,16 @@
             </summary>
             <param name="other">The other transform to compare.</param>
             <returns>Whether or not the matrices are approximately equal.</returns>
+        </member>
+        <member name="T:Godot.UnhandledExceptionArgs">
+            <summary>
+            Event arguments for when unhandled exceptions occur.
+            </summary>
+        </member>
+        <member name="P:Godot.UnhandledExceptionArgs.Exception">
+            <summary>
+            Exception object
+            </summary>
         </member>
         <member name="T:Godot.Vector2">
             <summary>
@@ -5817,6 +5929,36 @@
             <para>Gamepad button 15.</para>
             </summary>
         </member>
+        <member name="F:Godot.JoystickList.Button16">
+            <summary>
+            <para>Gamepad button 16.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Button17">
+            <summary>
+            <para>Gamepad button 17.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Button18">
+            <summary>
+            <para>Gamepad button 18.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Button19">
+            <summary>
+            <para>Gamepad button 19.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Button20">
+            <summary>
+            <para>Gamepad button 20.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.Button21">
+            <summary>
+            <para>Gamepad button 21.</para>
+            </summary>
+        </member>
         <member name="F:Godot.JoystickList.ButtonMax">
             <summary>
             <para>Represents the maximum number of joystick buttons supported.</para>
@@ -5947,36 +6089,6 @@
             <para>Gamepad DPad right.</para>
             </summary>
         </member>
-        <member name="F:Godot.JoystickList.L">
-            <summary>
-            <para>Gamepad left Shoulder button.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.JoystickList.L2">
-            <summary>
-            <para>Gamepad left trigger.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.JoystickList.L3">
-            <summary>
-            <para>Gamepad left stick click.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.JoystickList.R">
-            <summary>
-            <para>Gamepad right Shoulder button.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.JoystickList.R2">
-            <summary>
-            <para>Gamepad right trigger.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.JoystickList.R3">
-            <summary>
-            <para>Gamepad right stick click.</para>
-            </summary>
-        </member>
         <member name="F:Godot.JoystickList.Misc1">
             <summary>
             <para>Gamepad SDL miscellaneous button.</para>
@@ -6005,6 +6117,36 @@
         <member name="F:Godot.JoystickList.Touchpad">
             <summary>
             <para>Gamepad SDL touchpad button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.L">
+            <summary>
+            <para>Gamepad left Shoulder button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.L2">
+            <summary>
+            <para>Gamepad left trigger.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.L3">
+            <summary>
+            <para>Gamepad left stick click.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.R">
+            <summary>
+            <para>Gamepad right Shoulder button.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.R2">
+            <summary>
+            <para>Gamepad right trigger.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.JoystickList.R3">
+            <summary>
+            <para>Gamepad right stick click.</para>
             </summary>
         </member>
         <member name="F:Godot.JoystickList.Axis0">
@@ -7523,6 +7665,7 @@
         <member name="M:Godot.AStar.GetPointPath(System.Int32,System.Int32)">
             <summary>
             <para>Returns an array with the points that are in the path found by AStar between the given points. The array is ordered from the starting point to the ending point of the path.</para>
+            <para>Note: This method is not thread-safe. If called from a <see cref="T:Godot.Thread"/>, it will return an empty <see cref="T:Godot.Vector3"/> and will print an error message.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar.GetIdPath(System.Int32,System.Int32)">
@@ -7703,6 +7846,7 @@
         <member name="M:Godot.AStar2D.GetPointPath(System.Int32,System.Int32)">
             <summary>
             <para>Returns an array with the points that are in the path found by AStar2D between the given points. The array is ordered from the starting point to the ending point of the path.</para>
+            <para>Note: This method is not thread-safe. If called from a <see cref="T:Godot.Thread"/>, it will return an empty <see cref="T:Godot.Vector2"/> and will print an error message.</para>
             </summary>
         </member>
         <member name="M:Godot.AStar2D.GetIdPath(System.Int32,System.Int32)">
@@ -8033,7 +8177,7 @@
         </member>
         <member name="P:Godot.Animation.Loop">
             <summary>
-            <para>A flag indicating that the animation must loop. This is uses for correct interpolation of animation cycles, and for hinting the player that it must restart the animation.</para>
+            <para>A flag indicating that the animation must loop. This is used for correct interpolation of animation cycles, and for hinting the player that it must restart the animation.</para>
             </summary>
         </member>
         <member name="P:Godot.Animation.Step">
@@ -9003,7 +9147,7 @@
         </member>
         <member name="P:Godot.AnimationNodeStateMachineTransition.AdvanceCondition">
             <summary>
-            <para>Turn on auto advance when this condition is set. The provided name will become a boolean parameter on the <see cref="T:Godot.AnimationTree"/> that can be controlled from code (see <a href="https://docs.godotengine.org/en/3.2/tutorials/animation/animation_tree.html#controlling-from-code"></a>). For example, if <see cref="P:Godot.AnimationTree.TreeRoot"/> is an <see cref="T:Godot.AnimationNodeStateMachine"/> and <see cref="P:Godot.AnimationNodeStateMachineTransition.AdvanceCondition"/> is set to <c>"idle"</c>:</para>
+            <para>Turn on auto advance when this condition is set. The provided name will become a boolean parameter on the <see cref="T:Godot.AnimationTree"/> that can be controlled from code (see <a href="https://docs.godotengine.org/en/3.3/tutorials/animation/animation_tree.html#controlling-from-code"></a>). For example, if <see cref="P:Godot.AnimationTree.TreeRoot"/> is an <see cref="T:Godot.AnimationNodeStateMachine"/> and <see cref="P:Godot.AnimationNodeStateMachineTransition.AdvanceCondition"/> is set to <c>"idle"</c>:</para>
             <para><code>
             $animation_tree["parameters/conditions/idle"] = is_on_floor and (linear_velocity.x == 0)
             </code></para>
@@ -9031,7 +9175,18 @@
         </member>
         <member name="T:Godot.AnimationNodeTimeSeek">
             <summary>
-            <para>This node can be used to cause a seek command to happen to any sub-children of the graph. After setting the time, this value returns to -1.</para>
+            <para>This node can be used to cause a seek command to happen to any sub-children of the animation graph. Use this node type to play an <see cref="T:Godot.Animation"/> from the start or a certain playback position inside the <see cref="T:Godot.AnimationNodeBlendTree"/>. After setting the time and changing the animation playback, the seek node automatically goes into sleep mode on the next process frame by setting its <c>seek_position</c> value to <c>-1.0</c>.</para>
+            <para><code>
+            # Play child animation from the start.
+            animation_tree.set("parameters/Seek/seek_position", 0.0)
+            # Alternative syntax (same result as above).
+            animation_tree["parameters/Seek/seek_position"] = 0.0
+            
+            # Play child animation from 12 second timestamp.
+            animation_tree.set("parameters/Seek/seek_position", 12.0)
+            # Alternative syntax (same result as above).
+            animation_tree["parameters/Seek/seek_position"] = 12.0
+            </code></para>
             </summary>
         </member>
         <member name="T:Godot.AnimationNodeTransition">
@@ -9089,7 +9244,7 @@
         <member name="P:Godot.AnimationPlayer.CurrentAnimation">
             <summary>
             <para>The name of the currently playing animation. If no animation is playing, the property's value is an empty string. Changing this value does not restart the animation. See <see cref="M:Godot.AnimationPlayer.Play(System.String,System.Single,System.Single,System.Boolean)"/> for more information on playing animations.</para>
-            <para>Note: while this property appears in the inspector, it's not meant to be edited and it's not saved in the scene. This property is mainly used to get the currently playing animation, and internally for animation playback tracks. For more information, see <see cref="T:Godot.Animation"/>.</para>
+            <para>Note: while this property appears in the inspector, it's not meant to be edited, and it's not saved in the scene. This property is mainly used to get the currently playing animation, and internally for animation playback tracks. For more information, see <see cref="T:Godot.Animation"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.AnimationPlayer.AssignedAnimation">
@@ -9776,12 +9931,12 @@
         </member>
         <member name="P:Godot.Area.CollisionLayer">
             <summary>
-            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area.CollisionMask"/>. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area.CollisionMask"/>. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area.CollisionMask">
             <summary>
-            <para>The physics layers this area scans to determine collision detection. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this area scans to determine collision detection. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area.AudioBusOverride">
@@ -9941,12 +10096,12 @@
         </member>
         <member name="P:Godot.Area2D.CollisionLayer">
             <summary>
-            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area2D.CollisionMask"/>. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The area's physics layer(s). Collidable objects can exist in any of 32 different layers. A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See also <see cref="P:Godot.Area2D.CollisionMask"/>. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area2D.CollisionMask">
             <summary>
-            <para>The physics layers this area scans to determine collision detection. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this area scans to determine collision detection. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Area2D.AudioBusOverride">
@@ -10290,7 +10445,8 @@
         </member>
         <member name="T:Godot.AtlasTexture">
             <summary>
-            <para><see cref="T:Godot.Texture"/> resource aimed at managing big textures files that pack multiple smaller textures. Consists of a <see cref="T:Godot.Texture"/>, a margin that defines the border width, and a region that defines the actual area of the AtlasTexture.</para>
+            <para><see cref="T:Godot.Texture"/> resource that crops out one part of the <see cref="P:Godot.AtlasTexture.Atlas"/> texture, defined by <see cref="P:Godot.AtlasTexture.Region"/>. The main use case is cropping out textures from a texture atlas, which is a big texture file that packs multiple smaller textures. Consists of a <see cref="T:Godot.Texture"/> for the <see cref="P:Godot.AtlasTexture.Atlas"/>, a <see cref="P:Godot.AtlasTexture.Region"/> that defines the area of <see cref="P:Godot.AtlasTexture.Atlas"/> to use, and a <see cref="P:Godot.AtlasTexture.Margin"/> that defines the border width.</para>
+            <para><see cref="T:Godot.AtlasTexture"/> cannot be used in an <see cref="T:Godot.AnimatedTexture"/>, cannot be tiled in nodes such as <see cref="T:Godot.TextureRect"/>, and does not work properly if used inside of other <see cref="T:Godot.AtlasTexture"/> resources. Multiple <see cref="T:Godot.AtlasTexture"/> resources can be used to crop multiple textures from the atlas. Using a texture atlas helps to optimize video memory costs and render calls compared to using multiple small files.</para>
             <para>Note: AtlasTextures don't support repetition. The  and  flags are ignored when using an AtlasTexture.</para>
             </summary>
         </member>
@@ -10342,6 +10498,53 @@
         <member name="T:Godot.AudioEffectBandPassFilter">
             <summary>
             <para>Attenuates the frequencies inside of a range around the <see cref="P:Godot.AudioEffectFilter.CutoffHz"/> and cuts frequencies outside of this band.</para>
+            </summary>
+        </member>
+        <member name="T:Godot.AudioEffectCapture">
+            <summary>
+            <para>AudioEffectCapture is an AudioEffect which copies all audio frames from the attached audio effect bus into its internal ring buffer.</para>
+            <para>Application code should consume these audio frames from this ring buffer using <see cref="M:Godot.AudioEffectCapture.GetBuffer(System.Int32)"/> and process it as needed, for example to capture data from a microphone, implement application defined effects, or to transmit audio over the network.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.AudioEffectCapture.BufferLength">
+            <summary>
+            <para>Length of the internal ring buffer, in seconds. Setting the buffer length will have no effect if already initialized.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.CanGetBuffer(System.Int32)">
+            <summary>
+            <para>Returns <c>true</c> if at least <c>frames</c> audio frames are available to read in the internal ring buffer.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.GetBuffer(System.Int32)">
+            <summary>
+            <para>Gets the next <c>frames</c> audio samples from the internal ring buffer.</para>
+            <para>Returns a <see cref="T:Godot.Vector2"/> containing exactly <c>frames</c> audio samples if available, or an empty <see cref="T:Godot.Vector2"/> if insufficient data was available.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.ClearBuffer">
+            <summary>
+            <para>Clears the internal ring buffer.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.GetFramesAvailable">
+            <summary>
+            <para>Returns the number of frames available to read using <see cref="M:Godot.AudioEffectCapture.GetBuffer(System.Int32)"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.GetDiscardedFrames">
+            <summary>
+            <para>Returns the number of audio frames discarded from the audio bus due to full buffer.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.GetBufferLengthFrames">
+            <summary>
+            <para>Returns the total size of the internal ring buffer in frames.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.AudioEffectCapture.GetPushedFrames">
+            <summary>
+            <para>Returns the number of audio frames inserted from the audio bus.</para>
             </summary>
         </member>
         <member name="T:Godot.AudioEffectChorus">
@@ -11653,7 +11856,7 @@
         </member>
         <member name="T:Godot.BackBufferCopy">
             <summary>
-            <para>Node for back-buffering the currently-displayed screen. The region defined in the BackBufferCopy node is bufferized with the content of the screen it covers, or the entire screen according to the copy mode set. Use the <c>texture(SCREEN_TEXTURE, ...)</c> function in your shader scripts to access the buffer.</para>
+            <para>Node for back-buffering the currently-displayed screen. The region defined in the BackBufferCopy node is buffered with the content of the screen it covers, or the entire screen according to the copy mode set. Use the <c>texture(SCREEN_TEXTURE, ...)</c> function in your shader scripts to access the buffer.</para>
             <para>Note: Since this node inherits from <see cref="T:Godot.Node2D"/> (and not <see cref="T:Godot.Control"/>), anchors and margins won't apply to child <see cref="T:Godot.Control"/>-derived nodes. This can be problematic when resizing the window. To avoid this, add <see cref="T:Godot.Control"/>-derived nodes as siblings to the BackBufferCopy node instead of adding them as children.</para>
             </summary>
         </member>
@@ -11685,7 +11888,6 @@
         <member name="T:Godot.BakedLightmap">
             <summary>
             <para>Baked lightmaps are an alternative workflow for adding indirect (or baked) lighting to a scene. Unlike the <see cref="T:Godot.GIProbe"/> approach, baked lightmaps work fine on low-end PCs and mobile devices as they consume almost no resources in run-time.</para>
-            <para>Note: This node has many known bugs and will be <a href="https://godotengine.org/article/godot-40-will-get-new-modernized-lightmapper">rewritten for Godot 4.0</a>. See <a href="https://github.com/godotengine/godot/issues/30929">GitHub issue #30929</a>.</para>
             </summary>
         </member>
         <member name="F:Godot.BakedLightmap.BakeQuality.Low">
@@ -11783,6 +11985,17 @@
             <para>When enabled, a lightmap denoiser will be used to reduce the noise inherent to Monte Carlo based global illumination.</para>
             </summary>
         </member>
+        <member name="P:Godot.BakedLightmap.UseHdr">
+            <summary>
+            <para>If <c>true</c>, stores the lightmap textures in a high dynamic range format (EXR). If <c>false</c>, stores the lightmap texture in a low dynamic range PNG image. This can be set to <c>false</c> to reduce disk usage, but light values over 1.0 will be clamped and you may see banding caused by the reduced precision.</para>
+            <para>Note: Setting <see cref="P:Godot.BakedLightmap.UseHdr"/> to <c>true</c> will decrease lightmap banding even when using the GLES2 backend or if  is <c>false</c>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmap.UseColor">
+            <summary>
+            <para>Store full color values in the lightmap textures. When disabled, lightmap textures will store a single brightness channel. Can be disabled to reduce disk usage if the scene contains only white lights or you don't mind losing color information in indirect lighting.</para>
+            </summary>
+        </member>
         <member name="P:Godot.BakedLightmap.Bias">
             <summary>
             <para>Raycasting bias used during baking to avoid floating point precission issues.</para>
@@ -11828,6 +12041,11 @@
             <para>The energy scaling factor when when <see cref="P:Godot.BakedLightmap.EnvironmentMode"/> is set to  or .</para>
             </summary>
         </member>
+        <member name="P:Godot.BakedLightmap.EnvironmentMinLight">
+            <summary>
+            <para>Minimum ambient light for all the lightmap texels. This doesn't take into account any occlusion from the scene's geometry, it simply ensures a minimum amount of light on all the lightmap texels. Can be used for artistic control on shadow color.</para>
+            </summary>
+        </member>
         <member name="P:Godot.BakedLightmap.CaptureEnabled">
             <summary>
             <para>When enabled, an octree containing the scene's lighting information will be computed. This octree will then be used to light dynamic objects in the scene.</para>
@@ -11861,6 +12079,16 @@
         <member name="M:Godot.BakedLightmap.Bake(Godot.Node,System.String)">
             <summary>
             <para>Bakes the lightmap, scanning from the given <c>from_node</c> root and saves the resulting <see cref="T:Godot.BakedLightmapData"/> in <c>data_save_path</c>. If no save path is provided it will try to match the path from the current <see cref="P:Godot.BakedLightmap.LightData"/>.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmapData.Energy">
+            <summary>
+            <para>Global energy multiplier for baked and dynamic capture objects.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.BakedLightmapData.Interior">
+            <summary>
+            <para>Controls whether dynamic capture objects receive environment lighting or not.</para>
             </summary>
         </member>
         <member name="T:Godot.BaseButton">
@@ -12185,6 +12413,7 @@
             </code></para>
             <para>Buttons (like all Control nodes) can also be created in the editor, but some situations may require creating them from code.</para>
             <para>See also <see cref="T:Godot.BaseButton"/> which contains common properties and methods associated with this node.</para>
+            <para>Note: Buttons do not interpret touch input and therefore don't support multitouch, since mouse emulation can only press one button at a given time. Use <see cref="T:Godot.TouchScreenButton"/> for buttons that trigger gameplay movement or actions, as <see cref="T:Godot.TouchScreenButton"/> supports multitouch.</para>
             </summary>
         </member>
         <member name="F:Godot.Button.TextAlign.Left">
@@ -13485,12 +13714,12 @@
             <summary>
             <para>The physics layers this area is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the collision_mask property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.CSGShape.CollisionMask">
             <summary>
-            <para>The physics layers this CSG shape scans for collisions. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this CSG shape scans for collisions. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.CSGShape.IsRootShape">
@@ -13687,6 +13916,11 @@
         <member name="P:Godot.Camera.Fov">
             <summary>
             <para>The camera's field of view angle (in degrees). Only applicable in perspective mode. Since <see cref="P:Godot.Camera.KeepAspect"/> locks one axis, <c>fov</c> sets the other axis' field of view angle.</para>
+            <para>For reference, the default vertical field of view value (<c>75.0</c>) is equivalent to a horizontal FOV of:</para>
+            <para>- ~91.31 degrees in a 4:3 viewport</para>
+            <para>- ~101.67 degrees in a 16:10 viewport</para>
+            <para>- ~107.51 degrees in a 16:9 viewport</para>
+            <para>- ~121.63 degrees in a 21:9 viewport</para>
             </summary>
         </member>
         <member name="P:Godot.Camera.Size">
@@ -14376,7 +14610,7 @@
         </member>
         <member name="M:Godot.CanvasItem.DrawString(Godot.Font,Godot.Vector2,System.String,System.Nullable{Godot.Color},System.Int32)">
             <summary>
-            <para>Draws <c>text</c> using the specified <c>font</c> at the <c>position</c> (top-left corner). The text will have its color multiplied by <c>modulate</c>. If <c>clip_w</c> is greater than or equal to 0, the text will be clipped if it exceeds the specified width.</para>
+            <para>Draws <c>text</c> using the specified <c>font</c> at the <c>position</c> (bottom-left corner using the baseline of the font). The text will have its color multiplied by <c>modulate</c>. If <c>clip_w</c> is greater than or equal to 0, the text will be clipped if it exceeds the specified width.</para>
             <para>Example using the default project font:</para>
             <para><code>
             # If using this method in a script that redraws constantly, move the
@@ -14658,7 +14892,8 @@
         </member>
         <member name="P:Godot.CapsuleMesh.MidHeight">
             <summary>
-            <para>Height of the capsule mesh from the center point.</para>
+            <para>Height of the middle cylindrical part of the capsule (without the hemispherical ends).</para>
+            <para>Note: The capsule's total height is equal to <see cref="P:Godot.CapsuleMesh.MidHeight"/> + 2 * <see cref="P:Godot.CapsuleMesh.Radius"/>.</para>
             </summary>
         </member>
         <member name="P:Godot.CapsuleMesh.RadialSegments">
@@ -14815,7 +15050,7 @@
         </member>
         <member name="P:Godot.ClippedCamera.CollisionMask">
             <summary>
-            <para>The camera's collision mask. Only objects in at least one collision layer matching the mask will be detected. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The camera's collision mask. Only objects in at least one collision layer matching the mask will be detected. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.ClippedCamera.ClipToAreas">
@@ -15104,6 +15339,11 @@
             <summary>
             <para>Array of vertices which define the polygon.</para>
             <para>Note: The returned value is a copy of the original. Methods which mutate the size or properties of the return value will not impact the original polygon. To change properties of the polygon, assign it to a temporary variable and make changes before reassigning the <c>polygon</c> member.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.CollisionPolygon.Margin">
+            <summary>
+            <para>The collision margin for the generated <see cref="T:Godot.Shape"/>. See <see cref="P:Godot.Shape.Margin"/> for more details.</para>
             </summary>
         </member>
         <member name="T:Godot.CollisionPolygon2D">
@@ -15467,7 +15707,7 @@
         </member>
         <member name="M:Godot.ConfigFile.Parse(System.String)">
             <summary>
-            <para>Parses the the passed string as the contents of a config file. The string is parsed and loaded in the ConfigFile object which the method was called on.</para>
+            <para>Parses the passed string as the contents of a config file. The string is parsed and loaded in the ConfigFile object which the method was called on.</para>
             <para>Returns one of the <see cref="T:Godot.Error"/> code constants (<c>OK</c> on success).</para>
             </summary>
         </member>
@@ -15940,7 +16180,7 @@
         <member name="P:Godot.Control.RectScale">
             <summary>
             <para>The node's scale, relative to its <see cref="P:Godot.Control.RectSize"/>. Change this property to scale the node around its <see cref="P:Godot.Control.RectPivotOffset"/>. The Control's <see cref="P:Godot.Control.HintTooltip"/> will also scale according to this value.</para>
-            <para>Note: This property is mainly intended to be used for animation purposes. Text inside the Control will look pixelated or blurry when the Control is scaled. To support multiple resolutions in your project, use an appropriate viewport stretch mode as described in the <a href="https://docs.godotengine.org/en/3.2/tutorials/viewports/multiple_resolutions.html">documentation</a> instead of scaling Controls individually.</para>
+            <para>Note: This property is mainly intended to be used for animation purposes. Text inside the Control will look pixelated or blurry when the Control is scaled. To support multiple resolutions in your project, use an appropriate viewport stretch mode as described in the <a href="https://docs.godotengine.org/en/3.3/tutorials/viewports/multiple_resolutions.html">documentation</a> instead of scaling Controls individually.</para>
             <para>Note: If the Control node is a child of a <see cref="T:Godot.Container"/> node, the scale will be reset to <c>Vector2(1, 1)</c> when the scene is instanced. To set the Control's scale when it's instanced, wait for one frame using <c>yield(get_tree(), "idle_frame")</c> then set its <see cref="P:Godot.Control.RectScale"/> property.</para>
             </summary>
         </member>
@@ -16014,6 +16254,12 @@
             <summary>
             <para>The default cursor shape for this control. Useful for Godot plugins and applications or games that use the system's mouse cursors.</para>
             <para>Note: On Linux, shapes may vary depending on the cursor theme of the system.</para>
+            </summary>
+        </member>
+        <member name="P:Godot.Control.InputPassOnModalCloseClick">
+            <summary>
+            <para>Enables whether input should propagate when you close the control as modal.</para>
+            <para>If <c>false</c>, stops event handling at the viewport input event handling. The viewport first hides the modal and after marks the input as handled.</para>
             </summary>
         </member>
         <member name="P:Godot.Control.SizeFlagsHorizontal">
@@ -16497,7 +16743,7 @@
         </member>
         <member name="M:Godot.Control.SetDragPreview(Godot.Control)">
             <summary>
-            <para>Shows the given control at the mouse pointer. A good time to call this method is in <see cref="M:Godot.Control.GetDragData(Godot.Vector2)"/>. The control must not be in the scene tree.</para>
+            <para>Shows the given control at the mouse pointer. A good time to call this method is in <see cref="M:Godot.Control.GetDragData(Godot.Vector2)"/>. The control must not be in the scene tree. You should not free the control, and you should not keep a reference to the control beyond the duration of the drag. It will be deleted automatically after the drag has ended.</para>
             <para><code>
             export (Color, RGBA) var color = Color(1, 0, 0, 1)
             
@@ -16966,7 +17212,7 @@
         </member>
         <member name="M:Godot.Curve2D.GetClosestPoint(Godot.Vector2)">
             <summary>
-            <para>Returns the closest point (in curve's local space) to <c>to_point</c>.</para>
+            <para>Returns the closest baked point (in curve's local space) to <c>to_point</c>.</para>
             <para><c>to_point</c> must be in this curve's local space.</para>
             </summary>
         </member>
@@ -17112,7 +17358,7 @@
         </member>
         <member name="M:Godot.Curve3D.GetClosestPoint(Godot.Vector3)">
             <summary>
-            <para>Returns the closest point (in curve's local space) to <c>to_point</c>.</para>
+            <para>Returns the closest baked point (in curve's local space) to <c>to_point</c>.</para>
             <para><c>to_point</c> must be in this curve's local space.</para>
             </summary>
         </member>
@@ -18312,12 +18558,12 @@
         </member>
         <member name="M:Godot.Font.GetCharSize(System.Int32,System.Int32)">
             <summary>
-            <para>Returns the size of a character, optionally taking kerning into account if the next character is provided.</para>
+            <para>Returns the size of a character, optionally taking kerning into account if the next character is provided. Note that the height returned is the font height (see <see cref="M:Godot.Font.GetHeight"/>) and has no relation to the glyph height.</para>
             </summary>
         </member>
         <member name="M:Godot.Font.GetStringSize(System.String)">
             <summary>
-            <para>Returns the size of a string, taking kerning and advance into account.</para>
+            <para>Returns the size of a string, taking kerning and advance into account. Note that the height returned is the font height (see <see cref="M:Godot.Font.GetHeight"/>) and has no relation to the string.</para>
             </summary>
         </member>
         <member name="M:Godot.Font.GetWordwrapStringSize(System.String,System.Single)">
@@ -18460,6 +18706,7 @@
             <summary>
             <para><see cref="T:Godot.GIProbe"/>s are used to provide high-quality real-time indirect light to scenes. They precompute the effect of objects that emit light and the effect of static geometry to simulate the behavior of complex light in real-time. <see cref="T:Godot.GIProbe"/>s need to be baked before using, however, once baked, dynamic objects will receive light from them. Further, lights can be fully dynamic or baked.</para>
             <para>Having <see cref="T:Godot.GIProbe"/>s in a scene can be expensive, the quality of the probe can be turned down in exchange for better performance in the <see cref="T:Godot.ProjectSettings"/> using .</para>
+            <para>Note: Meshes should have sufficiently thick walls to avoid light leaks (avoid one-sided walls). For interior levels, enclose your level geometry in a sufficiently large box and bridge the loops to close the mesh.</para>
             <para>Note: Due to a renderer limitation, emissive <see cref="T:Godot.ShaderMaterial"/>s cannot emit light when used in a <see cref="T:Godot.GIProbe"/>. Only emissive <see cref="T:Godot.SpatialMaterial"/>s can emit light in a <see cref="T:Godot.GIProbe"/>.</para>
             </summary>
         </member>
@@ -19282,7 +19529,7 @@
         <member name="M:Godot.GraphEdit.GetZoomHbox">
             <summary>
             <para>Gets the <see cref="T:Godot.HBoxContainer"/> that contains the zooming and grid snap controls in the top left of the graph.</para>
-            <para>Warning: The intended usage of this function is to allow you to reposition or add your own custom controls to the container. This is an internal control and as such should not be freed. If you wish to hide this or any of it's children use their <see cref="P:Godot.CanvasItem.Visible"/> property instead.</para>
+            <para>Warning: The intended usage of this function is to allow you to reposition or add your own custom controls to the container. This is an internal control and as such should not be freed. If you wish to hide this or any of its children, use their <see cref="P:Godot.CanvasItem.Visible"/> property instead.</para>
             </summary>
         </member>
         <member name="M:Godot.GraphEdit.SetSelected(Godot.Node)">
@@ -19294,7 +19541,7 @@
             <summary>
             <para>A GraphNode is a container. Each GraphNode can have several input and output slots, sometimes referred to as ports, allowing connections between GraphNodes. To add a slot to GraphNode, add any <see cref="T:Godot.Control"/>-derived child node to it.</para>
             <para>After adding at least one child to GraphNode new sections will be automatically created in the Inspector called 'Slot'. When 'Slot' is expanded you will see list with index number for each slot. You can click on each of them to expand further.</para>
-            <para>In the Inspector you can enable (show) or disable (hide) slots. By default all slots are disabled so you may not see any slots on your GraphNode initially. You can assign a type to each slot. Only slots of the same type will be able to connect to each other. You can also assign colors to slots. A tuple of input and output slots is defined for each GUI element included in the GraphNode. Input connections are on the left and output connections are on the right side of GraphNode. Only enabled slots are counted as connections.</para>
+            <para>In the Inspector you can enable (show) or disable (hide) slots. By default, all slots are disabled so you may not see any slots on your GraphNode initially. You can assign a type to each slot. Only slots of the same type will be able to connect to each other. You can also assign colors to slots. A tuple of input and output slots is defined for each GUI element included in the GraphNode. Input connections are on the left and output connections are on the right side of GraphNode. Only enabled slots are counted as connections.</para>
             </summary>
         </member>
         <member name="F:Godot.GraphNode.OverlayEnum.Disabled">
@@ -19471,6 +19718,11 @@
             <para>The assigned <see cref="T:Godot.MeshLibrary"/>.</para>
             </summary>
         </member>
+        <member name="P:Godot.GridMap.UseInBakedLight">
+            <summary>
+            <para>Controls whether this GridMap will be baked in a <see cref="T:Godot.BakedLightmap"/> or not.</para>
+            </summary>
+        </member>
         <member name="P:Godot.GridMap.CellSize">
             <summary>
             <para>The dimensions of the grid's cells.</para>
@@ -19511,7 +19763,7 @@
         </member>
         <member name="P:Godot.GridMap.CollisionMask">
             <summary>
-            <para>The physics layers this GridMap detects collisions in. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this GridMap detects collisions in. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.GridMap.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -19577,6 +19829,11 @@
             <para>Returns an array of <see cref="T:Godot.Transform"/> and <see cref="T:Godot.Mesh"/> references corresponding to the non-empty cells in the grid. The transforms are specified in world space.</para>
             </summary>
         </member>
+        <member name="M:Godot.GridMap.GetBakeMeshes">
+            <summary>
+            <para>Returns an array of <see cref="T:Godot.ArrayMesh"/>es and <see cref="T:Godot.Transform"/> references of all bake meshes that exist within the current GridMap.</para>
+            </summary>
+        </member>
         <member name="T:Godot.GrooveJoint2D">
             <summary>
             <para>Groove constraint for 2D physics. This is useful for making a body "slide" through a segment placed in another.</para>
@@ -19620,7 +19877,7 @@
         </member>
         <member name="T:Godot.HTTPClient">
             <summary>
-            <para>Hyper-text transfer protocol client (sometimes called "User Agent"). Used to make HTTP requests to download web content, upload files and other data or to communicate with various services, among other use cases. See the <see cref="T:Godot.HTTPRequest"/> node for an higher-level alternative.</para>
+            <para>Hyper-text transfer protocol client (sometimes called "User Agent"). Used to make HTTP requests to download web content, upload files and other data or to communicate with various services, among other use cases. See the <see cref="T:Godot.HTTPRequest"/> node for a higher-level alternative.</para>
             <para>Note: This client only needs to connect to a host once (see <see cref="M:Godot.HTTPClient.ConnectToHost(System.String,System.Int32,System.Boolean,System.Boolean)"/>) to send multiple requests. Because of this, methods that take URLs usually take just the part after the host instead of the full URL, as the client is already connected to a host. See <see cref="M:Godot.HTTPClient.Request(Godot.HTTPClient.Method,System.String,System.String[],System.String)"/> for a full example and to get started.</para>
             <para>A <see cref="T:Godot.HTTPClient"/> should be reused between multiple requests or to connect to different hosts instead of creating one client per request. Supports SSL and SSL server certificate verification. HTTP status codes in the 2xx range indicate success, 3xx redirection (i.e. "try again, but over here"), 4xx something was wrong with the request, and 5xx something went wrong on the server's side.</para>
             <para>For more information on HTTP, see https://developer.mozilla.org/en-US/docs/Web/HTTP (or read RFC 2616 to get it straight from the source: https://tools.ietf.org/html/rfc2616).</para>
@@ -20612,7 +20869,7 @@
         </member>
         <member name="M:Godot.IP.GetLocalAddresses">
             <summary>
-            <para>Returns all of the user's current IPv4 and IPv6 addresses as an array.</para>
+            <para>Returns all the user's current IPv4 and IPv6 addresses as an array.</para>
             </summary>
         </member>
         <member name="M:Godot.IP.GetLocalInterfaces">
@@ -20937,7 +21194,7 @@
         </member>
         <member name="P:Godot.Image.Data">
             <summary>
-            <para>Holds all of the image's color data in a given format. See <see cref="T:Godot.Image.Format"/> constants.</para>
+            <para>Holds all the image's color data in a given format. See <see cref="T:Godot.Image.Format"/> constants.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.GetWidth">
@@ -21017,7 +21274,7 @@
         </member>
         <member name="M:Godot.Image.GenerateMipmaps(System.Boolean)">
             <summary>
-            <para>Generates mipmaps for the image. Mipmaps are pre-calculated and lower resolution copies of the image. Mipmaps are automatically used if the image needs to be scaled down when rendered. This improves image quality and the performance of the rendering. Returns an error if the image is compressed, in a custom format or if the image's width/height is 0.</para>
+            <para>Generates mipmaps for the image. Mipmaps are precalculated and lower resolution copies of the image. Mipmaps are automatically used if the image needs to be scaled down when rendered. This improves image quality and the performance of the rendering. Returns an error if the image is compressed, in a custom format or if the image's width/height is 0.</para>
             </summary>
         </member>
         <member name="M:Godot.Image.ClearMipmaps">
@@ -21042,7 +21299,7 @@
         </member>
         <member name="M:Godot.Image.Load(System.String)">
             <summary>
-            <para>Loads an image from file <c>path</c>. See <a href="https://docs.godotengine.org/en/3.2/getting_started/workflow/assets/importing_images.html#supported-image-formats">Supported image formats</a> for a list of supported image formats and limitations.</para>
+            <para>Loads an image from file <c>path</c>. See <a href="https://docs.godotengine.org/en/3.3/getting_started/workflow/assets/importing_images.html#supported-image-formats">Supported image formats</a> for a list of supported image formats and limitations.</para>
             <para>Warning: This method should only be used in the editor or in cases when you need to load external images at run-time, such as images located at the <c>user://</c> directory, and may not work in exported projects.</para>
             <para>See also <see cref="T:Godot.ImageTexture"/> description for usage examples.</para>
             </summary>
@@ -21607,19 +21864,19 @@
         <member name="M:Godot.Input.GetGravity">
             <summary>
             <para>Returns the gravity of the device's accelerometer sensor, if the device has one. Otherwise, the method returns .</para>
-            <para>Note: This method only works on Android and iOS. On other platforms, it always returns .</para>
+            <para>Note: This method only works on Android and iOS. On other platforms, it always returns . On Android the unit of measurement for each axis is m/s² while on iOS it's a multiple of the Earth's gravitational acceleration <c>g</c> (~9.81 m/s²).</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetAccelerometer">
             <summary>
             <para>Returns the acceleration of the device's accelerometer sensor, if the device has one. Otherwise, the method returns .</para>
             <para>Note this method returns an empty <see cref="T:Godot.Vector3"/> when running from the editor even when your device has an accelerometer. You must export your project to a supported device to read values from the accelerometer.</para>
-            <para>Note: This method only works on iOS, Android, and UWP. On other platforms, it always returns .</para>
+            <para>Note: This method only works on iOS, Android, and UWP. On other platforms, it always returns . On Android the unit of measurement for each axis is m/s² while on iOS and UWP it's a multiple of the Earth's gravitational acceleration <c>g</c> (~9.81 m/s²).</para>
             </summary>
         </member>
         <member name="M:Godot.Input.GetMagnetometer">
             <summary>
-            <para>Returns the the magnetic field strength in micro-Tesla for all axes of the device's magnetometer sensor, if the device has one. Otherwise, the method returns .</para>
+            <para>Returns the magnetic field strength in micro-Tesla for all axes of the device's magnetometer sensor, if the device has one. Otherwise, the method returns .</para>
             <para>Note: This method only works on Android, iOS and UWP. On other platforms, it always returns .</para>
             </summary>
         </member>
@@ -21791,7 +22048,7 @@
         </member>
         <member name="P:Godot.InputEventAction.Strength">
             <summary>
-            <para>The action's strength between 0 and 1. This value is considered as equal to 0 if pressed is <c>false</c>. The event strength allows faking analog joypad motion events, by precising how strongly is the joypad axis bent or pressed.</para>
+            <para>The action's strength between 0 and 1. This value is considered as equal to 0 if pressed is <c>false</c>. The event strength allows faking analog joypad motion events, by specifying how strongly the joypad axis is bent or pressed.</para>
             </summary>
         </member>
         <member name="P:Godot.InputEventGesture.Position">
@@ -22309,10 +22566,6 @@
         <member name="M:Godot.ItemList.SetItemCustomBgColor(System.Int32,Godot.Color)">
             <summary>
             <para>Sets the background color of the item specified by <c>idx</c> index to the specified <see cref="T:Godot.Color"/>.</para>
-            <para><code>
-            var some_string = "Some text"
-            some_string.set_item_custom_bg_color(0,Color(1, 0, 0, 1) # This will set the background color of the first item of the control to red.
-            </code></para>
             </summary>
         </member>
         <member name="M:Godot.ItemList.GetItemCustomBgColor(System.Int32)">
@@ -22323,10 +22576,6 @@
         <member name="M:Godot.ItemList.SetItemCustomFgColor(System.Int32,Godot.Color)">
             <summary>
             <para>Sets the foreground color of the item specified by <c>idx</c> index to the specified <see cref="T:Godot.Color"/>.</para>
-            <para><code>
-            var some_string = "Some text"
-            some_string.set_item_custom_fg_color(0,Color(1, 0, 0, 1) # This will set the foreground color of the first item of the control to red.
-            </code></para>
             </summary>
         </member>
         <member name="M:Godot.ItemList.GetItemCustomFgColor(System.Int32)">
@@ -22463,7 +22712,7 @@
         <member name="T:Godot.JavaScript">
             <summary>
             <para>The JavaScript singleton is implemented only in the HTML5 export. It's used to access the browser's JavaScript context. This allows interaction with embedding pages or calling third-party JavaScript APIs.</para>
-            <para>Note: This singleton can be disabled at build-time to improve security. By default, the JavaScript singleton is enabled. Official export templates also have the JavaScript singleton enabled. See <a href="https://docs.godotengine.org/en/3.2/development/compiling/compiling_for_web.html">Compiling for the Web</a> in the documentation for more information.</para>
+            <para>Note: This singleton can be disabled at build-time to improve security. By default, the JavaScript singleton is enabled. Official export templates also have the JavaScript singleton enabled. See <a href="https://docs.godotengine.org/en/3.3/development/compiling/compiling_for_web.html">Compiling for the Web</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.JavaScript.Eval(System.String,System.Boolean)">
@@ -22546,7 +22795,10 @@
         </member>
         <member name="P:Godot.KinematicBody.Collision__safeMargin">
             <summary>
-            <para>If the body is at least this close to another body, this body will consider them to be colliding.</para>
+            <para>Extra margin used for collision recovery in motion functions (see <see cref="M:Godot.KinematicBody.MoveAndCollide(Godot.Vector3,System.Boolean,System.Boolean,System.Boolean)"/>, <see cref="M:Godot.KinematicBody.MoveAndSlide(Godot.Vector3,System.Nullable{Godot.Vector3},System.Boolean,System.Int32,System.Single,System.Boolean)"/>, <see cref="M:Godot.KinematicBody.MoveAndSlideWithSnap(Godot.Vector3,Godot.Vector3,System.Nullable{Godot.Vector3},System.Boolean,System.Int32,System.Single,System.Boolean)"/>).</para>
+            <para>If the body is at least this close to another body, it will consider them to be colliding and will be pushed away before performing the actual motion.</para>
+            <para>A higher value means it's more flexible for detecting collision, which helps with consistently detecting walls and floors.</para>
+            <para>A lower value forces the collision algorithm to use more exact detection, so it can be used in cases that specifically require precision, e.g at very low scale to avoid visible jittering, or for stability with a stack of kinematic bodies.</para>
             </summary>
         </member>
         <member name="M:Godot.KinematicBody.MoveAndCollide(Godot.Vector3,System.Boolean,System.Boolean,System.Boolean)">
@@ -22635,7 +22887,10 @@
         </member>
         <member name="P:Godot.KinematicBody2D.Collision__safeMargin">
             <summary>
-            <para>If the body is at least this close to another body, this body will consider them to be colliding.</para>
+            <para>Extra margin used for collision recovery in motion functions (see <see cref="M:Godot.KinematicBody2D.MoveAndCollide(Godot.Vector2,System.Boolean,System.Boolean,System.Boolean)"/>, <see cref="M:Godot.KinematicBody2D.MoveAndSlide(Godot.Vector2,System.Nullable{Godot.Vector2},System.Boolean,System.Int32,System.Single,System.Boolean)"/>, <see cref="M:Godot.KinematicBody2D.MoveAndSlideWithSnap(Godot.Vector2,Godot.Vector2,System.Nullable{Godot.Vector2},System.Boolean,System.Int32,System.Single,System.Boolean)"/>).</para>
+            <para>If the body is at least this close to another body, it will consider them to be colliding and will be pushed away before performing the actual motion.</para>
+            <para>A higher value means it's more flexible for detecting collision, which helps with consistently detecting walls and floors.</para>
+            <para>A lower value forces the collision algorithm to use more exact detection, so it can be used in cases that specifically require precision, e.g at very low scale to avoid visible jittering, or for stability with a stack of kinematic bodies.</para>
             </summary>
         </member>
         <member name="P:Godot.KinematicBody2D.Motion__syncToPhysics">
@@ -24004,11 +24259,12 @@
             <para>Adds a top, left, bottom, and right margin to all <see cref="T:Godot.Control"/> nodes that are direct children of the container. To control the <see cref="T:Godot.MarginContainer"/>'s margin, use the <c>margin_*</c> theme properties listed below.</para>
             <para>Note: Be careful, <see cref="T:Godot.Control"/> margin values are different than the constant margin values. If you want to change the custom margin values of the <see cref="T:Godot.MarginContainer"/> by code, you should use the following examples:</para>
             <para><code>
+            # This code sample assumes the current script is extending MarginContainer.
             var margin_value = 100
-            set("custom_constants/margin_top", margin_value)
-            set("custom_constants/margin_left", margin_value)
-            set("custom_constants/margin_bottom", margin_value)
-            set("custom_constants/margin_right", margin_value)
+            add_constant_override("margin_top", margin_value)
+            add_constant_override("margin_left", margin_value)
+            add_constant_override("margin_bottom", margin_value)
+            add_constant_override("margin_right", margin_value)
             </code></para>
             </summary>
         </member>
@@ -24042,7 +24298,7 @@
         <member name="T:Godot.MenuButton">
             <summary>
             <para>Special button that brings up a <see cref="T:Godot.PopupMenu"/> when clicked.</para>
-            <para>New items can be created inside this <see cref="T:Godot.PopupMenu"/> using <c>get_popup().add_item("My Item Name")</c>. You can also create them directly from the editor. To do so, select the <see cref="T:Godot.MenuButton"/> node, then in the toolbar at the top of the 2D editor, click Items then click Add in the popup. You will be able to give each items new properties.</para>
+            <para>New items can be created inside this <see cref="T:Godot.PopupMenu"/> using <c>get_popup().add_item("My Item Name")</c>. You can also create them directly from the editor. To do so, select the <see cref="T:Godot.MenuButton"/> node, then in the toolbar at the top of the 2D editor, click Items then click Add in the popup. You will be able to give each item new properties.</para>
             <para>See also <see cref="T:Godot.BaseButton"/> which contains common properties and methods associated with this node.</para>
             </summary>
         </member>
@@ -24806,7 +25062,7 @@
             <summary>
             <para>MultiMesh provides low-level mesh instancing. Drawing thousands of <see cref="T:Godot.MeshInstance"/> nodes can be slow, since each object is submitted to the GPU then drawn individually.</para>
             <para>MultiMesh is much faster as it can draw thousands of instances with a single draw call, resulting in less API overhead.</para>
-            <para>As a drawback, if the instances are too far away of each other, performance may be reduced as every single instance will always rendered (they are spatially indexed as one, for the whole object).</para>
+            <para>As a drawback, if the instances are too far away of each other, performance may be reduced as every single instance will always render (they are spatially indexed as one, for the whole object).</para>
             <para>Since instances may have any behavior, the AABB used for visibility must be provided by the user.</para>
             </summary>
         </member>
@@ -25399,6 +25655,12 @@
             <para>Returns the remote port of the given peer.</para>
             </summary>
         </member>
+        <member name="M:Godot.NetworkedMultiplayerENet.SetPeerTimeout(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            <para>Sets the timeout parameters for a peer.The timeout parameters control how and when a peer will timeout from a failure to acknowledge reliable traffic. Timeout values are expressed in milliseconds.</para>
+            <para>The <c>timeout_limit</c> is a factor that, multiplied by a value based on the avarage round trip time, will determine the timeout limit for a reliable packet. When that limit is reached, the timeout will be doubled, and the peer will be disconnected if that limit has reached <c>timeout_min</c>. The <c>timeout_max</c> parameter, on the other hand, defines a fixed timeout for which any packet must be acknowledged or the peer will be dropped.</para>
+            </summary>
+        </member>
         <member name="M:Godot.NetworkedMultiplayerENet.GetPacketChannel">
             <summary>
             <para>Returns the channel of the next packet that will be retrieved via <see cref="M:Godot.PacketPeer.GetPacket"/>.</para>
@@ -25713,6 +25975,7 @@
         <member name="P:Godot.NoiseTexture.Seamless">
             <summary>
             <para>Whether the texture can be tiled without visible seams or not. Seamless textures take longer to generate.</para>
+            <para>Note: Seamless noise has a lower contrast compared to non-seamless noise. This is due to the way noise uses higher dimensions for generating seamless noise.</para>
             </summary>
         </member>
         <member name="P:Godot.NoiseTexture.AsNormalmap">
@@ -25866,6 +26129,7 @@
         <member name="M:Godot.OpenSimplexNoise.GetSeamlessImage(System.Int32)">
             <summary>
             <para>Generate a tileable noise image in  format, based on the current noise parameters. Generated seamless images are always square (<c>size</c> × <c>size</c>).</para>
+            <para>Note: Seamless noise has a lower contrast compared to non-seamless noise. This is due to the way noise uses higher dimensions for generating seamless noise.</para>
             </summary>
         </member>
         <member name="M:Godot.OpenSimplexNoise.GetNoise1d(System.Single)">
@@ -26051,85 +26315,6 @@
         <member name="M:Godot.PHashTranslation.Generate(Godot.Translation)">
             <summary>
             <para>Generates and sets an optimized translation from the given <see cref="T:Godot.Translation"/> resource.</para>
-            </summary>
-        </member>
-        <member name="T:Godot.PackedScene">
-            <summary>
-            <para>A simplified interface to a scene file. Provides access to operations and checks that can be performed on the scene resource itself.</para>
-            <para>Can be used to save a node to a file. When saving, the node as well as all the nodes it owns get saved (see <c>owner</c> property on <see cref="T:Godot.Node"/>).</para>
-            <para>Note: The node doesn't need to own itself.</para>
-            <para>Example of loading a saved scene:</para>
-            <para><code>
-            # Use `load()` instead of `preload()` if the path isn't known at compile-time.
-            var scene = preload("res://scene.tscn").instance()
-            # Add the node as a child of the node the script is attached to.
-            add_child(scene)
-            </code></para>
-            <para>Example of saving a node with different owners: The following example creates 3 objects: <c>Node2D</c> (<c>node</c>), <c>RigidBody2D</c> (<c>rigid</c>) and <c>CollisionObject2D</c> (<c>collision</c>). <c>collision</c> is a child of <c>rigid</c> which is a child of <c>node</c>. Only <c>rigid</c> is owned by <c>node</c> and <c>pack</c> will therefore only save those two nodes, but not <c>collision</c>.</para>
-            <para><code>
-            # Create the objects.
-            var node = Node2D.new()
-            var rigid = RigidBody2D.new()
-            var collision = CollisionShape2D.new()
-            
-            # Create the object hierarchy.
-            rigid.add_child(collision)
-            node.add_child(rigid)
-            
-            # Change owner of `rigid`, but not of `collision`.
-            rigid.owner = node
-            
-            var scene = PackedScene.new()
-            # Only `node` and `rigid` are now packed.
-            var result = scene.pack(node)
-            if result == OK:
-                var error = ResourceSaver.save("res://path/name.scn", scene)  # Or "user://..."
-                if error != OK:
-                    push_error("An error occurred while saving the scene to disk.")
-            </code></para>
-            </summary>
-        </member>
-        <member name="F:Godot.PackedScene.GenEditState.Disabled">
-            <summary>
-            <para>If passed to <see cref="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)"/>, blocks edits to the scene state.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.PackedScene.GenEditState.Instance">
-            <summary>
-            <para>If passed to <see cref="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)"/>, provides local scene resources to the local scene.</para>
-            <para>Note: Only available in editor builds.</para>
-            </summary>
-        </member>
-        <member name="F:Godot.PackedScene.GenEditState.Main">
-            <summary>
-            <para>If passed to <see cref="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)"/>, provides local scene resources to the local scene. Only the main scene should receive the main edit state.</para>
-            <para>Note: Only available in editor builds.</para>
-            </summary>
-        </member>
-        <member name="P:Godot.PackedScene._Bundled">
-            <summary>
-            <para>A dictionary representation of the scene contents.</para>
-            <para>Available keys include "rnames" and "variants" for resources, "node_count", "nodes", "node_paths" for nodes, "editable_instances" for base scene children overrides, "conn_count" and "conns" for signal connections, and "version" for the format style of the PackedScene.</para>
-            </summary>
-        </member>
-        <member name="M:Godot.PackedScene.Pack(Godot.Node)">
-            <summary>
-            <para>Pack will ignore any sub-nodes not owned by given node. See <see cref="P:Godot.Node.Owner"/>.</para>
-            </summary>
-        </member>
-        <member name="M:Godot.PackedScene.Instance(Godot.PackedScene.GenEditState)">
-            <summary>
-            <para>Instantiates the scene's node hierarchy. Triggers child scene instantiation(s). Triggers a  notification on the root node.</para>
-            </summary>
-        </member>
-        <member name="M:Godot.PackedScene.CanInstance">
-            <summary>
-            <para>Returns <c>true</c> if the scene file has nodes.</para>
-            </summary>
-        </member>
-        <member name="M:Godot.PackedScene.GetState">
-            <summary>
-            <para>Returns the <c>SceneState</c> representing the scene file contents.</para>
             </summary>
         </member>
         <member name="T:Godot.PacketPeer">
@@ -27574,13 +27759,14 @@
         </member>
         <member name="M:Godot.Physics2DDirectSpaceState.IntersectPoint(Godot.Vector2,System.Int32,Godot.Collections.Array,System.UInt32,System.Boolean,System.Boolean)">
             <summary>
-            <para>Checks whether a point is inside any shape. The shapes the point is inside of are returned in an array containing dictionaries with the following fields:</para>
+            <para>Checks whether a point is inside any solid shape. The shapes the point is inside of are returned in an array containing dictionaries with the following fields:</para>
             <para><c>collider</c>: The colliding object.</para>
             <para><c>collider_id</c>: The colliding object's ID.</para>
             <para><c>metadata</c>: The intersecting shape's metadata. This metadata is different from <see cref="M:Godot.Object.GetMeta(System.String)"/>, and is set with <see cref="M:Godot.Physics2DServer.ShapeSetData(Godot.RID,System.Object)"/>.</para>
             <para><c>rid</c>: The intersecting object's <see cref="T:Godot.RID"/>.</para>
             <para><c>shape</c>: The shape index of the colliding shape.</para>
             <para>Additionally, the method can take an <c>exclude</c> array of objects or <see cref="T:Godot.RID"/>s that are to be excluded from collisions, a <c>collision_mask</c> bitmask representing the physics layers to check in, or booleans to determine if the ray should collide with <see cref="T:Godot.PhysicsBody"/>s or <see cref="T:Godot.Area"/>s, respectively.</para>
+            <para>Note: <see cref="T:Godot.ConcavePolygonShape2D"/>s and <see cref="T:Godot.CollisionPolygon2D"/>s in <c>Segments</c> build mode are not solid shapes. Therefore, they will not be detected.</para>
             </summary>
             <param name="exclude">If the parameter is null, then the default value is new Godot.Collections.Array {}</param>
         </member>
@@ -27986,7 +28172,7 @@
         </member>
         <member name="M:Godot.Physics2DServer.AreaCreate">
             <summary>
-            <para>Creates an <see cref="T:Godot.Area2D"/>.</para>
+            <para>Creates an <see cref="T:Godot.Area2D"/>. After creating an <see cref="T:Godot.Area2D"/> with this method, assign it to a space using <see cref="M:Godot.Physics2DServer.AreaSetSpace(Godot.RID,Godot.RID)"/> to use the created <see cref="T:Godot.Area2D"/> in the physics world.</para>
             </summary>
         </member>
         <member name="M:Godot.Physics2DServer.AreaSetSpace(Godot.RID,Godot.RID)">
@@ -28375,7 +28561,7 @@
         </member>
         <member name="P:Godot.Physics2DShapeQueryParameters.CollisionLayer">
             <summary>
-            <para>The physics layer(s) the query will take into account (as a bitmask). See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layer(s) the query will take into account (as a bitmask). See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.Physics2DShapeQueryParameters.Exclude">
@@ -28457,12 +28643,12 @@
             <summary>
             <para>The physics layers this area is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the <see cref="P:Godot.PhysicsBody.CollisionMask"/> property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.PhysicsBody.CollisionMask">
             <summary>
-            <para>The physics layers this area scans for collisions. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this area scans for collisions. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.PhysicsBody.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -28514,12 +28700,12 @@
             <summary>
             <para>The physics layers this area is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the <see cref="P:Godot.PhysicsBody2D.CollisionMask"/> property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.PhysicsBody2D.CollisionMask">
             <summary>
-            <para>The physics layers this area scans for collisions. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this area scans for collisions. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="M:Godot.PhysicsBody2D.SetCollisionMaskBit(System.Int32,System.Boolean)">
@@ -29902,7 +30088,7 @@
         </member>
         <member name="P:Godot.PhysicsShapeQueryParameters.CollisionMask">
             <summary>
-            <para>The physics layer(s) the query will take into account (as a bitmask). See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layer(s) the query will take into account (as a bitmask). See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.PhysicsShapeQueryParameters.Exclude">
@@ -30267,7 +30453,7 @@
         </member>
         <member name="P:Godot.PopupMenu.AllowSearch">
             <summary>
-            <para>If <c>true</c>, allows to navigate <see cref="T:Godot.PopupMenu"/> with letter keys.</para>
+            <para>If <c>true</c>, allows navigating <see cref="T:Godot.PopupMenu"/> with letter keys.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.AddItem(System.String,System.Int32,System.UInt32)">
@@ -30427,7 +30613,7 @@
         </member>
         <member name="M:Godot.PopupMenu.SetItemMultistate(System.Int32,System.Int32)">
             <summary>
-            <para>Sets the state of an multistate item. See <see cref="M:Godot.PopupMenu.AddMultistateItem(System.String,System.Int32,System.Int32,System.Int32,System.UInt32)"/> for details.</para>
+            <para>Sets the state of a multistate item. See <see cref="M:Godot.PopupMenu.AddMultistateItem(System.String,System.Int32,System.Int32,System.Int32,System.UInt32)"/> for details.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.SetItemShortcutDisabled(System.Int32,System.Boolean)">
@@ -30442,7 +30628,7 @@
         </member>
         <member name="M:Godot.PopupMenu.ToggleItemMultistate(System.Int32)">
             <summary>
-            <para>Cycle to the next state of an multistate item. See <see cref="M:Godot.PopupMenu.AddMultistateItem(System.String,System.Int32,System.Int32,System.Int32,System.UInt32)"/> for details.</para>
+            <para>Cycle to the next state of a multistate item. See <see cref="M:Godot.PopupMenu.AddMultistateItem(System.String,System.Int32,System.Int32,System.Int32,System.UInt32)"/> for details.</para>
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.GetItemText(System.Int32)">
@@ -30582,7 +30768,7 @@
         </member>
         <member name="P:Godot.PrimitiveMesh.CustomAabb">
             <summary>
-            <para>Overrides the <see cref="T:Godot.AABB"/> with one defined by user for use with frustum culling. Especially useful to avoid unnexpected culling when  using a shader to offset vertices.</para>
+            <para>Overrides the <see cref="T:Godot.AABB"/> with one defined by user for use with frustum culling. Especially useful to avoid unexpected culling when  using a shader to offset vertices.</para>
             </summary>
         </member>
         <member name="P:Godot.PrimitiveMesh.FlipFaces">
@@ -30761,7 +30947,7 @@
             <summary>
             <para>Contains global variables accessible from everywhere. Use <see cref="M:Godot.ProjectSettings.GetSetting(System.String)"/>, <see cref="M:Godot.ProjectSettings.SetSetting(System.String,System.Object)"/> or <see cref="M:Godot.ProjectSettings.HasSetting(System.String)"/> to access them. Variables stored in <c>project.godot</c> are also loaded into ProjectSettings, making this object very useful for reading custom game configuration options.</para>
             <para>When naming a Project Settings property, use the full path to the setting including the category. For example, <c>"application/config/name"</c> for the project name. Category and property names can be viewed in the Project Settings dialog.</para>
-            <para>Overriding: Any project setting can be overridden by creating a file named <c>override.cfg</c> in the project's root directory. This can also be used in exported projects by placing this file in the same directory as the project binary.</para>
+            <para>Overriding: Any project setting can be overridden by creating a file named <c>override.cfg</c> in the project's root directory. This can also be used in exported projects by placing this file in the same directory as the project binary. Overriding will still take the base project settings' <a href="https://docs.godotengine.org/en/latest/tutorials/export/feature_tags.html">feature tags</a> in account. Therefore, make sure to also override the setting with the desired feature tags if you want them to override base project settings on all platforms and configurations.</para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.HasSetting(System.String)">
@@ -30835,7 +31021,7 @@
         </member>
         <member name="M:Godot.ProjectSettings.GlobalizePath(System.String)">
             <summary>
-            <para>Returns the absolute, native OS path corresponding to the localized <c>path</c> (starting with <c>res://</c> or <c>user://</c>). The returned path will vary depending on the operating system and user preferences. See <a href="https://docs.godotengine.org/en/latest/tutorials/io/data_paths.html">File paths in Godot projects</a> to see what those paths convert to. See also <see cref="M:Godot.ProjectSettings.LocalizePath(System.String)"/>.</para>
+            <para>Returns the absolute, native OS path corresponding to the localized <c>path</c> (starting with <c>res://</c> or <c>user://</c>). The returned path will vary depending on the operating system and user preferences. See <a href="https://docs.godotengine.org/en/3.3/tutorials/io/data_paths.html">File paths in Godot projects</a> to see what those paths convert to. See also <see cref="M:Godot.ProjectSettings.LocalizePath(System.String)"/>.</para>
             <para>Note: <see cref="M:Godot.ProjectSettings.GlobalizePath(System.String)"/> with <c>res://</c> will not work in an exported project. Instead, prepend the executable's base directory to the path when running from an exported project:</para>
             <para><code>
             var path = ""
@@ -30855,6 +31041,7 @@
         <member name="M:Godot.ProjectSettings.Save">
             <summary>
             <para>Saves the configuration to the <c>project.godot</c> file.</para>
+            <para>Note: This method is intended to be used by editor plugins, as modified <see cref="T:Godot.ProjectSettings"/> can't be loaded back in the running app. If you want to change project settings in exported projects, use <see cref="M:Godot.ProjectSettings.SaveCustom(System.String)"/> to save <c>override.cfg</c> file.</para>
             </summary>
         </member>
         <member name="M:Godot.ProjectSettings.LoadResourcePack(System.String,System.Boolean,System.Int32)">
@@ -30876,7 +31063,7 @@
         </member>
         <member name="M:Godot.ProjectSettings.SaveCustom(System.String)">
             <summary>
-            <para>Saves the configuration to a custom file. The file extension must be <c>.godot</c> (to save in text-based <see cref="T:Godot.ConfigFile"/> format) or <c>.binary</c> (to save in binary format).</para>
+            <para>Saves the configuration to a custom file. The file extension must be <c>.godot</c> (to save in text-based <see cref="T:Godot.ConfigFile"/> format) or <c>.binary</c> (to save in binary format). You can also save <c>override.cfg</c> file, which is also text, but can be used in exported projects unlike other formats.</para>
             </summary>
         </member>
         <member name="T:Godot.ProximityGroup">
@@ -31056,7 +31243,7 @@
         </member>
         <member name="P:Godot.RayCast.CollisionMask">
             <summary>
-            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.RayCast.CollideWithAreas">
@@ -31165,7 +31352,7 @@
         </member>
         <member name="P:Godot.RayCast2D.CollisionMask">
             <summary>
-            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The ray's collision mask. Only objects in at least one collision layer enabled in the mask will be detected. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.RayCast2D.CollideWithAreas">
@@ -31684,7 +31871,7 @@
             <summary>
             <para>Godot loads resources in the editor or in exported games using ResourceFormatLoaders. They are queried automatically via the <see cref="T:Godot.ResourceLoader"/> singleton, or when a resource with internal dependencies is loaded. Each file type may load as a different resource type, so multiple ResourceFormatLoaders are registered in the engine.</para>
             <para>Extending this class allows you to define your own loader. Be sure to respect the documented return types and values. You should give it a global class name with <c>class_name</c> for it to be registered. Like built-in ResourceFormatLoaders, it will be called automatically when loading resources of its handled type(s). You may also implement a <see cref="T:Godot.ResourceFormatSaver"/>.</para>
-            <para>Note: You can also extend <see cref="!:Godot.EditorImportPlugin"/> if the resource type you need exists but Godot is unable to load its format. Choosing one way over another depends if the format is suitable or not for the final exported game. For example, it's better to import <c>.png</c> textures as <c>.stex</c> (<see cref="T:Godot.StreamTexture"/>) first, so they can be loaded with better efficiency on the graphics card.</para>
+            <para>Note: You can also extend <see cref="!:Godot.EditorImportPlugin"/> if the resource type you need exists but Godot is unable to load its format. Choosing one way over another depends on if the format is suitable or not for the final exported game. For example, it's better to import <c>.png</c> textures as <c>.stex</c> (<see cref="T:Godot.StreamTexture"/>) first, so they can be loaded with better efficiency on the graphics card.</para>
             </summary>
         </member>
         <member name="M:Godot.ResourceFormatLoader.GetDependencies(System.String,System.String)">
@@ -31876,6 +32063,7 @@
         <member name="P:Godot.RichTextLabel.BbcodeEnabled">
             <summary>
             <para>If <c>true</c>, the label uses BBCode formatting.</para>
+            <para>Note: Trying to alter the <see cref="T:Godot.RichTextLabel"/>'s text with <see cref="M:Godot.RichTextLabel.AddText(System.String)"/> will reset this to <c>false</c>. Use instead <see cref="M:Godot.RichTextLabel.AppendBbcode(System.String)"/> to preserve BBCode formatting.</para>
             </summary>
         </member>
         <member name="P:Godot.RichTextLabel.BbcodeText">
@@ -32327,7 +32515,7 @@
         </member>
         <member name="T:Godot.RigidBody2D">
             <summary>
-            <para>This node implements simulated 2D physics. You do not control a RigidBody2D directly. Instead you apply forces to it (gravity, impulses, etc.) and the physics simulation calculates the resulting movement based on its mass, friction, and other physical properties.</para>
+            <para>This node implements simulated 2D physics. You do not control a RigidBody2D directly. Instead, you apply forces to it (gravity, impulses, etc.) and the physics simulation calculates the resulting movement based on its mass, friction, and other physical properties.</para>
             <para>A RigidBody2D has 4 behavior <see cref="P:Godot.RigidBody2D.Mode"/>s: Rigid, Static, Character, and Kinematic.</para>
             <para>Note: You should not change a RigidBody2D's <c>position</c> or <c>linear_velocity</c> every frame or even very often. If you need to directly affect the body's state, use <see cref="M:Godot.RigidBody2D._IntegrateForces(Godot.Physics2DDirectBodyState)"/>, which allows you to directly access the physics state.</para>
             <para>Please also keep in mind that physics bodies manage their own transform which overwrites the ones you set. So any direct or indirect transformation (including scaling of the node or its parent) will be visible in the editor only, and immediately reset at runtime.</para>
@@ -32659,7 +32847,7 @@
         <member name="T:Godot.SceneTree">
             <summary>
             <para>As one of the most important classes, the <see cref="T:Godot.SceneTree"/> manages the hierarchy of nodes in a scene as well as scenes themselves. Nodes can be added, retrieved and removed. The whole scene tree (and thus the current scene) can be paused. Scenes can be loaded, switched and reloaded.</para>
-            <para>You can also use the <see cref="T:Godot.SceneTree"/> to organize your nodes into groups: every node can be assigned as many groups as you want to create, e.g. a "enemy" group. You can then iterate these groups or even call methods and set properties on all the group's members at once.</para>
+            <para>You can also use the <see cref="T:Godot.SceneTree"/> to organize your nodes into groups: every node can be assigned as many groups as you want to create, e.g. an "enemy" group. You can then iterate these groups or even call methods and set properties on all the group's members at once.</para>
             <para><see cref="T:Godot.SceneTree"/> is the default <see cref="T:Godot.MainLoop"/> implementation used by scenes, and is thus in charge of the game loop.</para>
             </summary>
         </member>
@@ -33183,7 +33371,8 @@
         </member>
         <member name="P:Godot.Shape.Margin">
             <summary>
-            <para>The collision margin for the shape.</para>
+            <para>The collision margin for the shape. Used in Bullet Physics only.</para>
+            <para>Collision margins allow collision detection to be more efficient by adding an extra shell around shapes. Collision algorithms are more expensive when objects overlap by more than their margin, so a higher value for margins is better for performance, at the cost of accuracy around edges as it makes them less sharp.</para>
             </summary>
         </member>
         <member name="T:Godot.Shape2D">
@@ -33684,12 +33873,12 @@
             <summary>
             <para>The physics layers this SoftBody is in.</para>
             <para>Collidable objects can exist in any of 32 different layers. These layers work like a tagging system, and are not visual. A collidable can use these layers to select with which objects it can collide, using the collision_mask property.</para>
-            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>A contact is detected if object A is in any of the layers that object B scans, or object B is in any layer scanned by object A. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.SoftBody.CollisionMask">
             <summary>
-            <para>The physics layers this SoftBody scans for collisions. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The physics layers this SoftBody scans for collisions. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.SoftBody.ParentCollisionIgnore">
@@ -34758,6 +34947,7 @@
         <member name="P:Godot.SpatialMaterial.DepthEnabled">
             <summary>
             <para>If <c>true</c>, depth mapping is enabled (also called "parallax mapping" or "height mapping"). See also <see cref="P:Godot.SpatialMaterial.NormalEnabled"/>.</para>
+            <para>Note: Depth mapping is not supported if triplanar mapping is used on the same material. The value of <see cref="P:Godot.SpatialMaterial.DepthEnabled"/> will be ignored if <see cref="P:Godot.SpatialMaterial.Uv1Triplanar"/> is enabled.</para>
             </summary>
         </member>
         <member name="P:Godot.SpatialMaterial.DepthScale">
@@ -35027,6 +35217,7 @@
             </code></para>
             <para>The above code will create a <see cref="T:Godot.SpinBox"/>, disable context menu on it and set the text alignment to right.</para>
             <para>See <see cref="T:Godot.Range"/> class for more options over the <see cref="T:Godot.SpinBox"/>.</para>
+            <para>Note: <see cref="T:Godot.SpinBox"/> relies on an underlying <see cref="T:Godot.LineEdit"/> node. To theme a <see cref="T:Godot.SpinBox"/>'s background, add theme items for <see cref="T:Godot.LineEdit"/> and customize them.</para>
             </summary>
         </member>
         <member name="P:Godot.SpinBox.Align">
@@ -35135,7 +35326,7 @@
         </member>
         <member name="P:Godot.SpringArm.CollisionMask">
             <summary>
-            <para>The layers against which the collision check shall be done. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The layers against which the collision check shall be done. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.SpringArm.Shape">
@@ -35357,7 +35548,7 @@
         </member>
         <member name="P:Godot.SpriteBase3D.Opacity">
             <summary>
-            <para>The objects visibility on a scale from <c>0</c> fully invisible to <c>1</c> fully visible.</para>
+            <para>The objects' visibility on a scale from <c>0</c> fully invisible to <c>1</c> fully visible.</para>
             </summary>
         </member>
         <member name="P:Godot.SpriteBase3D.PixelSize">
@@ -35846,8 +36037,8 @@
         </member>
         <member name="M:Godot.StreamPeerTCP.SetNoDelay(System.Boolean)">
             <summary>
-            <para>Disables Nagle's algorithm to improve latency for small packets.</para>
-            <para>Note: For applications that send large packets or need to transfer a lot of data, this can decrease the total available bandwidth.</para>
+            <para>If <c>enabled</c> is <c>true</c>, packets will be sent immediately. If <c>enabled</c> is <c>false</c> (the default), packet transfers will be delayed and combined using <a href="https://en.wikipedia.org/wiki/Nagle%27s_algorithm">Nagle's algorithm</a>.</para>
+            <para>Note: It's recommended to leave this disabled for applications that send large packets or need to transfer a lot of data, as enabling this can decrease the total available bandwidth.</para>
             </summary>
         </member>
         <member name="T:Godot.StreamTexture">
@@ -35951,12 +36142,12 @@
         </member>
         <member name="T:Godot.StyleBoxFlat">
             <summary>
-            <para>This <see cref="T:Godot.StyleBox"/> can be used to achieve all kinds of looks without the need of a texture. Those properties are customizable:</para>
+            <para>This <see cref="T:Godot.StyleBox"/> can be used to achieve all kinds of looks without the need of a texture. The following properties are customizable:</para>
             <para>- Color</para>
             <para>- Border width (individual width for each border)</para>
             <para>- Rounded corners (individual radius for each corner)</para>
             <para>- Shadow (with blur and offset)</para>
-            <para>Setting corner radius to high values is allowed. As soon as corners would overlap, the stylebox will switch to a relative system. Example:</para>
+            <para>Setting corner radius to high values is allowed. As soon as corners overlap, the stylebox will switch to a relative system. Example:</para>
             <para><code>
             height = 30
             corner_radius_top_left = 50
@@ -36031,8 +36222,8 @@
         </member>
         <member name="P:Godot.StyleBoxFlat.CornerDetail">
             <summary>
-            <para>This sets the amount of vertices used for each corner. Higher values result in rounder corners but take more processing power to compute. When choosing a value, you should take the corner radius (<see cref="M:Godot.StyleBoxFlat.SetCornerRadiusAll(System.Int32)"/>) into account.</para>
-            <para>For corner radii smaller than 10, <c>4</c> or <c>5</c> should be enough. For corner radii smaller than 30, values between <c>8</c> and <c>12</c> should be enough.</para>
+            <para>This sets the number of vertices used for each corner. Higher values result in rounder corners but take more processing power to compute. When choosing a value, you should take the corner radius (<see cref="M:Godot.StyleBoxFlat.SetCornerRadiusAll(System.Int32)"/>) into account.</para>
+            <para>For corner radii less than 10, <c>4</c> or <c>5</c> should be enough. For corner radii less than 30, values between <c>8</c> and <c>12</c> should be enough.</para>
             <para>A corner detail of <c>1</c> will result in chamfered corners instead of rounded corners, which is useful for some artistic effects.</para>
             </summary>
         </member>
@@ -36335,38 +36526,38 @@
         </member>
         <member name="M:Godot.SurfaceTool.AddColor(Godot.Color)">
             <summary>
-            <para>Specifies a <see cref="T:Godot.Color"/> for the next vertex to use.</para>
+            <para>Specifies a <see cref="T:Godot.Color"/> to use for the next vertex. If every vertex needs to have this information set and you fail to submit it for the first vertex, this information may not be used at all.</para>
             <para>Note: The material must have <see cref="P:Godot.SpatialMaterial.VertexColorUseAsAlbedo"/> enabled for the vertex color to be visible.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddNormal(Godot.Vector3)">
             <summary>
-            <para>Specifies a normal for the next vertex to use.</para>
+            <para>Specifies a normal to use for the next vertex. If every vertex needs to have this information set and you fail to submit it for the first vertex, this information may not be used at all.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddTangent(Godot.Plane)">
             <summary>
-            <para>Specifies a tangent for the next vertex to use.</para>
+            <para>Specifies a tangent to use for the next vertex. If every vertex needs to have this information set and you fail to submit it for the first vertex, this information may not be used at all.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddUv(Godot.Vector2)">
             <summary>
-            <para>Specifies a set of UV coordinates to use for the next vertex.</para>
+            <para>Specifies a set of UV coordinates to use for the next vertex. If every vertex needs to have this information set and you fail to submit it for the first vertex, this information may not be used at all.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddUv2(Godot.Vector2)">
             <summary>
-            <para>Specifies an optional second set of UV coordinates to use for the next vertex.</para>
+            <para>Specifies an optional second set of UV coordinates to use for the next vertex. If every vertex needs to have this information set and you fail to submit it for the first vertex, this information may not be used at all.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddBones(System.Int32[])">
             <summary>
-            <para>Adds an array of bones for the next vertex to use. <c>bones</c> must contain 4 integers.</para>
+            <para>Specifies an array of bones to use for the next vertex. <c>bones</c> must contain 4 integers.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddWeights(System.Single[])">
             <summary>
-            <para>Specifies weight values for next vertex to use. <c>weights</c> must contain 4 values.</para>
+            <para>Specifies weight values to use for the next vertex. <c>weights</c> must contain 4 values. If every vertex needs to have this information set and you fail to submit it for the first vertex, this information may not be used at all.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.AddSmoothGroup(System.Boolean)">
@@ -36392,7 +36583,7 @@
         </member>
         <member name="M:Godot.SurfaceTool.Index">
             <summary>
-            <para>Shrinks the vertex array by creating an index array (avoids reusing vertices).</para>
+            <para>Shrinks the vertex array by creating an index array. This can improve performance by avoiding vertex reuse.</para>
             </summary>
         </member>
         <member name="M:Godot.SurfaceTool.Deindex">
@@ -36666,7 +36857,7 @@
         </member>
         <member name="P:Godot.Tabs.ScrollingEnabled">
             <summary>
-            <para>if <c>true</c>, the mouse's scroll wheel cab be used to navigate the scroll view.</para>
+            <para>if <c>true</c>, the mouse's scroll wheel can be used to navigate the scroll view.</para>
             </summary>
         </member>
         <member name="P:Godot.Tabs.DragToRearrangeEnabled">
@@ -37349,7 +37540,19 @@
         </member>
         <member name="T:Godot.TextureArray">
             <summary>
-            <para><see cref="T:Godot.TextureArray"/>s store an array of images in a single <see cref="T:Godot.Texture"/> primitive. Each layer of the texture array has its own mipmap chain. This makes it is a good alternative to texture atlases.</para>
+            <para><see cref="T:Godot.TextureArray"/>s store an array of <see cref="T:Godot.Image"/>s in a single <see cref="T:Godot.Texture"/> primitive. Each layer of the texture array has its own mipmap chain. This makes it is a good alternative to texture atlases.</para>
+            <para><see cref="T:Godot.TextureArray"/>s must be displayed using shaders. After importing your file as a <see cref="T:Godot.TextureArray"/> and setting the appropriate Horizontal and Vertical Slices, display it by setting it as a uniform to a shader, for example:</para>
+            <para><code>
+            shader_type canvas_item;
+            
+            uniform sampler2DArray tex;
+            uniform int index;
+            
+            void fragment() {
+                COLOR = texture(tex, vec3(UV.x, UV.y, float(index)));
+            }
+            </code></para>
+            <para>Set the integer uniform "index" to show a particular part of the texture as defined by the Horizontal and Vertical Slices in the importer.</para>
             </summary>
         </member>
         <member name="T:Godot.TextureButton">
@@ -37753,7 +37956,8 @@
         </member>
         <member name="M:Godot.Theme.GetStylebox(System.String,System.String)">
             <summary>
-            <para>Returns the icon <see cref="T:Godot.StyleBox"/> at <c>name</c> if the theme has <c>node_type</c>.</para>
+            <para>Returns the <see cref="T:Godot.StyleBox"/> at <c>name</c> if the theme has <c>node_type</c>.</para>
+            <para>Valid <c>name</c>s may be found using <see cref="M:Godot.Theme.GetStyleboxList(System.String)"/>. Valid <c>node_type</c>s may be found using <see cref="M:Godot.Theme.GetStyleboxTypes"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Theme.HasStylebox(System.String,System.String)">
@@ -37770,6 +37974,7 @@
         <member name="M:Godot.Theme.GetStyleboxList(System.String)">
             <summary>
             <para>Returns all the <see cref="T:Godot.StyleBox"/>s as a <see cref="T:System.String"/> filled with each <see cref="T:Godot.StyleBox"/>'s name, for use in <see cref="M:Godot.Theme.GetStylebox(System.String,System.String)"/>, if the theme has <c>node_type</c>.</para>
+            <para>Valid <c>node_type</c>s may be found using <see cref="M:Godot.Theme.GetStyleboxTypes"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Theme.GetStyleboxTypes">
@@ -37984,6 +38189,11 @@
             <para>If <c>true</c>, the TileMap's direct children will be drawn in order of their Y coordinate.</para>
             </summary>
         </member>
+        <member name="P:Godot.TileMap.ShowCollision">
+            <summary>
+            <para>If <c>true</c>, collision shapes are shown in the editor and at run-time. Requires Visible Collision Shapes to be enabled in the Debug menu for collision shapes to be visible at run-time.</para>
+            </summary>
+        </member>
         <member name="P:Godot.TileMap.CompatibilityMode">
             <summary>
             <para>If <c>true</c>, the compatibility with the tilemaps made in Godot 3.1 or earlier is maintained (textures move when the tile origin changes and rotate if the texture size is not homogeneous). This mode presents problems when doing <c>flip_h</c>, <c>flip_v</c> and <c>transpose</c> tile operations on non-homogeneous isometric tiles (e.g. 2:1), in which the texture could not coincide with the collision, thus it is not recommended for isometric or non-square tiles.</para>
@@ -38024,12 +38234,12 @@
         </member>
         <member name="P:Godot.TileMap.CollisionLayer">
             <summary>
-            <para>The collision layer(s) for all colliders in the TileMap. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The collision layer(s) for all colliders in the TileMap. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.TileMap.CollisionMask">
             <summary>
-            <para>The collision mask(s) for all colliders in the TileMap. See <a href="https://docs.godotengine.org/en/3.2/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
+            <para>The collision mask(s) for all colliders in the TileMap. See <a href="https://docs.godotengine.org/en/3.3/tutorials/physics/physics_introduction.html#collision-layers-and-masks">Collision layers and masks</a> in the documentation for more information.</para>
             </summary>
         </member>
         <member name="P:Godot.TileMap.OccluderLightMask">
@@ -38066,7 +38276,7 @@
             <para>If you need these to be immediately updated, you can call <see cref="M:Godot.TileMap.UpdateDirtyQuadrants"/>.</para>
             <para>Overriding this method also overrides it internally, allowing custom logic to be implemented when tiles are placed/removed:</para>
             <para><code>
-            func set_cell(x, y, tile, flip_x=false, flip_y=false, transpose=false, autotile_coord=Vector2())
+            func set_cell(x, y, tile, flip_x=false, flip_y=false, transpose=false, autotile_coord=Vector2()):
                 # Write your custom logic here.
                 # To call the default method:
                 .set_cell(x, y, tile, flip_x, flip_y, transpose, autotile_coord)
@@ -38140,13 +38350,23 @@
         </member>
         <member name="M:Godot.TileMap.MapToWorld(Godot.Vector2,System.Boolean)">
             <summary>
-            <para>Returns the local position corresponding to the given tilemap (grid-based) coordinates.</para>
+            <para>Returns the local position of the top left corner of the cell corresponding to the given tilemap (grid-based) coordinates.</para>
+            <para>To get the global position, use <see cref="M:Godot.Node2D.ToGlobal(Godot.Vector2)"/>:</para>
+            <para><code>
+            var local_position = my_tilemap.map_to_world(map_position)
+            var global_position = my_tilemap.to_global(local_position)
+            </code></para>
             <para>Optionally, the tilemap's half offset can be ignored.</para>
             </summary>
         </member>
         <member name="M:Godot.TileMap.WorldToMap(Godot.Vector2)">
             <summary>
             <para>Returns the tilemap (grid-based) coordinates corresponding to the given local position.</para>
+            <para>To use this with a global position, first determine the local position with <see cref="M:Godot.Node2D.ToLocal(Godot.Vector2)"/>:</para>
+            <para><code>
+            var local_position = my_tilemap.to_local(global_position)
+            var map_position = my_tilemap.world_to_map(local_position)
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.TileMap.UpdateDirtyQuadrants">
@@ -38515,7 +38735,7 @@
         <member name="T:Godot.Timer">
             <summary>
             <para>Counts down a specified interval and emits a signal on reaching 0. Can be set to repeat or "one-shot" mode.</para>
-            <para>Note: To create an one-shot timer without instantiating a node, use <see cref="M:Godot.SceneTree.CreateTimer(System.Single,System.Boolean)"/>.</para>
+            <para>Note: To create a one-shot timer without instantiating a node, use <see cref="M:Godot.SceneTree.CreateTimer(System.Single,System.Boolean)"/>.</para>
             </summary>
         </member>
         <member name="F:Godot.Timer.TimerProcessMode.Physics">
@@ -38587,7 +38807,7 @@
         </member>
         <member name="T:Godot.TouchScreenButton">
             <summary>
-            <para>TouchScreenButton allows you to create on-screen buttons for touch devices. It's intended for gameplay use, such as a unit you have to touch to move.</para>
+            <para>TouchScreenButton allows you to create on-screen buttons for touch devices. It's intended for gameplay use, such as a unit you have to touch to move. Unlike <see cref="T:Godot.Button"/>, TouchScreenButton supports multitouch out of the box. Several TouchScreenButtons can be pressed at the same time with touch input.</para>
             <para>This node inherits from <see cref="T:Godot.Node2D"/>. Unlike with <see cref="T:Godot.Control"/> nodes, you cannot set anchors on it. If you want to create menus or user interfaces, you may want to use <see cref="T:Godot.Button"/> nodes instead. To make button nodes react to touch events, you can enable the Emulate Mouse option in the Project Settings.</para>
             <para>You can configure TouchScreenButton to be visible only on touch devices, helping you develop your game both for desktop and mobile devices.</para>
             </summary>
@@ -38634,7 +38854,8 @@
         </member>
         <member name="P:Godot.TouchScreenButton.PassbyPress">
             <summary>
-            <para>If <c>true</c>, pass-by presses are enabled.</para>
+            <para>If <c>true</c>, the <c>pressed</c> and <c>released</c> signals are emitted whenever a pressed finger goes in and out of the button, even if the pressure started outside the active area of the button.</para>
+            <para>Note: this is a "pass-by" (not "bypass") press mode.</para>
             </summary>
         </member>
         <member name="P:Godot.TouchScreenButton.Action">
@@ -38893,6 +39114,11 @@
         <member name="M:Godot.Tree.GetEditedColumn">
             <summary>
             <para>Returns the column for the currently edited item.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.Tree.EditSelected">
+            <summary>
+            <para>Edits the selected tree item as if it was clicked. The item must be set editable with <see cref="M:Godot.TreeItem.SetEditable(System.Int32,System.Boolean)"/>. Returns <c>true</c> if the item could be edited. Fails if no item is selected.</para>
             </summary>
         </member>
         <member name="M:Godot.Tree.GetCustomPopupRect">
@@ -39331,7 +39557,7 @@
                     Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
             tween.start()
             </code></para>
-            <para>Many methods require a property name, such as <c>"position"</c> above. You can find the correct property name by hovering over the property in the Inspector. You can also provide the components of a property directly by using <c>"property:component"</c> (eg. <c>position:x</c>), where it would only apply to that particular component.</para>
+            <para>Many methods require a property name, such as <c>"position"</c> above. You can find the correct property name by hovering over the property in the Inspector. You can also provide the components of a property directly by using <c>"property:component"</c> (e.g. <c>position:x</c>), where it would only apply to that particular component.</para>
             <para>Many of the methods accept <c>trans_type</c> and <c>ease_type</c>. The first accepts an <see cref="T:Godot.Tween.TransitionType"/> constant, and refers to the way the timing of the animation is handled (see <a href="https://easings.net/">easings.net</a> for some examples). The second accepts an <see cref="T:Godot.Tween.EaseType"/> constant, and controls where the <c>trans_type</c> is applied to the interpolation (in the beginning, the end, or both). If you don't know which transition and easing to pick, you can try different <see cref="T:Godot.Tween.TransitionType"/> constants with , and use the one that looks best.</para>
             <para><a href="https://raw.githubusercontent.com/godotengine/godot-docs/master/img/tween_cheatsheet.png">Tween easing and transition types cheatsheet</a></para>
             </summary>
@@ -40300,6 +40526,7 @@
         <member name="P:Godot.VideoPlayer.StreamPosition">
             <summary>
             <para>The current position of the stream, in seconds.</para>
+            <para>Note: Changing this value won't have any effect as seeking is not implemented yet, except in video formats implemented by a GDNative add-on.</para>
             </summary>
         </member>
         <member name="P:Godot.VideoPlayer.Bus">
@@ -42190,7 +42417,7 @@
             <para>Resources are created using the <c>*_create</c> functions.</para>
             <para>All objects are drawn to a viewport. You can use the <see cref="T:Godot.Viewport"/> attached to the <see cref="T:Godot.SceneTree"/> or you can create one yourself with <see cref="M:Godot.VisualServer.ViewportCreate"/>. When using a custom scenario or canvas, the scenario or canvas needs to be attached to the viewport using <see cref="M:Godot.VisualServer.ViewportSetScenario(Godot.RID,Godot.RID)"/> or <see cref="M:Godot.VisualServer.ViewportAttachCanvas(Godot.RID,Godot.RID)"/>.</para>
             <para>In 3D, all visual objects must be associated with a scenario. The scenario is a visual representation of the world. If accessing the visual server from a running game, the scenario can be accessed from the scene tree from any <see cref="T:Godot.Spatial"/> node with <see cref="M:Godot.Spatial.GetWorld"/>. Otherwise, a scenario can be created with <see cref="M:Godot.VisualServer.ScenarioCreate"/>.</para>
-            <para>Similarly in 2D, a canvas is needed to draw all canvas items.</para>
+            <para>Similarly, in 2D, a canvas is needed to draw all canvas items.</para>
             <para>In 3D, all visible objects are comprised of a resource and an instance. A resource can be a mesh, a particle system, a light, or any other 3D object. In order to be visible resources must be attached to an instance using <see cref="M:Godot.VisualServer.InstanceSetBase(Godot.RID,Godot.RID)"/>. The instance must also be attached to the scenario using <see cref="M:Godot.VisualServer.InstanceSetScenario(Godot.RID,Godot.RID)"/> in order to be visible.</para>
             <para>In 2D, all visible objects are some form of canvas item. In order to be visible, a canvas item needs to be the child of a canvas attached to a viewport, or it needs to be the child of another canvas item that is eventually attached to the canvas.</para>
             </summary>
@@ -44174,6 +44401,16 @@
             <para>Returns the energy multiplier used by the lightmap capture.</para>
             </summary>
         </member>
+        <member name="M:Godot.VisualServer.LightmapCaptureSetInterior(Godot.RID,System.Boolean)">
+            <summary>
+            <para>Sets the "interior" mode for this lightmap capture. Equivalent to <see cref="P:Godot.BakedLightmapData.Interior"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.VisualServer.LightmapCaptureIsInterior(Godot.RID)">
+            <summary>
+            <para>Returns <c>true</c> if capture is in "interior" mode.</para>
+            </summary>
+        </member>
         <member name="M:Godot.VisualServer.ParticlesCreate">
             <summary>
             <para>Creates a particle system and adds it to the VisualServer. It can be accessed with the RID that is returned. This RID will be used in all <c>particles_*</c> VisualServer functions.</para>
@@ -44208,7 +44445,7 @@
         </member>
         <member name="M:Godot.VisualServer.ParticlesSetPreProcessTime(Godot.RID,System.Single)">
             <summary>
-            <para>Sets the preprocess time for the particles animation. This lets you delay starting an animation until after the particles have begun emitting. Equivalent to <see cref="P:Godot.Particles.Preprocess"/>.</para>
+            <para>Sets the preprocess time for the particles' animation. This lets you delay starting an animation until after the particles have begun emitting. Equivalent to <see cref="P:Godot.Particles.Preprocess"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.VisualServer.ParticlesSetExplosivenessRatio(Godot.RID,System.Single)">
@@ -44708,7 +44945,7 @@
         </member>
         <member name="M:Godot.VisualServer.InstanceSetExtraVisibilityMargin(Godot.RID,System.Single)">
             <summary>
-            <para>Sets a margin to increase the size of the AABB when culling objects from the view frustum. This allows you avoid culling objects that fall outside the view frustum. Equivalent to <see cref="P:Godot.GeometryInstance.ExtraCullMargin"/>.</para>
+            <para>Sets a margin to increase the size of the AABB when culling objects from the view frustum. This allows you to avoid culling objects that fall outside the view frustum. Equivalent to <see cref="P:Godot.GeometryInstance.ExtraCullMargin"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.VisualServer.InstanceGeometrySetFlag(Godot.RID,Godot.VisualServer.InstanceFlags,System.Boolean)">
@@ -45682,7 +45919,7 @@
         </member>
         <member name="M:Godot.VisualShaderNodeCustom._GetCategory">
             <summary>
-            <para>Override this method to define the category of the associated custom node in the Visual Shader Editor's members dialog.</para>
+            <para>Override this method to define the category of the associated custom node in the Visual Shader Editor's members dialog. The path may look like <c>"MyGame/MyFunctions/Noise"</c>.</para>
             <para>Defining this method is optional. If not overridden, the node will be filed under the "Custom" category.</para>
             </summary>
         </member>
@@ -45765,7 +46002,7 @@
         </member>
         <member name="T:Godot.VisualShaderNodeDeterminant">
             <summary>
-            <para>Translates to <c>deteminant(x)</c> in the shader language.</para>
+            <para>Translates to <c>determinant(x)</c> in the shader language.</para>
             </summary>
         </member>
         <member name="T:Godot.VisualShaderNodeDotProduct">
@@ -45776,7 +46013,7 @@
         <member name="T:Godot.VisualShaderNodeExpression">
             <summary>
             <para>Custom Godot Shading Language expression, with a custom amount of input and output ports.</para>
-            <para>The provided code is directly injected into the graph's matching shader function (<c>vertex</c>, <c>fragment</c>, or <c>light</c>), so it cannot be used to to declare functions, varyings, uniforms, or global constants. See <see cref="T:Godot.VisualShaderNodeGlobalExpression"/> for such global definitions.</para>
+            <para>The provided code is directly injected into the graph's matching shader function (<c>vertex</c>, <c>fragment</c>, or <c>light</c>), so it cannot be used to declare functions, varyings, uniforms, or global constants. See <see cref="T:Godot.VisualShaderNodeGlobalExpression"/> for such global definitions.</para>
             </summary>
         </member>
         <member name="P:Godot.VisualShaderNodeExpression.Expression">
@@ -45786,7 +46023,7 @@
         </member>
         <member name="T:Godot.VisualShaderNodeFaceForward">
             <summary>
-            <para>Translates to <c>faceforward(N, I, Nref)</c> in the shader language. The function has three vector parameters: <c>N</c>, the vector to orient, <c>I</c>, the incident vector, and <c>Nref</c>, the reference vector. If the dot product of <c>I</c> and <c>Nref</c> is smaller than zero the return value is <c>N</c>. Otherwise <c>-N</c> is returned.</para>
+            <para>Translates to <c>faceforward(N, I, Nref)</c> in the shader language. The function has three vector parameters: <c>N</c>, the vector to orient, <c>I</c>, the incident vector, and <c>Nref</c>, the reference vector. If the dot product of <c>I</c> and <c>Nref</c> is smaller than zero the return value is <c>N</c>. Otherwise, <c>-N</c> is returned.</para>
             </summary>
         </member>
         <member name="T:Godot.VisualShaderNodeFresnel">
@@ -45816,7 +46053,7 @@
         </member>
         <member name="M:Godot.VisualShaderNodeGroupBase.GetInputs">
             <summary>
-            <para>Returns a <see cref="T:System.String"/> description of the input ports as as colon-separated list using the format <c>id,type,name;</c> (see <see cref="M:Godot.VisualShaderNodeGroupBase.AddInputPort(System.Int32,System.Int32,System.String)"/>).</para>
+            <para>Returns a <see cref="T:System.String"/> description of the input ports as a colon-separated list using the format <c>id,type,name;</c> (see <see cref="M:Godot.VisualShaderNodeGroupBase.AddInputPort(System.Int32,System.Int32,System.String)"/>).</para>
             </summary>
         </member>
         <member name="M:Godot.VisualShaderNodeGroupBase.SetOutputs(System.String)">
@@ -45826,7 +46063,7 @@
         </member>
         <member name="M:Godot.VisualShaderNodeGroupBase.GetOutputs">
             <summary>
-            <para>Returns a <see cref="T:System.String"/> description of the output ports as as colon-separated list using the format <c>id,type,name;</c> (see <see cref="M:Godot.VisualShaderNodeGroupBase.AddOutputPort(System.Int32,System.Int32,System.String)"/>).</para>
+            <para>Returns a <see cref="T:System.String"/> description of the output ports as a colon-separated list using the format <c>id,type,name;</c> (see <see cref="M:Godot.VisualShaderNodeGroupBase.AddOutputPort(System.Int32,System.Int32,System.String)"/>).</para>
             </summary>
         </member>
         <member name="M:Godot.VisualShaderNodeGroupBase.IsValidPortName(System.String)">
@@ -46895,6 +47132,7 @@
             <para>If <c>true</c> is passed as <c>gd_mp_api</c>, the client will behave like a network peer for the <see cref="T:Godot.MultiplayerAPI"/>, connections to non-Godot servers will not work, and <c>data_received</c> will not be emitted.</para>
             <para>If <c>false</c> is passed instead (default), you must call <see cref="T:Godot.PacketPeer"/> functions (<c>put_packet</c>, <c>get_packet</c>, etc.) on the <see cref="T:Godot.WebSocketPeer"/> returned via <c>get_peer(1)</c> and not on this object directly (e.g. <c>get_peer(1).put_packet(data)</c>).</para>
             <para>You can optionally pass a list of <c>custom_headers</c> to be added to the handshake HTTP request.</para>
+            <para>Note: To avoid mixed content warnings or errors in HTML5, you may have to use a <c>url</c> that starts with <c>wss://</c> (secure) instead of <c>ws://</c>. When doing so, make sure to use the fully qualified domain name that matches the one defined in the server's SSL certificate. Do not connect directly via the IP address for <c>wss://</c> connections, as it won't match with the SSL certificate.</para>
             <para>Note: Specifying <c>custom_headers</c> is not supported in HTML5 exports due to browsers restrictions.</para>
             </summary>
             <param name="protocols">If the parameter is null, then the default value is new string[] {}</param>
@@ -47532,7 +47770,7 @@
         <member name="M:Godot.ClassDB.ClassGetMethodList(System.String,System.Boolean)">
             <summary>
             <para>Returns an array with all the methods of <c>class</c> or its ancestry if <c>no_inheritance</c> is <c>false</c>. Every element of the array is a <see cref="T:Godot.Collections.Dictionary"/> with the following keys: <c>args</c>, <c>default_args</c>, <c>flags</c>, <c>id</c>, <c>name</c>, <c>return: (class_name, hint, hint_string, name, type, usage)</c>.</para>
-            <para>Note:[/code] In exported release builds the debug info is not available, so the returned dictionaries will contain only method names.</para>
+            <para>Note: In exported release builds the debug info is not available, so the returned dictionaries will contain only method names.</para>
             </summary>
         </member>
         <member name="M:Godot.ClassDB.ClassGetIntegerConstantList(System.String,System.Boolean)">
@@ -47564,6 +47802,7 @@
             <summary>
             <para>Directory type. It is used to manage directories and their content (not restricted to the project folder).</para>
             <para>When creating a new <see cref="T:Godot.Directory"/>, its default opened directory will be <c>res://</c>. This may change in the future, so it is advised to always use <see cref="M:Godot.Directory.Open(System.String)"/> to initialize your <see cref="T:Godot.Directory"/> where you want to operate, with explicit error checking.</para>
+            <para>Note: Many resources types are imported (e.g. textures or sound files), and their source asset will not be included in the exported game, as only the imported version is used. Use <see cref="T:Godot.ResourceLoader"/> to access imported resources.</para>
             <para>Here is an example on how to iterate through the files of a directory:</para>
             <para><code>
             func dir_contents(path):
@@ -47608,7 +47847,7 @@
         </member>
         <member name="M:Godot.Directory.ListDirEnd">
             <summary>
-            <para>Closes the current stream opened with <see cref="M:Godot.Directory.ListDirBegin(System.Boolean,System.Boolean)"/> (whether it has been fully processed with <see cref="M:Godot.Directory.GetNext"/> or not does not matter).</para>
+            <para>Closes the current stream opened with <see cref="M:Godot.Directory.ListDirBegin(System.Boolean,System.Boolean)"/> (whether it has been fully processed with <see cref="M:Godot.Directory.GetNext"/> does not matter).</para>
             </summary>
         </member>
         <member name="M:Godot.Directory.GetDriveCount">
@@ -47618,7 +47857,7 @@
         </member>
         <member name="M:Godot.Directory.GetDrive(System.Int32)">
             <summary>
-            <para>On Windows, returns the name of the drive (partition) passed as an argument (e.g. <c>C:</c>). On other platforms, or if the requested drive does not existed, the method returns an empty String.</para>
+            <para>On Windows, returns the name of the drive (partition) passed as an argument (e.g. <c>C:</c>). On other platforms, or if the requested drive does not exist, the method returns an empty String.</para>
             </summary>
         </member>
         <member name="M:Godot.Directory.GetCurrentDrive">
@@ -47689,7 +47928,15 @@
         </member>
         <member name="P:Godot.Engine.EditorHint">
             <summary>
-            <para>If <c>true</c>, it is running inside the editor. Useful for tool scripts.</para>
+            <para>If <c>true</c>, the script is currently running inside the editor. This is useful for <c>tool</c> scripts to conditionally draw editor helpers, or prevent accidentally running "game" code that would affect the scene state while in the editor:</para>
+            <para><code>
+            if Engine.editor_hint:
+                draw_gizmos()
+            else:
+                simulate_physics()
+            </code></para>
+            <para>See <a href="https://docs.godotengine.org/en/stable/tutorials/misc/running_code_in_the_editor.html">Running code in the editor</a> in the documentation for more information.</para>
+            <para>Note: To detect whether the script is run from an editor build (e.g. when pressing <c>F5</c>), use <see cref="M:Godot.OS.HasFeature(System.String)"/> with the <c>"editor"</c> argument instead. <c>OS.has_feature("editor")</c> will evaluate to <c>true</c> both when the code is running in the editor and when running the project from the editor, but it will evaluate to <c>false</c> when the code is run from an exported project.</para>
             </summary>
         </member>
         <member name="P:Godot.Engine.IterationsPerSecond">
@@ -47709,7 +47956,7 @@
         </member>
         <member name="P:Godot.Engine.PhysicsJitterFix">
             <summary>
-            <para>Controls how much physics ticks are synchronized with real time. For 0 or less, the ticks are synchronized. Such values are recommended for network games, where clock synchronization matters. Higher values cause higher deviation of in-game clock and real clock, but allows to smooth out framerate jitters. The default value of 0.5 should be fine for most; values above 2 could cause the game to react to dropped frames with a noticeable delay and are not recommended.</para>
+            <para>Controls how much physics ticks are synchronized with real time. For 0 or less, the ticks are synchronized. Such values are recommended for network games, where clock synchronization matters. Higher values cause higher deviation of in-game clock and real clock, but allows smoothing out framerate jitters. The default value of 0.5 should be fine for most; values above 2 could cause the game to react to dropped frames with a noticeable delay and are not recommended.</para>
             </summary>
         </member>
         <member name="M:Godot.Engine.GetPhysicsInterpolationFraction">
@@ -47828,8 +48075,9 @@
                 file.close()
                 return content
             </code></para>
-            <para>In the example above, the file will be saved in the user data folder as specified in the <a href="https://docs.godotengine.org/en/3.2/tutorials/io/data_paths.html">Data paths</a> documentation.</para>
+            <para>In the example above, the file will be saved in the user data folder as specified in the <a href="https://docs.godotengine.org/en/3.3/tutorials/io/data_paths.html">Data paths</a> documentation.</para>
             <para>Note: To access project resources once exported, it is recommended to use <see cref="T:Godot.ResourceLoader"/> instead of the <see cref="T:Godot.File"/> API, as some files are converted to engine-specific formats and their original source files might not be present in the exported PCK package.</para>
+            <para>Note: Files are automatically closed only if the process exits "normally" (such as by clicking the window manager's close button or pressing Alt + F4). If you stop the project execution by pressing F8 while the project is running, the file won't be closed as the game process will be killed. You can work around this by calling <see cref="M:Godot.File.Flush"/> at regular intervals.</para>
             </summary>
         </member>
         <member name="F:Godot.File.CompressionMode.Fastlz">
@@ -47900,9 +48148,15 @@
             <para>Opens the file for writing or reading, depending on the flags.</para>
             </summary>
         </member>
+        <member name="M:Godot.File.Flush">
+            <summary>
+            <para>Writes the file's buffer to disk. Flushing is automatically performed when the file is closed. This means you don't need to call <see cref="M:Godot.File.Flush"/> manually before closing a file using <see cref="M:Godot.File.Close"/>. Still, calling <see cref="M:Godot.File.Flush"/> can be used to ensure the data is safe even if the project crashes instead of being closed gracefully.</para>
+            <para>Note: Only call <see cref="M:Godot.File.Flush"/> when you actually need it. Otherwise, it will decrease performance due to constant disk writes.</para>
+            </summary>
+        </member>
         <member name="M:Godot.File.Close">
             <summary>
-            <para>Closes the currently opened file.</para>
+            <para>Closes the currently opened file and prevents subsequent read/write operations. Use <see cref="M:Godot.File.Flush"/> to persist the data to disk without closing the file.</para>
             </summary>
         </member>
         <member name="M:Godot.File.GetPath">
@@ -48334,7 +48588,7 @@
         <member name="M:Godot.Geometry.MergePolygons2d(Godot.Vector2[],Godot.Vector2[])">
             <summary>
             <para>Merges (combines) <c>polygon_a</c> and <c>polygon_b</c> and returns an array of merged polygons. This performs  between polygons.</para>
-            <para>The operation may result in an outer polygon (boundary) and inner polygon (hole) produced which could be distinguished by calling <see cref="M:Godot.Geometry.IsPolygonClockwise(Godot.Vector2[])"/>.</para>
+            <para>The operation may result in an outer polygon (boundary) and multiple inner polygons (holes) produced which could be distinguished by calling <see cref="M:Godot.Geometry.IsPolygonClockwise(Godot.Vector2[])"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.Geometry.ClipPolygons2d(Godot.Vector2[],Godot.Vector2[])">
@@ -49171,12 +49425,20 @@
         </member>
         <member name="M:Godot.OS.GetEnvironment(System.String)">
             <summary>
-            <para>Returns an environment variable.</para>
+            <para>Returns the value of an environment variable. Returns an empty string if the environment variable doesn't exist.</para>
+            <para>Note: Double-check the casing of <c>variable</c>. Environment variable names are case-sensitive on all platforms except Windows.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.OS.SetEnvironment(System.String,System.String)">
+            <summary>
+            <para>Sets the value of the environment variable <c>variable</c> to <c>value</c>. The environment variable will be set for the Godot process and any process executed with <see cref="M:Godot.OS.Execute(System.String,System.String[],System.Boolean,Godot.Collections.Array,System.Boolean)"/> after running <see cref="M:Godot.OS.SetEnvironment(System.String,System.String)"/>. The environment variable will not persist to processes run after the Godot process was terminated.</para>
+            <para>Note: Double-check the casing of <c>variable</c>. Environment variable names are case-sensitive on all platforms except Windows.</para>
             </summary>
         </member>
         <member name="M:Godot.OS.HasEnvironment(System.String)">
             <summary>
-            <para>Returns <c>true</c> if an environment variable exists.</para>
+            <para>Returns <c>true</c> if the environment variable with the name <c>variable</c> exists.</para>
+            <para>Note: Double-check the casing of <c>variable</c>. Environment variable names are case-sensitive on all platforms except Windows.</para>
             </summary>
         </member>
         <member name="M:Godot.OS.GetName">
@@ -49222,7 +49484,7 @@
         </member>
         <member name="M:Godot.OS.GetUnixTime">
             <summary>
-            <para>Returns the current UNIX epoch timestamp.</para>
+            <para>Returns the current UNIX epoch timestamp in seconds.</para>
             <para>Important: This is the system clock that the user can manully set. Never use this method for precise time calculation since its results are also subject to automatic adjustments by the operating system. Always use <see cref="M:Godot.OS.GetTicksUsec"/> or <see cref="M:Godot.OS.GetTicksMsec"/> for precise time calculation instead, since they are guaranteed to be monotonic (i.e. never decrease).</para>
             </summary>
         </member>
@@ -49236,6 +49498,7 @@
             <summary>
             <para>Gets an epoch time value from a dictionary of time values.</para>
             <para><c>datetime</c> must be populated with the following keys: <c>year</c>, <c>month</c>, <c>day</c>, <c>hour</c>, <c>minute</c>, <c>second</c>.</para>
+            <para>If the dictionary is empty <c>0</c> is returned.</para>
             <para>You can pass the output from <see cref="M:Godot.OS.GetDatetimeFromUnixTime(System.Int64)"/> directly into this function. Daylight Savings Time (<c>dst</c>), if present, is ignored.</para>
             </summary>
         </member>
@@ -49263,14 +49526,14 @@
             <para>Note: This method is implemented on HTML5, Linux, macOS and Windows.</para>
             </summary>
         </member>
-        <member name="M:Godot.OS.DelayUsec(System.UInt32)">
+        <member name="M:Godot.OS.DelayUsec(System.Int32)">
             <summary>
-            <para>Delay execution of the current thread by <c>usec</c> microseconds.</para>
+            <para>Delay execution of the current thread by <c>usec</c> microseconds. <c>usec</c> must be greater than or equal to <c>0</c>. Otherwise, <see cref="M:Godot.OS.DelayUsec(System.Int32)"/> will do nothing and will print an error message.</para>
             </summary>
         </member>
-        <member name="M:Godot.OS.DelayMsec(System.UInt32)">
+        <member name="M:Godot.OS.DelayMsec(System.Int32)">
             <summary>
-            <para>Delay execution of the current thread by <c>msec</c> milliseconds.</para>
+            <para>Delay execution of the current thread by <c>msec</c> milliseconds. <c>usec</c> must be greater than or equal to <c>0</c>. Otherwise, <see cref="M:Godot.OS.DelayMsec(System.Int32)"/> will do nothing and will print an error message.</para>
             </summary>
         </member>
         <member name="M:Godot.OS.GetTicksMsec">
@@ -49529,7 +49792,7 @@
         </member>
         <member name="M:Godot.OS.HasFeature(System.String)">
             <summary>
-            <para>Returns <c>true</c> if the feature for the given feature tag is supported in the currently running instance, depending on platform, build etc. Can be used to check whether you're currently running a debug build, on a certain platform or arch, etc. Refer to the <a href="https://docs.godotengine.org/en/3.2/getting_started/workflow/export/feature_tags.html">Feature Tags</a> documentation for more details.</para>
+            <para>Returns <c>true</c> if the feature for the given feature tag is supported in the currently running instance, depending on platform, build etc. Can be used to check whether you're currently running a debug build, on a certain platform or arch, etc. Refer to the <a href="https://docs.godotengine.org/en/3.3/getting_started/workflow/export/feature_tags.html">Feature Tags</a> documentation for more details.</para>
             <para>Note: Tag names are case-sensitive.</para>
             </summary>
         </member>

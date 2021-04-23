@@ -545,12 +545,12 @@
         </member>
         <member name="T:Godot.EditorInspectorPlugin">
             <summary>
-            <para>This plugins allows adding custom property editors to <see cref="T:Godot.EditorInspector"/>.</para>
+            <para>These plugins allow adding custom property editors to <see cref="T:Godot.EditorInspector"/>.</para>
             <para>Plugins are registered via <see cref="M:Godot.EditorPlugin.AddInspectorPlugin(Godot.EditorInspectorPlugin)"/>.</para>
             <para>When an object is edited, the <see cref="M:Godot.EditorInspectorPlugin.CanHandle(Godot.Object)"/> function is called and must return <c>true</c> if the object type is supported.</para>
             <para>If supported, the function <see cref="M:Godot.EditorInspectorPlugin.ParseBegin(Godot.Object)"/> will be called, allowing to place custom controls at the beginning of the class.</para>
             <para>Subsequently, the <see cref="M:Godot.EditorInspectorPlugin.ParseCategory(Godot.Object,System.String)"/> and <see cref="M:Godot.EditorInspectorPlugin.ParseProperty(Godot.Object,System.Int32,System.String,System.Int32,System.String,System.Int32)"/> are called for every category and property. They offer the ability to add custom controls to the inspector too.</para>
-            <para>Finally <see cref="M:Godot.EditorInspectorPlugin.ParseEnd"/> will be called.</para>
+            <para>Finally, <see cref="M:Godot.EditorInspectorPlugin.ParseEnd"/> will be called.</para>
             <para>On each of these calls, the "add" functions can be called.</para>
             </summary>
         </member>
@@ -630,9 +630,20 @@
             <para>Returns the main container of Godot editor's window. For example, you can use it to retrieve the size of the container and place your controls accordingly.</para>
             </summary>
         </member>
+        <member name="M:Godot.EditorInterface.GetEditorScale">
+            <summary>
+            <para>Returns the actual scale of the editor UI (<c>1.0</c> being 100% scale). This can be used to adjust position and dimensions of the UI added by plugins.</para>
+            <para>Note: This value is set via the <c>interface/editor/display_scale</c> and <c>interface/editor/custom_display_scale</c> editor settings. Editor must be restarted for changes to be properly applied.</para>
+            </summary>
+        </member>
         <member name="M:Godot.EditorInterface.EditResource(Godot.Resource)">
             <summary>
             <para>Edits the given <see cref="T:Godot.Resource"/>.</para>
+            </summary>
+        </member>
+        <member name="M:Godot.EditorInterface.EditNode(Godot.Node)">
+            <summary>
+            <para>Edits the given <see cref="T:Godot.Node"/>. The node will be also selected if it's inside the scene tree.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorInterface.OpenSceneFromPath(System.String)">
@@ -772,6 +783,12 @@
             <para>This is used, for example, in shader editors to let the plugin know that it must apply the shader code being written by the user to the object.</para>
             </summary>
         </member>
+        <member name="M:Godot.EditorPlugin.Build">
+            <summary>
+            <para>This method is called when the editor is about to run the project. The plugin can then perform required operations before the project runs.</para>
+            <para>This method must return a boolean. If this method returns <c>false</c>, the project will not run. The run is aborted immediately, so this also prevents all other plugins' <see cref="M:Godot.EditorPlugin.Build"/> methods from running.</para>
+            </summary>
+        </member>
         <member name="M:Godot.EditorPlugin.Clear">
             <summary>
             <para>Clear all the state and reset the object being edited to zero. This ensures your plugin does not keep editing a currently existing node, or a node from the wrong scene.</para>
@@ -798,7 +815,7 @@
             <para><code>
             func forward_canvas_draw_over_viewport(overlay):
                 # Draw a circle at cursor position.
-                overlay.draw_circle(overlay.get_local_mouse_position(), 64)
+                overlay.draw_circle(overlay.get_local_mouse_position(), 64, Color.white)
             
             func forward_canvas_gui_input(event):
                 if event is InputEventMouseMotion:
@@ -1309,6 +1326,7 @@
         <member name="M:Godot.EditorSelection.AddNode(Godot.Node)">
             <summary>
             <para>Adds a node to the selection.</para>
+            <para>Note: The newly selected node will not be automatically edited in the inspector. If you want to edit a node, use <see cref="M:Godot.EditorInterface.EditNode(Godot.Node)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorSelection.RemoveNode(Godot.Node)">
@@ -1595,7 +1613,7 @@
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.IsSelectableWhenHidden">
             <summary>
-            <para>Override this method to define whether Spatial with this gizmo should be selecteble even when the gizmo is hidden.</para>
+            <para>Override this method to define whether a Spatial with this gizmo should be selectable even when the gizmo is hidden.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorSpatialGizmoPlugin.Redraw(Godot.EditorSpatialGizmo)">
@@ -1656,7 +1674,7 @@
         </member>
         <member name="M:Godot.EditorVCSInterface.GetModifiedFilesData">
             <summary>
-            <para>Returns a <see cref="T:Godot.Collections.Dictionary"/> containing the path of the detected file change mapped to an integer signifying what kind of a change the corresponding file has experienced.</para>
+            <para>Returns a <see cref="T:Godot.Collections.Dictionary"/> containing the path of the detected file change mapped to an integer signifying what kind of change the corresponding file has experienced.</para>
             <para>The following integer values are being used to signify that the detected file is:</para>
             <para>- <c>0</c>: New to the VCS working directory</para>
             <para>- <c>1</c>: Modified</para>
