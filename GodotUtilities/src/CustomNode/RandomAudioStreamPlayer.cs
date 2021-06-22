@@ -1,8 +1,7 @@
 using System.Linq;
 using Godot;
-using GodotUtilities;
 
-namespace Game.CustomNode
+namespace GodotUtilities.CustomNode
 {
     [Tool]
     public class RandomAudioStreamPlayer : Node
