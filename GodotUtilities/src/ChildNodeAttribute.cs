@@ -29,12 +29,14 @@ namespace GodotUtilities
             foreach (var memberInfo in fields)
             {
                 SetChildNode(n, memberInfo, lowerCaseChildNameToChild);
+                SetParentNode(n, memberInfo);
             }
 
             var properties = n.GetType().GetProperties(BINDING_FLAGS);
             foreach (var memberInfo in properties)
             {
                 SetChildNode(n, memberInfo, lowerCaseChildNameToChild);
+                SetParentNode(n, memberInfo);
             }
         }
 
@@ -60,6 +62,18 @@ namespace GodotUtilities
                 }
             }
             SetMemberValue(node, memberInfo, childNode);
+        }
+
+        private static void SetParentNode(Node node, MemberInfo memberInfo)
+        {
+            var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(ParentAttribute));
+            if (!(attribute is ParentAttribute))
+            {
+                return;
+            }
+
+            Node parentNode = node.GetParent();
+            SetMemberValue(node, memberInfo, parentNode);
         }
 
         private static void SetMemberValue(Node node, MemberInfo memberInfo, Node childNode)
