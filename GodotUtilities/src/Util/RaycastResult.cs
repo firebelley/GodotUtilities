@@ -19,12 +19,12 @@ namespace GodotUtilities.Util
         {
             FromPosition = from;
             ToPosition = to;
-            Position = (Vector2) resultDict["position"];
-            Normal = (Vector2) resultDict["normal"];
-            Collider = (Object) resultDict["collider"];
-            ColliderId = (int) resultDict["collider_id"];
-            RID = (RID) resultDict["rid"];
-            Shape = (int) resultDict["shape"];
+            Position = (Vector2)resultDict["position"];
+            Normal = (Vector2)resultDict["normal"];
+            Collider = (Object)resultDict["collider"];
+            ColliderId = (int)resultDict["collider_id"];
+            RID = (RID)resultDict["rid"];
+            Shape = (int)resultDict["shape"];
             Metadata = resultDict["metadata"];
         }
     }

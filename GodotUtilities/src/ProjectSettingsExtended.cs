@@ -6,7 +6,7 @@ namespace GodotUtilities
     {
         public static T GetSettingOrDefault<T>(string name)
         {
-            return ProjectSettings.HasSetting(name) ? (T) ProjectSettings.GetSetting(name) : default;
+            return ProjectSettings.HasSetting(name) ? (T)ProjectSettings.GetSetting(name) : default;
         }
 
         public static T GetDebugSettingOrDefault<T>(string name)

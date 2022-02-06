@@ -8,12 +8,9 @@ namespace GodotUtilities.Collections
         private readonly Dictionary<TKey, TValue> _keyToValue = new Dictionary<TKey, TValue>();
         private readonly Dictionary<TValue, TKey> _valueToKey = new Dictionary<TValue, TKey>();
 
-        public TValue this [TKey key]
+        public TValue this[TKey key]
         {
-            get
-            {
-                return _keyToValue[key];
-            }
+            get => _keyToValue[key];
             set
             {
                 if (_keyToValue.ContainsKey(key))
@@ -26,12 +23,9 @@ namespace GodotUtilities.Collections
             }
         }
 
-        public TKey this [TValue val]
+        public TKey this[TValue val]
         {
-            get
-            {
-                return _valueToKey[val];
-            }
+            get => _valueToKey[val];
             set
             {
                 if (_valueToKey.ContainsKey(val))
