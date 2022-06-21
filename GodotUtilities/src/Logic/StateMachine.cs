@@ -1,83 +1,78 @@
 ﻿using System.Collections.Generic;
+using Godot;
 
 namespace GodotUtilities.Logic
 {
-    public class StateMachine<T>
+    public class StateMachine<T> : Resource
     {
         public delegate void StateDelegate();
 
-        private T _currentState;
-        private T _nextState;
-        private bool _forceNew;
-        private bool _isStateNew;
+        private T currentState;
 
-        private readonly Dictionary<T, StateDelegate> _states = new Dictionary<T, StateDelegate>();
-        private readonly Dictionary<StateDelegate, T> _delegates = new Dictionary<StateDelegate, T>();
-        private readonly Dictionary<T, StateDelegate> _leaveStates = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<T, StateDelegate> states = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<StateDelegate, T> delegates = new Dictionary<StateDelegate, T>();
+        private readonly Dictionary<T, StateDelegate> leaveStates = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<T, StateDelegate> enterStates = new Dictionary<T, StateDelegate>();
 
         public void AddState(T state, StateDelegate del)
         {
-            _states.Add(state, del);
-            _delegates.Add(del, state);
+            states.Add(state, del);
+            delegates.Add(del, state);
         }
 
         public void AddLeaveState(T stateToLeave, StateDelegate del)
         {
-            _leaveStates.Add(stateToLeave, del);
+            leaveStates.Add(stateToLeave, del);
+        }
+
+        public void AddEnterState(T enterState, StateDelegate del)
+        {
+            enterStates.Add(enterState, del);
         }
 
         public void ChangeState(T state)
         {
-            _nextState = state;
+            CallDeferred(nameof(SetState), state);
         }
 
         public void ChangeState(StateDelegate stateDelegate)
         {
-            _nextState = _delegates[stateDelegate];
-        }
-
-        public bool IsStateNew()
-        {
-            return _isStateNew;
-        }
-
-        public T GetNextState()
-        {
-            return _nextState;
+            ChangeState(delegates[stateDelegate]);
         }
 
         public void SetInitialState(T state)
         {
-            _currentState = state;
-            _nextState = state;
-            _forceNew = true;
+            SetState(state);
         }
 
         public void SetInitialState(StateDelegate del)
         {
-            SetInitialState(_delegates[del]);
+            SetInitialState(delegates[del]);
         }
 
         public T GetCurrentState()
         {
-            return _currentState;
+            return currentState;
         }
 
         public void Update()
         {
-            var statesDifferent = !_currentState.Equals(_nextState);
-            _isStateNew = statesDifferent || _forceNew;
-
-            if (statesDifferent && _leaveStates.ContainsKey(_currentState))
+            if (states.ContainsKey(currentState))
             {
-                _leaveStates[_currentState]();
+                states[currentState]();
             }
+        }
 
-            _currentState = _nextState;
-            _forceNew = false;
-            if (_states.ContainsKey(_currentState))
+        private void SetState(T state)
+        {
+            if (leaveStates.ContainsKey(currentState))
             {
-                _states[_currentState]();
+                leaveStates[currentState]();
+            }
+            currentState = state;
+            if (enterStates.ContainsKey(currentState))
+            {
+                enterStates[currentState]();
             }
         }
     }

@@ -119,5 +119,10 @@ namespace GodotUtilities
             if (count == 0) return null;
             return n.GetChild(count - 1);
         }
+
+        public static void QueueFreeDeferred(this Node n)
+        {
+            n.CallDeferred("queue_free");
+        }
     }
 }
