@@ -48,7 +48,7 @@ namespace GodotUtilities
                 return;
             }
 
-            Node childNode = null;
+            Node childNode;
             if (childNodeAttribute.NodePath != null)
             {
                 childNode = node.GetNodeOrNull(childNodeAttribute.NodePath);
@@ -60,6 +60,15 @@ namespace GodotUtilities
                 {
                     childNode = lowerCaseChildNameToChild[lowerCaseName];
                 }
+                else
+                {
+                    childNode = TryGetUniqueNode(node, memberInfo);
+                }
+            }
+            if (childNode == null)
+            {
+                var filename = !string.IsNullOrEmpty(node.Filename) ? node.Filename : "the scene.";
+                GD.PrintErr($"Could not match member {memberInfo.Name} to any Node in {filename}.");
             }
             SetMemberValue(node, memberInfo, childNode);
         }
@@ -91,6 +100,18 @@ namespace GodotUtilities
         private static string InferNodeName(IEnumerable<string> lowerCaseChildNames, MemberInfo memberInfo)
         {
             return lowerCaseChildNames.Where(x => memberInfo.Name.ToLower().Contains(x)).OrderByDescending(x => x.Length).FirstOrDefault();
+        }
+
+        private static Node TryGetUniqueNode(Node node, MemberInfo memberInfo)
+        {
+            var name = memberInfo.Name;
+            var child = node.GetNodeOrNull($"%{name}");
+            if (child == null && name.Length > 1)
+            {
+                name = name[0].ToString().ToUpper() + name.Substring(1);
+                child = node.GetNodeOrNull($"%{name}");
+            }
+            return child;
         }
     }
 }
