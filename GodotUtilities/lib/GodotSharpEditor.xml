@@ -179,7 +179,7 @@
         </member>
         <member name="M:Godot.EditorFeatureProfile.SaveToFile(System.String)">
             <summary>
-            <para>Saves the editor feature profile to a file in JSON format. It can then be imported using the feature profile manager's Import button or the <see cref="M:Godot.EditorFeatureProfile.LoadFromFile(System.String)"/> button.</para>
+            <para>Saves the editor feature profile to a file in JSON format. It can then be imported using the feature profile manager's Import button or the <see cref="M:Godot.EditorFeatureProfile.LoadFromFile(System.String)"/> method.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorFeatureProfile.LoadFromFile(System.String)">
@@ -312,7 +312,7 @@
         </member>
         <member name="M:Godot.EditorFileSystem.IsScanning">
             <summary>
-            <para>Returns <c>true</c> of the filesystem is being scanned.</para>
+            <para>Returns <c>true</c> if the filesystem is being scanned.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorFileSystem.GetScanningProgress">
@@ -946,12 +946,26 @@
         </member>
         <member name="M:Godot.EditorPlugin.GetState">
             <summary>
-            <para>Gets the state of your plugin editor. This is used when saving the scene (so state is kept when opening it again) and for switching tabs (so state can be restored when the tab returns).</para>
+            <para>Override this method to provide a state data you want to be saved, like view position, grid settings, folding, etc. This is used when saving the scene (so state is kept when opening it again) and for switching tabs (so state can be restored when the tab returns). This data is automatically saved for each scene in an <c>editstate</c> file in the editor metadata folder. If you want to store global (scene-independent) editor data for your plugin, you can use <see cref="M:Godot.EditorPlugin.GetWindowLayout(Godot.ConfigFile)"/> instead.</para>
+            <para>Use <see cref="M:Godot.EditorPlugin.SetState(Godot.Collections.Dictionary)"/> to restore your saved state.</para>
+            <para>Note: This method should not be used to save important settings that should persist with the project.</para>
+            <para>Note: You must implement <see cref="M:Godot.EditorPlugin.GetPluginName"/> for the state to be stored and restored correctly.</para>
+            <para><code>
+            func get_state():
+                var state = {"zoom": zoom, "preferred_color": my_color}
+                return state
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.GetWindowLayout(Godot.ConfigFile)">
             <summary>
-            <para>Gets the GUI layout of the plugin. This is used to save the project's editor layout when <see cref="M:Godot.EditorPlugin.QueueSaveLayout"/> is called or the editor layout was changed(For example changing the position of a dock).</para>
+            <para>Override this method to provide the GUI layout of the plugin or any other data you want to be stored. This is used to save the project's editor layout when <see cref="M:Godot.EditorPlugin.QueueSaveLayout"/> is called or the editor layout was changed (for example changing the position of a dock). The data is stored in the <c>editor_layout.cfg</c> file in the editor metadata directory.</para>
+            <para>Use <see cref="M:Godot.EditorPlugin.SetWindowLayout(Godot.ConfigFile)"/> to restore your saved layout.</para>
+            <para><code>
+            func get_window_layout(configuration):
+                configuration.set_value("MyPlugin", "window_position", $Window.position)
+                configuration.set_value("MyPlugin", "icon_color", $Icon.modulate)
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.Handles(Godot.Object)">
@@ -977,12 +991,23 @@
         </member>
         <member name="M:Godot.EditorPlugin.SetState(Godot.Collections.Dictionary)">
             <summary>
-            <para>Restore the state saved by <see cref="M:Godot.EditorPlugin.GetState"/>.</para>
+            <para>Restore the state saved by <see cref="M:Godot.EditorPlugin.GetState"/>. This method is called when the current scene tab is changed in the editor.</para>
+            <para>Note: Your plugin must implement <see cref="M:Godot.EditorPlugin.GetPluginName"/>, otherwise it will not be recognized and this method will not be called.</para>
+            <para><code>
+            func set_state(data):
+                zoom = data.get("zoom", 1.0)
+                preferred_color = data.get("my_color", Color.white)
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.SetWindowLayout(Godot.ConfigFile)">
             <summary>
-            <para>Restore the plugin GUI layout saved by <see cref="M:Godot.EditorPlugin.GetWindowLayout(Godot.ConfigFile)"/>.</para>
+            <para>Restore the plugin GUI layout and data saved by <see cref="M:Godot.EditorPlugin.GetWindowLayout(Godot.ConfigFile)"/>. This method is called for every plugin on editor startup. Use the provided <c>configuration</c> file to read your saved data.</para>
+            <para><code>
+            func set_window_layout(configuration):
+                $Window.position = configuration.get_value("MyPlugin", "window_position", Vector2())
+                $Icon.modulate = configuration.get_value("MyPlugin", "icon_color", Color.white)
+            </code></para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.AddControlToContainer(Godot.EditorPlugin.CustomControlContainer,Godot.Control)">
@@ -1164,7 +1189,7 @@
         </member>
         <member name="M:Godot.EditorPlugin.GetScriptCreateDialog">
             <summary>
-            <para>Gets the Editor's dialogue used for making scripts.</para>
+            <para>Gets the Editor's dialog used for making scripts.</para>
             <para>Note: Users can configure it before use.</para>
             <para>Warning: Removing and freeing this node will render a part of the editor useless and may cause a crash.</para>
             </summary>
@@ -1385,6 +1410,11 @@
             - Up Axis: Y
             - Binary format in FBX 2017
             </code></para>
+            </summary>
+        </member>
+        <member name="T:Godot.EditorSceneImporterGLTF">
+            <summary>
+            <para>Note: This class is only compiled in editor builds. Run-time glTF loading and saving is not available in exported projects. References to <see cref="T:Godot.EditorSceneImporterGLTF"/> within a script will cause an error in an exported project.</para>
             </summary>
         </member>
         <member name="T:Godot.EditorScenePostImport">
@@ -1820,6 +1850,11 @@
             <para>This <see cref="T:Godot.Control"/> node is used in the editor's Inspector dock to allow editing of numeric values. Can be used with <see cref="T:Godot.EditorInspectorPlugin"/> to recreate the same behavior.</para>
             </summary>
         </member>
+        <member name="P:Godot.EditorSpinSlider.HideSlider">
+            <summary>
+            <para>If <c>true</c>, the slider is hidden.</para>
+            </summary>
+        </member>
         <member name="T:Godot.EditorVCSInterface">
             <summary>
             <para>Defines the API that the editor uses to extract information from the underlying VCS. The implementation of this API is included in VCS plugins, which are scripts that inherit <see cref="T:Godot.EditorVCSInterface"/> and are attached (on demand) to the singleton instance of <see cref="T:Godot.EditorVCSInterface"/>. Instead of performing the task themselves, all the virtual functions listed below are calling the internally overridden functions in the VCS plugins to provide a plug-n-play experience. A custom VCS plugin is supposed to inherit from <see cref="T:Godot.EditorVCSInterface"/> and override these virtual functions.</para>
@@ -2023,6 +2058,11 @@
         <member name="M:Godot.EditorVCSInterface.PopupError(System.String)">
             <summary>
             <para>Pops up an error message in the edior.</para>
+            </summary>
+        </member>
+        <member name="T:Godot.GLTFMesh">
+            <summary>
+            <para>Note: This class is only compiled in editor builds. Run-time glTF loading and saving is not available in exported projects. References to <see cref="T:Godot.GLTFMesh"/> within a script will cause an error in an exported project.</para>
             </summary>
         </member>
         <member name="T:Godot.ScriptCreateDialog">
