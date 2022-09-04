@@ -55,14 +55,19 @@ namespace GodotUtilities
             }
             else
             {
-                var lowerCaseName = InferNodeName(lowerCaseChildNameToChild.Keys, memberInfo);
-                if (lowerCaseName != null)
+                var memberNameLower = memberInfo.Name.ToLower();
+                var lookupSuccess = lowerCaseChildNameToChild.TryGetValue(memberNameLower, out childNode);
+                if (!lookupSuccess)
                 {
-                    childNode = lowerCaseChildNameToChild[lowerCaseName];
-                }
-                else
-                {
-                    childNode = TryGetUniqueNode(node, memberInfo);
+                    childNode = lowerCaseChildNameToChild
+                        .Where(x => memberNameLower.Contains(x.Key))
+                        .OrderByDescending(x => x.Key.Length)
+                        .FirstOrDefault().Value;
+
+                    if (childNode == null)
+                    {
+                        childNode = TryGetUniqueNode(node, memberInfo);
+                    }
                 }
             }
             if (childNode == null)
@@ -95,11 +100,6 @@ namespace GodotUtilities
             {
                 fieldInfo.SetValue(node, childNode);
             }
-        }
-
-        private static string InferNodeName(IEnumerable<string> lowerCaseChildNames, MemberInfo memberInfo)
-        {
-            return lowerCaseChildNames.Where(x => memberInfo.Name.ToLower().Contains(x)).OrderByDescending(x => x.Length).FirstOrDefault();
         }
 
         private static Node TryGetUniqueNode(Node node, MemberInfo memberInfo)
