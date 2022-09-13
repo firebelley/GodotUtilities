@@ -75,6 +75,10 @@ namespace GodotUtilities
                 var filename = !string.IsNullOrEmpty(node.Filename) ? node.Filename : "the scene.";
                 GD.PrintErr($"Could not match member {memberInfo.Name} to any Node in {filename}.");
             }
+            Type memberType = memberInfo.GetUnderlyingType();
+            if (!memberType.IsAssignableFrom(childNode.GetType())) {
+                GD.PrintErr($"Could not match member {memberInfo.Name} to any Node of type {memberType}. Found {childNode.GetType()}.");
+            }
             SetMemberValue(node, memberInfo, childNode);
         }
 
@@ -112,6 +116,26 @@ namespace GodotUtilities
                 child = node.GetNodeOrNull($"%{name}");
             }
             return child;
+        }
+
+        public static Type GetUnderlyingType(this MemberInfo member)
+        {
+            switch (member.MemberType)
+            {
+                case MemberTypes.Event:
+                    return ((EventInfo)member).EventHandlerType;
+                case MemberTypes.Field:
+                    return ((FieldInfo)member).FieldType;
+                case MemberTypes.Method:
+                    return ((MethodInfo)member).ReturnType;
+                case MemberTypes.Property:
+                    return ((PropertyInfo)member).PropertyType;
+                default:
+                    throw new ArgumentException
+                    (
+                    "Input MemberInfo must be if type EventInfo, FieldInfo, MethodInfo, or PropertyInfo"
+                    );
+            }
         }
     }
 }
