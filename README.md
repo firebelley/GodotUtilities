@@ -4,7 +4,11 @@
 
 ## Building
 
-There is a post build event that will invoke `nuget.exe` in your path (Windows) and will create a `.nupkg` in `bin/Release`. You can then pull this `.nupkg` into your Godot project.
+Make sure `nuget.exe` is in your `PATH` environment variable. There is a post build event that will invoke `nuget.exe` and will create a `.nupkg` in `bin/Release`. You can then pull this `.nupkg` into your Godot project. In order to do so, you will need to configure a [local nuget repository location](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds).
+
+```
+dotnet build -c Release
+```
 
 ## Other Notes
 
