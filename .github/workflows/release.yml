@@ -5,7 +5,7 @@ on:
 
 jobs:
   export_game:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     name: Release
     steps:
       - name: Checkout Files
