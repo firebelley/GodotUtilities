@@ -9,7 +9,7 @@ jobs:
     name: Release
     steps:
       - name: Checkout Files
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 0
 
