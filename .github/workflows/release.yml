@@ -16,7 +16,7 @@ jobs:
       - name: Get Tag Version
         id: tag_version
         run: |
-          echo ::set-output name=TAG_VERSION::${GITHUB_REF#refs/tags/v}
+          echo "name=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Build Nupkg
         run: dotnet build -c Release
