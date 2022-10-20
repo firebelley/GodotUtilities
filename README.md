@@ -1,6 +1,6 @@
 # GodotUtilities
 
-**NOTE**: This code is not designed for general public use. It was developed to meet my personal development needs and as such several features may be unclear. The nuspec versioning also violates the standards of semantic versioning. Nevertheless, you may find something here that is useful in your project.
+**NOTE**: This library was developed to meet my personal development needs and as such several features may be unclear. If you see anything that's unclear, or documentation that is lacking, please open an issue!
 
 ## Usage
 
