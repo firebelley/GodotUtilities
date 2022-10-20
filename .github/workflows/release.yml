@@ -21,7 +21,7 @@ jobs:
       - name: Build Nupkg
         run: dotnet build -c Release
 
-      - name: create release
+      - name: Create Release
         uses: softprops/action-gh-release@v0.1.14
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
