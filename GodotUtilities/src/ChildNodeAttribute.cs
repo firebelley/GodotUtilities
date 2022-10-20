@@ -75,11 +75,20 @@ namespace GodotUtilities
                 var filename = !string.IsNullOrEmpty(node.Filename) ? node.Filename : "the scene.";
                 GD.PrintErr($"Could not match member {memberInfo.Name} to any Node in {filename}.");
             }
-            Type memberType = memberInfo.GetUnderlyingType();
-            if (!memberType.IsAssignableFrom(childNode.GetType())) {
-                GD.PrintErr($"Could not match member {memberInfo.Name} to any Node of type {memberType}. Found {childNode.GetType()}.");
+
+            try
+            {
+                SetMemberValue(node, memberInfo, childNode);
             }
-            SetMemberValue(node, memberInfo, childNode);
+            catch
+            {
+                var filename = !string.IsNullOrEmpty(node.Filename) ? node.Filename : "the scene.";
+                Type memberType = memberInfo.GetUnderlyingType();
+                if (!memberType.IsAssignableFrom(childNode.GetType()))
+                {
+                    GD.PrintErr($"Could not match member {memberInfo.Name} to any Node of type {memberType} in {filename}. Found {childNode.GetType()}.");
+                }
+            }
         }
 
         private static void SetParentNode(Node node, MemberInfo memberInfo)
@@ -131,10 +140,7 @@ namespace GodotUtilities
                 case MemberTypes.Property:
                     return ((PropertyInfo)member).PropertyType;
                 default:
-                    throw new ArgumentException
-                    (
-                    "Input MemberInfo must be if type EventInfo, FieldInfo, MethodInfo, or PropertyInfo"
-                    );
+                    throw new ArgumentException("Input MemberInfo must be if type EventInfo, FieldInfo, MethodInfo, or PropertyInfo");
             }
         }
     }
