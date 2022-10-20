@@ -1,0 +1,30 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  export_game:
+    runs-on: ubuntu-latest
+    name: Release
+    steps:
+      - name: Checkout Files
+        uses: actions/checkout@v4.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Get Tag Version
+        id: tag_version
+        run: |
+          echo ::set-output name=TAG_VERSION::${GITHUB_REF#refs/tags/v}
+
+      - name: Build Nupkg
+        run: dotnet build -c Release
+
+      - name: create release
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: true
+          tag_name: ${{ steps.tag_version.outputs.TAG_VERSION }}
+          files: "**/*/*.nupkg"

@@ -124,5 +124,13 @@ namespace GodotUtilities
         {
             n.CallDeferred("queue_free");
         }
+
+        public static void QueueFreeAll(this IEnumerable<Node> objects)
+        {
+            foreach (var obj in objects)
+            {
+                obj.QueueFree();
+            }
+        }
     }
 }

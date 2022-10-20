@@ -14,5 +14,10 @@ namespace GodotUtilities
             var max = Mathf.Max(absVec.x, absVec.y);
             return (ALPHA * max) + (BETA * min);
         }
+
+        public static Vector2 RotatedDegrees(this Vector2 v, float degrees)
+        {
+            return v.Rotated(Mathf.Deg2Rad(degrees));
+        }
     }
 }
