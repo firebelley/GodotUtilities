@@ -59,14 +59,19 @@ namespace GodotUtilities
                 var lookupSuccess = lowerCaseChildNameToChild.TryGetValue(memberNameLower, out childNode);
                 if (!lookupSuccess)
                 {
-                    childNode = lowerCaseChildNameToChild
-                        .Where(x => memberNameLower.Contains(x.Key))
-                        .OrderByDescending(x => x.Key.Length)
-                        .FirstOrDefault().Value;
+                    childNode = TryGetUniqueNode(node, memberInfo);
 
                     if (childNode == null)
                     {
-                        childNode = TryGetUniqueNode(node, memberInfo);
+                        childNode = lowerCaseChildNameToChild
+                            .Where(x => memberNameLower.Contains(x.Key))
+                            .OrderByDescending(x => x.Key.Length)
+                            .FirstOrDefault().Value;
+
+                        if (childNode != null)
+                        {
+                            GD.PushWarning($"Assigned member {memberInfo.Name} to node {childNode.Name} in {node?.Filename ?? "the scene"} as a best-guess.");
+                        }
                     }
                 }
             }
