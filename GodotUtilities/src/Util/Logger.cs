@@ -13,6 +13,7 @@ namespace GodotUtilities.Util
         public static void Info(params object[] what)
         {
             GD.PrintRaw(what);
+            GD.PrintRaw("\n");
         }
 
         public static void Debug(params object[] what)
