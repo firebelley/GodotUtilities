@@ -7,8 +7,8 @@ namespace GodotUtilities.Logic
     public class LootTable<T>
     {
         public int WeightSum { get; protected set; }
-        private readonly List<TableData> _table = new List<TableData>();
-        private RandomNumberGenerator _random = new RandomNumberGenerator();
+        private readonly List<TableData> table = new List<TableData>();
+        private RandomNumberGenerator random = new RandomNumberGenerator();
 
         public class TableData
         {
@@ -24,62 +24,74 @@ namespace GodotUtilities.Logic
 
         public void SetSeed(ulong seed)
         {
-            _random.Seed = seed;
+            random.Seed = seed;
         }
 
         public void SetRandom(RandomNumberGenerator random)
         {
-            _random = random;
+            this.random = random;
         }
 
         public void AddItem(T obj, int weight)
         {
-            _table.Add(new TableData(obj, weight));
+            table.Add(new TableData(obj, weight));
+            CalculateWeightSum();
+        }
+
+        public void AddItem(TableData tableData)
+        {
+            table.Add(tableData);
             CalculateWeightSum();
         }
 
         public void AddRange(List<TableData> range)
         {
-            _table.AddRange(range);
+            table.AddRange(range);
             CalculateWeightSum();
+        }
+
+        public void SetData(List<TableData> tableData)
+        {
+            table.Clear();
+            AddRange(tableData);
         }
 
         public T PickItem()
         {
-            return PickItem(_table, WeightSum);
+            return PickItem(table, WeightSum);
         }
 
         public T PickRange(int startIdx, int count)
         {
-            var range = _table.GetRange(startIdx, count);
+            var range = table.GetRange(startIdx, count);
             var weightSum = range.Sum(x => x.Weight);
             return PickItem(range, weightSum);
         }
 
         public List<T> GetLootTableItems()
         {
-            return _table.Select(x => x.Obj).ToList();
+            return table.Select(x => x.Obj).ToList();
         }
 
         public List<TableData> GetLootTableData()
         {
-            return _table;
+            return table;
         }
 
         public int GetCount()
         {
-            return _table.Count;
+            return table.Count;
         }
 
         public void CalculateWeightSum()
         {
-            WeightSum = _table.Sum(x => x.Weight);
+            WeightSum = table.Sum(x => x.Weight);
         }
 
         private T PickItem(List<TableData> table, int weightSum)
         {
             int sum = 0;
-            int val = _random.RandiRange(1, weightSum);
+            int val = random.RandiRange(1, weightSum);
             foreach (var data in table)
             {
                 sum += data.Weight;
