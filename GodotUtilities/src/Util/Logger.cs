@@ -14,5 +14,13 @@ namespace GodotUtilities.Util
         {
             GD.PrintRaw(what);
         }
+
+        public static void Debug(params object[] what)
+        {
+            if (OS.IsDebugBuild())
+            {
+                Info(what);
+            }
+        }
     }
 }
