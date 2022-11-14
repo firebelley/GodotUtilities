@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -12,8 +13,8 @@ namespace GodotUtilities.Logic
 
         public class TableData
         {
-            public T Obj;
-            public int Weight;
+            public T Obj { get; private set; }
+            public int Weight { get; private set; }
 
             public TableData(T o, int w)
             {
@@ -61,6 +62,35 @@ namespace GodotUtilities.Logic
             return PickItem(table, WeightSum);
         }
 
+        public TableData PickTableData()
+        {
+            return PickTableData();
+        }
+
+        /// <summary>
+        /// Picks an item from the loot table and returns it if <paramref name="canPickConditionalFn"/> returns <c>true</c>. 
+        /// </summary>
+        /// <param name="canPickConditionalFn"></param>
+        /// <returns></returns>
+        public T PickItemConditional(Func<TableData, bool> canPickConditionalFn)
+        {
+            var tableCopy = table.ToList();
+            var weightSum = WeightSum;
+
+            TableData pickedTableData;
+            do
+            {
+                pickedTableData = PickTableData(tableCopy, weightSum);
+                if (pickedTableData != null)
+                {
+                    weightSum -= pickedTableData.Weight;
+                    tableCopy.Remove(pickedTableData);
+                }
+            } while (pickedTableData != null && !canPickConditionalFn(pickedTableData));
+
+            return pickedTableData != null ? pickedTableData.Obj : default;
+        }
+
         public T PickRange(int startIdx, int count)
         {
             var range = table.GetRange(startIdx, count);
@@ -90,6 +120,12 @@ namespace GodotUtilities.Logic
 
         private T PickItem(List<TableData> table, int weightSum)
         {
+            var tableData = PickTableData(table, weightSum);
+            return tableData != null ? tableData.Obj : default;
+        }
+
+        private TableData PickTableData(List<TableData> table, int weightSum)
+        {
             int sum = 0;
             int val = random.RandiRange(1, weightSum);
             foreach (var data in table)
@@ -97,10 +133,10 @@ namespace GodotUtilities.Logic
                 sum += data.Weight;
                 if (val <= sum)
                 {
-                    return data.Obj;
+                    return data;
                 }
             }
-            return default;
+            return null;
         }
     }
 }
