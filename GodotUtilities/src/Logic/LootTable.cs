@@ -9,7 +9,7 @@ namespace GodotUtilities.Logic
     {
         public int WeightSum { get; protected set; }
         private readonly List<TableData> table = new List<TableData>();
-        private RandomNumberGenerator random = new RandomNumberGenerator();
+        private RandomNumberGenerator random;
 
         public class TableData
         {
@@ -21,6 +21,11 @@ namespace GodotUtilities.Logic
                 Obj = o;
                 Weight = w;
             }
+        }
+
+        public LootTable()
+        {
+            random = MathUtil.RNG;
         }
 
         public void SetSeed(ulong seed)
