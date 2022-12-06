@@ -3,7 +3,7 @@ using Godot;
 
 namespace GodotUtilities.Logic
 {
-    public class StateMachine<T> : Resource
+    public class StateMachine<T> : Reference
     {
         public delegate void StateDelegate();
 
