@@ -8,7 +8,7 @@ namespace GodotUtilities.Logic
     public class LootTable<T>
     {
         public int WeightSum { get; protected set; }
-        private readonly List<TableData> table = new List<TableData>();
+        private readonly List<TableData> table = new();
         private RandomNumberGenerator random;
 
         public class TableData

@@ -6,7 +6,7 @@ namespace GodotUtilities
     {
         public static void CenterPivotOffset(this Control control)
         {
-            control.RectPivotOffset = control.RectSize / 2f;
+            control.PivotOffset = control.Size / 2f;
         }
     }
 }

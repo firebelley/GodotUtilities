@@ -3,33 +3,33 @@ using Godot;
 
 namespace GodotUtilities.Logic
 {
-    public class DelegateStateMachine : Reference
+    public class DelegateStateMachine : RefCounted
     {
-        public delegate void StateDelegate();
+        public delegate void State();
 
-        private StateDelegate currentState;
+        private State currentState;
 
-        private readonly Dictionary<StateDelegate, StateFlows> states = new Dictionary<StateDelegate, StateFlows>();
+        private readonly Dictionary<State, StateFlows> states = new();
 
-        public void AddStates(StateDelegate normal, StateDelegate enterState = null, StateDelegate leaveState = null)
+        public void AddStates(State normal, State enterState = null, State leaveState = null)
         {
             var stateFlows = new StateFlows(normal, enterState, leaveState);
             states[normal] = stateFlows;
         }
 
-        public void ChangeState(StateDelegate toStateDelegate)
+        public void ChangeState(State toStateDelegate)
         {
             states.TryGetValue(toStateDelegate, out var stateDelegates);
             CallDeferred(nameof(SetState), stateDelegates);
         }
 
-        public void SetInitialState(StateDelegate stateDelegate)
+        public void SetInitialState(State stateDelegate)
         {
             states.TryGetValue(stateDelegate, out var stateFlows);
             SetState(stateFlows);
         }
 
-        public StateDelegate GetCurrentState()
+        public State GetCurrentState()
         {
             return currentState;
         }
@@ -50,13 +50,13 @@ namespace GodotUtilities.Logic
             stateFlows?.EnterState?.Invoke();
         }
 
-        private class StateFlows : Reference
+        private class StateFlows : RefCounted
         {
-            public StateDelegate Normal { get; private set; }
-            public StateDelegate EnterState { get; private set; }
-            public StateDelegate LeaveState { get; private set; }
+            public State Normal { get; private set; }
+            public State EnterState { get; private set; }
+            public State LeaveState { get; private set; }
 
-            public StateFlows(StateDelegate normal, StateDelegate enterState = null, StateDelegate leaveState = null)
+            public StateFlows(State normal, State enterState = null, State leaveState = null)
             {
                 Normal = normal;
                 EnterState = enterState;

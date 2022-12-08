@@ -3,16 +3,16 @@ using Godot;
 
 namespace GodotUtilities.Logic
 {
-    public class StateMachine<T> : Reference
+    public class StateMachine<T> : RefCounted
     {
         public delegate void StateDelegate();
 
         private T currentState;
 
-        private readonly Dictionary<T, StateDelegate> states = new Dictionary<T, StateDelegate>();
-        private readonly Dictionary<StateDelegate, T> delegates = new Dictionary<StateDelegate, T>();
-        private readonly Dictionary<T, StateDelegate> leaveStates = new Dictionary<T, StateDelegate>();
-        private readonly Dictionary<T, StateDelegate> enterStates = new Dictionary<T, StateDelegate>();
+        private readonly Dictionary<T, StateDelegate> states = new();
+        private readonly Dictionary<StateDelegate, T> delegates = new();
+        private readonly Dictionary<T, StateDelegate> leaveStates = new();
+        private readonly Dictionary<T, StateDelegate> enterStates = new();
 
         public void AddState(T state, StateDelegate del)
         {
@@ -32,7 +32,7 @@ namespace GodotUtilities.Logic
 
         public void ChangeState(T state)
         {
-            CallDeferred(nameof(SetState), state);
+            new Callable(this, nameof(SetStateVariant)).CallDeferred(new VariantWrapper { Data = state });
         }
 
         public void ChangeState(StateDelegate stateDelegate)
@@ -74,6 +74,16 @@ namespace GodotUtilities.Logic
             {
                 enterStates[currentState]();
             }
+        }
+
+        private void SetStateVariant(VariantWrapper variantWrapper)
+        {
+            SetState(variantWrapper.Data);
+        }
+
+        private class VariantWrapper : RefCounted
+        {
+            public T Data;
         }
     }
 }

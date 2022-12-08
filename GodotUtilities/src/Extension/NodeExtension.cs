@@ -105,7 +105,7 @@ namespace GodotUtilities
         public static T GetAncestor<T>(this Node n) where T : Node
         {
             Node currentNode = n;
-            while (currentNode != n.GetTree().Root && !(currentNode is T))
+            while (currentNode != n.GetTree().Root && currentNode is not T)
             {
                 currentNode = currentNode.GetParent();
             }

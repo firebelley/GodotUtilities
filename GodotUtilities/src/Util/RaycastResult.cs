@@ -11,7 +11,6 @@ namespace GodotUtilities.Util
         public int ColliderId { get; set; }
         public RID RID { get; set; }
         public int Shape { get; set; }
-        public object Metadata { get; set; }
         public Vector2 FromPosition { get; set; }
         public Vector2 ToPosition { get; set; }
 
@@ -25,7 +24,6 @@ namespace GodotUtilities.Util
             ColliderId = (int)resultDict["collider_id"];
             RID = (RID)resultDict["rid"];
             Shape = (int)resultDict["shape"];
-            Metadata = resultDict["metadata"];
         }
     }
 }

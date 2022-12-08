@@ -5,8 +5,8 @@ namespace GodotUtilities.Collections
 {
     public class DoubleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private readonly Dictionary<TKey, TValue> _keyToValue = new Dictionary<TKey, TValue>();
-        private readonly Dictionary<TValue, TKey> _valueToKey = new Dictionary<TValue, TKey>();
+        private readonly Dictionary<TKey, TValue> _keyToValue = new();
+        private readonly Dictionary<TValue, TKey> _valueToKey = new();
 
         public TValue this[TKey key]
         {

@@ -7,22 +7,21 @@ namespace GodotUtilities.Util
     {
         public static List<T> InstanceScenesInPath<T>(string dirPath) where T : Node
         {
-            if (dirPath[dirPath.Length - 1] != '/')
+            if (dirPath[^1] != '/')
             {
                 dirPath += "/";
             }
 
             var scenes = new List<T>();
 
-            var dir = new Directory();
-            var err = dir.Open(dirPath);
-            if (err != Error.Ok)
+            var dir = DirAccess.Open(dirPath);
+            if (dir == null)
             {
                 Logger.Error("Could not open directory " + dirPath);
                 return scenes;
             }
 
-            dir.ListDirBegin(true);
+            dir.ListDirBegin();
             while (true)
             {
                 var path = dir.GetNext();
@@ -37,7 +36,7 @@ namespace GodotUtilities.Util
 
                     if (GD.Load(fullPath) is PackedScene packedScene)
                     {
-                        var scene = packedScene.Instance();
+                        var scene = packedScene.Instantiate();
                         if (scene is T node)
                         {
                             scenes.Add(node);
@@ -49,16 +48,16 @@ namespace GodotUtilities.Util
                     }
                 }
             }
+            dir.ListDirEnd();
 
             return scenes;
         }
 
         public static List<T> LoadResourcesInPath<T>(string path) where T : Resource
         {
-            var dir = new Directory();
-            var err = dir.Open(path);
+            var dir = DirAccess.Open(path);
             var results = new List<T>();
-            if (err == Error.Ok)
+            if (dir != null)
             {
                 dir.ListDirBegin();
                 var fileName = dir.GetNext();
@@ -71,7 +70,7 @@ namespace GodotUtilities.Util
                             fileName = fileName.Replace(".converted.res", string.Empty);
                             var fullPath = $"{path}/{fileName}";
                             var resource = GD.Load(fullPath);
-                            if (!(resource is T res))
+                            if (resource is not T res)
                             {
                                 GD.PushWarning($"Could not load resource at {fullPath} with type {typeof(T).Name}");
                                 continue;
@@ -81,10 +80,11 @@ namespace GodotUtilities.Util
                     }
                     fileName = dir.GetNext();
                 }
+                dir.ListDirEnd();
             }
             else
             {
-                GD.PushWarning($"Could load resources in path {path}: {err}");
+                GD.PushWarning($"Could load resources in path {path}");
             }
             return results;
         }

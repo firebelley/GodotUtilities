@@ -16,12 +16,12 @@ namespace GodotUtilities
         /// <param name="collideWithBodies"></param>
         /// <param name="collideWithAreas"></param>
         /// <returns></returns>
-        public static RaycastResult Raycast(this Physics2DDirectSpaceState state, Vector2 from, Vector2 to, Godot.Collections.Array exclude = null, uint collisionLayer = uint.MaxValue, bool collideWithBodies = true, bool collideWithAreas = false)
+        public static RaycastResult Raycast(this PhysicsDirectSpaceState2D state, PhysicsRayQueryParameters2D query)
         {
-            var raycastDict = state.IntersectRay(from, to, exclude, collisionLayer, collideWithBodies, collideWithAreas);
+            var raycastDict = state.IntersectRay(query);
             if (raycastDict?.Count > 0)
             {
-                return new RaycastResult(from, to, raycastDict);
+                return new RaycastResult(query.From, query.To, raycastDict);
             }
             return null;
         }
