@@ -7,7 +7,7 @@ namespace GodotUtilities
     {
         public static T InstanceOrFree<T>(this PackedScene scene) where T : class
         {
-            var node = scene.Instance();
+            var node = scene.Instantiate();
             if (node is T t)
             {
                 return t;

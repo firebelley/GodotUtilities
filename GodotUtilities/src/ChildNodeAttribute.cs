@@ -23,8 +23,7 @@ namespace GodotUtilities
 
         public static void WireNodes(this Node n)
         {
-            var lowerCaseChildNameToChild = n.GetChildren().Cast<Node>().ToDictionary(x => x.Name.ToLower(), x => x);
-
+            var lowerCaseChildNameToChild = n.GetChildren().Cast<Node>().ToDictionary(x => x.Name.ToString().ToLowerInvariant(), x => x);
             var fields = n.GetType().GetFields(BINDING_FLAGS);
             foreach (var memberInfo in fields)
             {
@@ -43,7 +42,7 @@ namespace GodotUtilities
         private static void SetChildNode(Node node, MemberInfo memberInfo, Dictionary<string, Node> lowerCaseChildNameToChild)
         {
             var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(NodeAttribute));
-            if (!(attribute is NodeAttribute childNodeAttribute))
+            if (attribute is not NodeAttribute childNodeAttribute)
             {
                 return;
             }
@@ -70,14 +69,14 @@ namespace GodotUtilities
 
                         if (childNode != null)
                         {
-                            GD.PushWarning($"Assigned member {memberInfo.Name} to node {childNode.Name} in {node?.Filename ?? "the scene"} as a best-guess.");
+                            GD.PushWarning($"Assigned member {memberInfo.Name} to node {childNode.Name} in {node?.SceneFilePath ?? "the scene"} as a best-guess.");
                         }
                     }
                 }
             }
             if (childNode == null)
             {
-                var filename = !string.IsNullOrEmpty(node.Filename) ? node.Filename : "the scene.";
+                var filename = !string.IsNullOrEmpty(node.SceneFilePath) ? node.SceneFilePath : "the scene.";
                 GD.PrintErr($"Could not match member {memberInfo.Name} to any Node in {filename}.");
             }
 
@@ -87,7 +86,7 @@ namespace GodotUtilities
             }
             catch
             {
-                var filename = !string.IsNullOrEmpty(node.Filename) ? node.Filename : "the scene.";
+                var filename = !string.IsNullOrEmpty(node.SceneFilePath) ? node.SceneFilePath : "the scene.";
                 Type memberType = memberInfo.GetUnderlyingType();
                 if (!memberType.IsAssignableFrom(childNode.GetType()))
                 {
@@ -99,7 +98,7 @@ namespace GodotUtilities
         private static void SetParentNode(Node node, MemberInfo memberInfo)
         {
             var attribute = Attribute.GetCustomAttribute(memberInfo, typeof(ParentAttribute));
-            if (!(attribute is ParentAttribute))
+            if (attribute is not ParentAttribute)
             {
                 return;
             }
@@ -126,7 +125,7 @@ namespace GodotUtilities
             var child = node.GetNodeOrNull($"%{name}");
             if (child == null && name.Length > 1)
             {
-                name = name[0].ToString().ToUpper() + name.Substring(1);
+                name = string.Concat(name[0].ToString().ToUpper(), name.AsSpan(1));
                 child = node.GetNodeOrNull($"%{name}");
             }
             return child;
@@ -134,19 +133,14 @@ namespace GodotUtilities
 
         public static Type GetUnderlyingType(this MemberInfo member)
         {
-            switch (member.MemberType)
+            return member.MemberType switch
             {
-                case MemberTypes.Event:
-                    return ((EventInfo)member).EventHandlerType;
-                case MemberTypes.Field:
-                    return ((FieldInfo)member).FieldType;
-                case MemberTypes.Method:
-                    return ((MethodInfo)member).ReturnType;
-                case MemberTypes.Property:
-                    return ((PropertyInfo)member).PropertyType;
-                default:
-                    throw new ArgumentException("Input MemberInfo must be if type EventInfo, FieldInfo, MethodInfo, or PropertyInfo");
-            }
+                MemberTypes.Event => ((EventInfo)member).EventHandlerType,
+                MemberTypes.Field => ((FieldInfo)member).FieldType,
+                MemberTypes.Method => ((MethodInfo)member).ReturnType,
+                MemberTypes.Property => ((PropertyInfo)member).PropertyType,
+                _ => throw new ArgumentException("Input MemberInfo must be of type EventInfo, FieldInfo, MethodInfo, or PropertyInfo"),
+            };
         }
     }
 }

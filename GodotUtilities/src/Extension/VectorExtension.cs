@@ -17,7 +17,7 @@ namespace GodotUtilities
 
         public static Vector2 RotatedDegrees(this Vector2 v, float degrees)
         {
-            return v.Rotated(Mathf.Deg2Rad(degrees));
+            return v.Rotated(Mathf.DegToRad(degrees));
         }
 
         public static bool IsWithinDistanceSquared(this Vector2 v1, Vector2 v2, float distance)

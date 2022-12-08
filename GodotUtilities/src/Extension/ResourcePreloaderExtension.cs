@@ -26,7 +26,7 @@ namespace GodotUtilities
                 return null;
             }
 
-            return resource.InstanceOrNull<T>();
+            return resource.InstantiateOrNull<T>();
         }
 
         public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader) where T : Node
