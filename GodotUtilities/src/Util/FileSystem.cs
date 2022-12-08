@@ -14,7 +14,7 @@ namespace GodotUtilities.Util
 
             var scenes = new List<T>();
 
-            var dir = DirAccess.Open(dirPath);
+            using var dir = DirAccess.Open(dirPath);
             if (dir == null)
             {
                 Logger.Error("Could not open directory " + dirPath);
@@ -55,7 +55,7 @@ namespace GodotUtilities.Util
 
         public static List<T> LoadResourcesInPath<T>(string path) where T : Resource
         {
-            var dir = DirAccess.Open(path);
+            using var dir = DirAccess.Open(path);
             var results = new List<T>();
             if (dir != null)
             {
