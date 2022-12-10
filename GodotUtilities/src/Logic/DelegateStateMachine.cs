@@ -20,7 +20,7 @@ namespace GodotUtilities.Logic
         public void ChangeState(State toStateDelegate)
         {
             states.TryGetValue(toStateDelegate, out var stateDelegates);
-            CallDeferred(nameof(SetState), stateDelegates);
+            Callable.From(() => SetState(stateDelegates)).CallDeferred();
         }
 
         public void SetInitialState(State stateDelegate)
@@ -50,7 +50,7 @@ namespace GodotUtilities.Logic
             stateFlows?.EnterState?.Invoke();
         }
 
-        private class StateFlows : RefCounted
+        private class StateFlows
         {
             public State Normal { get; private set; }
             public State EnterState { get; private set; }

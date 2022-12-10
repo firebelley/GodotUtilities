@@ -32,7 +32,7 @@ namespace GodotUtilities.Logic
 
         public void ChangeState(T state)
         {
-            new Callable(this, nameof(SetStateVariant)).CallDeferred(new VariantWrapper { Data = state });
+            Callable.From(() => SetState(state)).CallDeferred();
         }
 
         public void ChangeState(StateDelegate stateDelegate)
@@ -74,16 +74,6 @@ namespace GodotUtilities.Logic
             {
                 enterStates[currentState]();
             }
-        }
-
-        private void SetStateVariant(VariantWrapper variantWrapper)
-        {
-            SetState(variantWrapper.Data);
-        }
-
-        private class VariantWrapper : RefCounted
-        {
-            public T Data;
         }
     }
 }
