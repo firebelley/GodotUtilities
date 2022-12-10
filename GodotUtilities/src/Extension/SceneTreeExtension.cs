@@ -45,7 +45,7 @@ namespace GodotUtilities
 
         public static async Task NextIdle(this SceneTree sceneTree)
         {
-            await sceneTree.ToSignal(sceneTree, "idle_frame");
+            await sceneTree.ToSignal(sceneTree, SceneTree.SignalName.ProcessFrame);
         }
     }
 }
