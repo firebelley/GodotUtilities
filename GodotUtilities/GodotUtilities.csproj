@@ -13,7 +13,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GodotSharp, Version=1.0.7005.40750, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GodotSharp, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\GodotSharp.dll</HintPath>
     </Reference>
