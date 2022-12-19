@@ -1585,7 +1585,7 @@
             <summary>
             <para>This editor-only singleton returns OS-specific paths to various data folders and files. It can be used in editor plugins to ensure files are saved in the correct location on each operating system.</para>
             <para>Note: This singleton is not accessible in exported projects. Attempting to access it in an exported project will result in a script error as the singleton won't be declared. To prevent script errors in exported projects, use <see cref="M:Godot.Engine.HasSingleton(Godot.StringName)"/> to check whether the singleton is available before using it.</para>
-            <para>Note: Godot complies with the <a href="https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG Base Directory Specification</a> on all platforms. You can override environment variables following the specification to change the editor and project data paths.</para>
+            <para>Note: On the Linux/BSD platform, Godot complies with the <a href="https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG Base Directory Specification</a>. You can override environment variables following the specification to change the editor and project data paths.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorPaths.GetDataDir">
@@ -2749,12 +2749,12 @@
             <para>// This sample changes all node names.</para>
             <para>// Called right after the scene is imported and gets the root node.</para>
             <para>[Tool]</para>
-            <para>public class NodeRenamer : EditorScenePostImport</para>
+            <para>public partial class NodeRenamer : EditorScenePostImport</para>
             <para>{</para>
-            <para>    public override Object PostImport(Object scene)</para>
+            <para>    public override Object _PostImport(Node scene)</para>
             <para>    {</para>
             <para>        // Change all node names to "modified_[oldnodename]"</para>
-            <para>        Iterate(scene as Node);</para>
+            <para>        Iterate(scene);</para>
             <para>        return scene; // Remember to return the imported scene</para>
             <para>    }</para>
             <para>    public void Iterate(Node node)</para>
@@ -3266,6 +3266,11 @@
         <member name="F:Godot.EditorUndoRedoManager.SpecialHistory.GlobalHistory">
             <summary>
             <para>Global history not associated with any scene, but with external resources etc.</para>
+            </summary>
+        </member>
+        <member name="F:Godot.EditorUndoRedoManager.SpecialHistory.RemoteHistory">
+            <summary>
+            <para>History associated with remote inspector. Used when live editing a running project.</para>
             </summary>
         </member>
         <member name="F:Godot.EditorUndoRedoManager.SpecialHistory.InvalidHistory">
