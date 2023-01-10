@@ -12,7 +12,7 @@ namespace GodotUtilities.Util
 
         public static void Info(params object[] what)
         {
-            GD.PrintErr($"[INFO] {what}");
+            GD.PrintRaw($"[INFO] {what}");
             GD.PrintRaw("\n");
         }
 
@@ -20,7 +20,7 @@ namespace GodotUtilities.Util
         {
             if (OS.IsDebugBuild())
             {
-                GD.PrintErr($"[DEBUG] {what}");
+                GD.PrintRaw($"[DEBUG] {what}");
                 GD.PrintRaw("\n");
             }
         }
