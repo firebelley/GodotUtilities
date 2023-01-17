@@ -184,6 +184,12 @@
             <para>Emitted when the attached remote instance exits a break state.</para>
             </summary>
         </member>
+        <member name="T:Godot.EditorExportPlatform">
+            <summary>
+            <para>Base resource that provides the functionality of exporting a release build of a project to a platform, from the editor. Stores platform-specific metadata such as the name and supported features of the platform, and performs the exporting of projects, PCK files, and ZIP files. Uses an export template for the platform provided at the time of project exporting.</para>
+            <para>Used in scripting by <see cref="T:Godot.EditorExportPlugin"/> to configure platform-specific customization of scenes and resources. See <see cref="M:Godot.EditorExportPlugin._BeginCustomizeScenes(Godot.EditorExportPlatform,System.String[])"/> and <see cref="M:Godot.EditorExportPlugin._BeginCustomizeResources(Godot.EditorExportPlatform,System.String[])"/> for more details.</para>
+            </summary>
+        </member>
         <member name="T:Godot.EditorExportPlugin">
             <summary>
             <para><see cref="T:Godot.EditorExportPlugin"/>s are automatically invoked whenever the user exports the project. Their most common use is to determine what files are being included in the exported project. For each plugin, <see cref="M:Godot.EditorExportPlugin._ExportBegin(System.String[],System.Boolean,System.String,System.Int64)"/> is called at the beginning of the export process and then <see cref="M:Godot.EditorExportPlugin._ExportFile(System.String,System.String,System.String[])"/> is called for each exported file.</para>
@@ -626,6 +632,14 @@
             </summary>
             <summary>
             <para>Emitted if the filesystem changed.</para>
+            </summary>
+        </member>
+        <member name="E:Godot.EditorFileSystem.ScriptClassesUpdated">
+            <summary>
+            Represents the method that handles the <see cref="E:Godot.EditorFileSystem.ScriptClassesUpdated"/> event of a <see cref="T:Godot.EditorFileSystem"/> class.
+            </summary>
+            <summary>
+            <para>Emitted when the list of global script classes gets updated.</para>
             </summary>
         </member>
         <member name="T:Godot.EditorFileSystem.SourcesChangedEventHandler">
@@ -1880,7 +1894,7 @@
             <para>[gdscript]</para>
             <para>func _forward_canvas_draw_over_viewport(overlay):</para>
             <para>    # Draw a circle at cursor position.</para>
-            <para>    overlay.draw_circle(overlay.get_local_mouse_position(), 64, Color.white)</para>
+            <para>    overlay.draw_circle(overlay.get_local_mouse_position(), 64, Color.WHITE)</para>
             <para></para>
             <para>func _forward_canvas_gui_input(event):</para>
             <para>    if event is InputEventMouseMotion:</para>
@@ -2066,7 +2080,7 @@
             <para><code>
             func _set_state(data):
                 zoom = data.get("zoom", 1.0)
-                preferred_color = data.get("my_color", Color.white)
+                preferred_color = data.get("my_color", Color.WHITE)
             </code></para>
             </summary>
         </member>
@@ -2076,7 +2090,7 @@
             <para><code>
             func _set_window_layout(configuration):
                 $Window.position = configuration.get_value("MyPlugin", "window_position", Vector2())
-                $Icon.modulate = configuration.get_value("MyPlugin", "icon_color", Color.white)
+                $Icon.modulate = configuration.get_value("MyPlugin", "icon_color", Color.WHITE)
             </code></para>
             </summary>
         </member>
@@ -2186,7 +2200,7 @@
         </member>
         <member name="M:Godot.EditorPlugin.RemoveUndoRedoInspectorHookCallback(Godot.Callable)">
             <summary>
-            <para>Removes a callback previsously added by <see cref="M:Godot.EditorPlugin.AddUndoRedoInspectorHookCallback(Godot.Callable)"/>.</para>
+            <para>Removes a callback previously added by <see cref="M:Godot.EditorPlugin.AddUndoRedoInspectorHookCallback(Godot.Callable)"/>.</para>
             </summary>
         </member>
         <member name="M:Godot.EditorPlugin.QueueSaveLayout">
@@ -3126,6 +3140,38 @@
         <member name="P:Godot.EditorSpinSlider.HideSlider">
             <summary>
             <para>If <c>true</c>, the slider is hidden.</para>
+            </summary>
+        </member>
+        <member name="E:Godot.EditorSpinSlider.Grabbed">
+            <summary>
+            Represents the method that handles the <see cref="E:Godot.EditorSpinSlider.Grabbed"/> event of a <see cref="T:Godot.EditorSpinSlider"/> class.
+            </summary>
+            <summary>
+            <para>Emitted when the spinner/slider is grabbed.</para>
+            </summary>
+        </member>
+        <member name="E:Godot.EditorSpinSlider.Ungrabbed">
+            <summary>
+            Represents the method that handles the <see cref="E:Godot.EditorSpinSlider.Ungrabbed"/> event of a <see cref="T:Godot.EditorSpinSlider"/> class.
+            </summary>
+            <summary>
+            <para>Emitted when the spinner/slider is ungrabbed.</para>
+            </summary>
+        </member>
+        <member name="E:Godot.EditorSpinSlider.ValueFocusEntered">
+            <summary>
+            Represents the method that handles the <see cref="E:Godot.EditorSpinSlider.ValueFocusEntered"/> event of a <see cref="T:Godot.EditorSpinSlider"/> class.
+            </summary>
+            <summary>
+            <para>Emitted when the value form gains focus.</para>
+            </summary>
+        </member>
+        <member name="E:Godot.EditorSpinSlider.ValueFocusExited">
+            <summary>
+            Represents the method that handles the <see cref="E:Godot.EditorSpinSlider.ValueFocusExited"/> event of a <see cref="T:Godot.EditorSpinSlider"/> class.
+            </summary>
+            <summary>
+            <para>Emitted when the value form loses focus.</para>
             </summary>
         </member>
         <member name="T:Godot.EditorSyntaxHighlighter">
