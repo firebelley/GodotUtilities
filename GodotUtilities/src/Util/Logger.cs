@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System.Linq;
+using Godot;
 
 namespace GodotUtilities.Util
 {
@@ -6,13 +7,13 @@ namespace GodotUtilities.Util
     {
         public static void Error(params object[] what)
         {
-            GD.PrintErr($"[ERROR]", what);
+            GD.PrintErr(new object[] { "[ERROR] " }.Concat(what));
             GD.PrintStack();
         }
 
         public static void Info(params object[] what)
         {
-            GD.PrintRaw($"[INFO]", what);
+            GD.PrintRaw(new object[] { "[INFO] " }.Concat(what));
             GD.PrintRaw("\n");
         }
 
@@ -20,7 +21,7 @@ namespace GodotUtilities.Util
         {
             if (OS.IsDebugBuild())
             {
-                GD.PrintRaw($"[DEBUG]", what);
+                GD.PrintRaw(new object[] { "[DEBUG] " }.Concat(what));
                 GD.PrintRaw("\n");
             }
         }
