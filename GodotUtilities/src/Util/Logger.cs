@@ -7,13 +7,13 @@ namespace GodotUtilities.Util
     {
         public static void Error(params object[] what)
         {
-            GD.PrintErr(new object[] { "[ERROR] " }.Concat(what));
+            GD.PrintErr(new object[] { "[ERROR] " }.Concat(what).ToArray());
             GD.PrintStack();
         }
 
         public static void Info(params object[] what)
         {
-            GD.PrintRaw(new object[] { "[INFO] " }.Concat(what));
+            GD.PrintRaw(new object[] { "[INFO] " }.Concat(what).ToArray());
             GD.PrintRaw("\n");
         }
 
@@ -21,7 +21,7 @@ namespace GodotUtilities.Util
         {
             if (OS.IsDebugBuild())
             {
-                GD.PrintRaw(new object[] { "[DEBUG] " }.Concat(what));
+                GD.PrintRaw(new object[] { "[DEBUG] " }.Concat(what).ToArray());
                 GD.PrintRaw("\n");
             }
         }
