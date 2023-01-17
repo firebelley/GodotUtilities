@@ -3,29 +3,17 @@
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PreBuildEvent>echo $(SolutionDir)</PreBuildEvent>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\Release\GodotUtilities.xml</DocumentationFile>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <PostBuildEvent>nuget.exe pack $(SolutionDir)GodotUtilities\GodotUtilities.nuspec</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <PostBuildEvent>nuget.exe pack $(SolutionDir)\GodotUtilities.nuspec</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GodotSharp, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\GodotSharp.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.355802">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

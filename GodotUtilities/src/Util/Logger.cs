@@ -6,13 +6,13 @@ namespace GodotUtilities.Util
     {
         public static void Error(params object[] what)
         {
-            GD.PrintErr($"[ERROR] {what}");
+            GD.PrintErr($"[ERROR]", what);
             GD.PrintStack();
         }
 
         public static void Info(params object[] what)
         {
-            GD.PrintRaw($"[INFO] {what}");
+            GD.PrintRaw($"[INFO]", what);
             GD.PrintRaw("\n");
         }
 
@@ -20,7 +20,7 @@ namespace GodotUtilities.Util
         {
             if (OS.IsDebugBuild())
             {
-                GD.PrintRaw($"[DEBUG] {what}");
+                GD.PrintRaw($"[DEBUG]", what);
                 GD.PrintRaw("\n");
             }
         }
