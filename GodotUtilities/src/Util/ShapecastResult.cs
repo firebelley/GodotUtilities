@@ -6,9 +6,9 @@ namespace GodotUtilities.Util
     {
         public Vector2 Point { get; set; }
         public Vector2 Normal { get; set; }
-        public Object Collider { get; set; }
+        public GodotObject Collider { get; set; }
         public int ColliderId { get; set; }
-        public RID RID { get; set; }
+        public Rid Rid { get; set; }
         public int Shape { get; set; }
         public Vector2 FromPosition { get; set; }
         public Vector2 ToPosition { get; set; }
@@ -20,9 +20,9 @@ namespace GodotUtilities.Util
             ToPosition = to;
             Point = (Vector2)resultDict["point"];
             Normal = (Vector2)resultDict["normal"];
-            Collider = (Object)resultDict["collider"];
+            Collider = (GodotObject)resultDict["collider"];
             ColliderId = (int)resultDict["collider_id"];
-            RID = (RID)resultDict["rid"];
+            Rid = (Rid)resultDict["rid"];
             Shape = (int)resultDict["shape"];
             LinearVelocity = (Vector2)resultDict["linear_velocity"];
         }
