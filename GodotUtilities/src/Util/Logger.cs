@@ -8,8 +8,7 @@ namespace GodotUtilities.Util
         public static void Error(params object[] what)
         {
             GD.PrintErr(new object[] { "[ERROR] " }.Concat(what).ToArray());
-            // TODO: what happened?
-            // GD.PrintStack();
+            GD.Print(System.Environment.StackTrace);
         }
 
         public static void Info(params object[] what)
