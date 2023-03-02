@@ -17,11 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Tag Version
-        id: tag_version
-        run: |
-          echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
       - name: Build Nupkg
         run: dotnet build -c Release
 
@@ -30,10 +25,10 @@ jobs:
       #   with:
       #     token: ${{ secrets.GITHUB_TOKEN }}
       #     generateReleaseNotes: true
-      #     tag: v${{ steps.tag_version.outputs.TAG_VERSION }}
+      #     tag: ${{ github.ref_name }}
       #     artifacts: ${{ steps.export.outputs.archive_directory }}/*
 
       - name: Publish to Nuget
         run: |
           cd .\bin\Release
-          dotnet nuget push .\Firebelley.GodotUtilities.${{ steps.tag_version.outputs.TAG_VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push .\Firebelley.GodotUtilities.${{ github.ref_name }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
