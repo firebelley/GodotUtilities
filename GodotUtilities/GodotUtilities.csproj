@@ -11,9 +11,6 @@
     <PostBuildEvent>nuget.exe pack $(SolutionDir)\GodotUtilities.nuspec</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GodotSharp, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\GodotSharp.dll</HintPath>
-    </Reference>
+    <PackageReference Include="GodotSharp" Version="4.0.0" />
   </ItemGroup>
 </Project>
