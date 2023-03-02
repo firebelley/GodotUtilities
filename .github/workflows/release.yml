@@ -18,7 +18,8 @@ jobs:
           fetch-depth: 0
 
       - name: Build Nupkg
-        run: dotnet build -c Release
+        run: echo ${{ github.ref_name#v }}
+        # run: dotnet build -c Release
 
       # - name: Create Release
       #   uses: ncipollo/release-action@v1.12.0
@@ -26,14 +27,15 @@ jobs:
       #     token: ${{ secrets.GITHUB_TOKEN }}
       #     generateReleaseNotes: true
       #     tag: ${{ github.ref_name }}
+      #     artifcats: "**/*/*.nupkg"
 
-      - name: Set Nuget Version
-        id: nuget_version
-        run: |
-          TAG=${{ github.ref_name }}
-          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+      # - name: Set Nuget Version
+      #   id: nuget_version
+      #   run: |
+      #     TAG=${{ github.ref_name }}
+      #     echo "VERSION=${TAG#v}" >> $GITHUB_ENV
 
-      - name: Publish to Nuget
-        run: |
-          cd .\bin\Release
-          dotnet nuget push .\Firebelley.GodotUtilities.${{ steps.nuget_version.outputs.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+      # - name: Publish to Nuget
+      #   run: |
+      #     cd .\bin\Release
+      #     dotnet nuget push .\Firebelley.GodotUtilities.${{ github.ref_name#v }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
