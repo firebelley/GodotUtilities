@@ -6,7 +6,11 @@ on:
 jobs:
   export_game:
     runs-on: windows-latest
+    environment: default
     name: Release
+    env:
+      nuget_api_key: ${{ secrets.NUGET_API_KEY }}
+
     steps:
       - name: Checkout Files
         uses: actions/checkout@v3.1.0
@@ -28,3 +32,8 @@ jobs:
           generate_release_notes: true
           tag_name: ${{ steps.tag_version.outputs.TAG_VERSION }}
           files: "**/*/*.nupkg"
+
+      - name: Publish to Nuget
+        run: |
+          cd .\bin\Release
+          dotnet nuget push .\Firebelley.GodotUtilities.${{ steps.tag_version.outputs.TAG_VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
