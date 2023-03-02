@@ -17,23 +17,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Tag Version
-        id: tag_version
+      - name: Get Nuget Version
+        id: nuget_version
         run: |
-          echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Build Nupkg
         run: dotnet build -c Release
 
-      # - name: Create Release
-      #   uses: ncipollo/release-action@v1.12.0
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     generateReleaseNotes: true
-      #     tag: v${{ steps.tag_version.outputs.TAG_VERSION }}
-      #     artifacts: ${{ steps.export.outputs.archive_directory }}/*
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
+          tag: ${{ github.ref_name }}
+          artifcats: "**/*/*.nupkg"
 
       - name: Publish to Nuget
         run: |
           cd .\bin\Release
-          dotnet nuget push .\Firebelley.GodotUtilities.${{ steps.tag_version.outputs.TAG_VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push .\Firebelley.GodotUtilities.${{ steps.nuget_version.outputs.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json

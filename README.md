@@ -1,31 +1,8 @@
 # GodotUtilities
 
-**NOTE**: This library was developed to meet my personal development needs and as such several features may be unclear. If you see anything that's unclear, or documentation that is lacking, please open an issue!
-
 ## Usage
 
-Download the latest nupkg from the releases page. You can add this to your project by copying the `.nupkg` to a `packages/offline` directory in your project (or similar). You will also need to configure a custom nuget config at the root of your project directory.
-
-- Create a `nuget.config` file alongside your `.sln` file.
-- Add the following contents:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-    <packageSources>
-        <clear />
-        <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-        <add key="local" value="packages/offline" />
-    </packageSources>
-    <packageRestore>
-        <add key="enabled" value="false" />
-        <add key="automatic" value="false" />
-    </packageRestore>
-</configuration>
-```
-
-- Copy the `.nupkg` to `./packages/offline`
-- Build your project. If all is configured correctly, you should be ready to use GodotUtilities!
+Add `Firebelley.GodotUtilities` to your `.csproj`: https://www.nuget.org/packages/Firebelley.GodotUtilities/#readme-body-tab
 
 ## Building
 
