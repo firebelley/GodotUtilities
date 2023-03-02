@@ -18,10 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Get Nuget Version
-        id: nuget_version
-        run: |
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Build Nupkg
         run: dotnet build -c Release
@@ -37,4 +34,4 @@ jobs:
       - name: Publish to Nuget
         run: |
           cd .\bin\Release
-          dotnet nuget push .\Firebelley.GodotUtilities.${GITHUB_REF_NAME#v}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push .\Firebelley.GodotUtilities.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
