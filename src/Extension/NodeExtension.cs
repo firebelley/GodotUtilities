@@ -132,5 +132,14 @@ namespace GodotUtilities
                 obj.QueueFree();
             }
         }
+
+        /// <summary>
+        /// Checks if the Node is the current game's scene. Useful for checking whether the scene was run using the "Run Current Scene" button.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsCurrentScene(this Node node)
+        {
+            return node.GetTree().CurrentScene.SceneFilePath == node.SceneFilePath;
+        }
     }
 }
