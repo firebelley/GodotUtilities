@@ -16,8 +16,8 @@ namespace GodotUtilities
         /// <returns></returns>
         public static T GetFirstNodeInGroup<T>(this SceneTree sceneTree, string group) where T : Node
         {
-            var nodes = sceneTree.GetNodesInGroup(group);
-            return nodes.Count > 0 ? nodes[0] as T : null;
+            var node = sceneTree.GetFirstNodeInGroup(group);
+            return node as T;
         }
 
         /// <summary>
@@ -28,8 +28,7 @@ namespace GodotUtilities
         /// <returns></returns>
         public static T GetFirstNodeInGroup<T>(this SceneTree sceneTree) where T : Node
         {
-            var name = typeof(T).Name;
-            return GetFirstNodeInGroup<T>(sceneTree, name);
+            return sceneTree.GetFirstNodeInGroup<T>(typeof(T).Name);
         }
 
         public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree, string group) where T : Node
