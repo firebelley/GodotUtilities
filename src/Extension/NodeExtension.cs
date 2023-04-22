@@ -25,10 +25,15 @@ namespace GodotUtilities
             return node.GetNode<T>(typeof(T).Name);
         }
 
-        public static List<T> GetChildren<T>(this Node node) where T : class
+        public static List<T> GetChildren<T>(this Node node) where T : Node
         {
             var children = node.GetChildren().Cast<Node>();
             return children.Select(x => x as T).ToList();
+        }
+
+        public static IEnumerable<T> GetChildrenOfType<T>(this Node node) where T : Node
+        {
+            return node.GetChildren().OfType<T>();
         }
 
         public static T GetFirstNodeOfType<T>(this Node node)
