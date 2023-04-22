@@ -146,5 +146,16 @@ namespace GodotUtilities
         {
             return node.GetTree().CurrentScene.SceneFilePath == node.SceneFilePath;
         }
+
+        public static List<Node> GetAllDescendants(this Node node)
+        {
+            var result = new List<Node>();
+            foreach (var child in node.GetChildren())
+            {
+                result.AddRange(child.GetAllDescendants());
+                result.Add(child);
+            }
+            return result;
+        }
     }
 }
