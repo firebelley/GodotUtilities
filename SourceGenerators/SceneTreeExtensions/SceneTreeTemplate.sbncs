@@ -1,0 +1,21 @@
+﻿{{- func render_assignments(node) ~}}
+{{NSIndent}}    {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.LowerName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.UniqueName}}");
+{{~ end -}}
+
+using System.ComponentModel;
+
+using Godot;
+
+{{~NSOpen~}}
+{{NSIndent}}partial class {{ClassName}}
+{{NSIndent}}{
+{{NSIndent}}    void WireNodes()
+{{NSIndent}}    {
+{{~
+for node in Nodes
+    render_assignments node
+end
+~}}
+{{NSIndent}}    }
+{{NSIndent}}}
+{{~NSClose~}}
