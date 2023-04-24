@@ -2,39 +2,105 @@
 
 ## Usage
 
+Built for Godot 4. Use versions <= 2 for Godot 3 compatibility.
+
 Add `Firebelley.GodotUtilities` to your `.csproj`: https://www.nuget.org/packages/Firebelley.GodotUtilities/#readme-body-tab
 
-## Building
+## Source Generation
+You may find it unwieldy in C# to constantly be assigning member variables to nodes using `GetNode`. Consider:
+```csharp
+using Godot;
 
-Make sure `nuget.exe` is in your `PATH` environment variable. You will also need to install the .NET 6.0 SDK which should already be installed if you are using C# with Godot 4. There is a post build event that will invoke `nuget.exe` and will create a `.nupkg` in `bin/Release`. You can then pull this `.nupkg` into your Godot project. In order to do so, you will need to configure a [local nuget repository location](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds).
-
+public partial class MyClass : Node {
+    private Label label;
+    private Sprite2D sprite2d;
+    private AudioStreamPlayer audioStreamPlayer;
+    
+    public override void _Ready() {
+        label = GetNodeOrNull<Label>("Label");
+        sprite2d = GetNodeOrNull<Label>("Sprite2D");
+        // and on...
+    }
+}
 ```
-dotnet build -c Release
-```
+This is a lot of boilerplate to write. This repository includes a source generatorto reduce this boilerplate, based on [this repository](https://github.com/Cat-Lips/GodotSharp.SourceGenerators). Be sure to check out that repository for a more sophisticated set of generators.
 
-## Other Notes
-
-There is an attribute which can automatically set nodes for you. It will find the Node that is a child that has the same name as the variable name.
-
-```cd
+With the included source generator, you can now write this code like so with the `[Scene]` and `[Node]` attributes:
+```csharp
+using Godot;
 using GodotUtilities;
 
-[Node]
-private Sprite2D sprite; // Finds node with name "Sprite" or "sprite"
-
-[Node("HBoxContainer/Label")] // If a Node path is specified, that will be used instead
-private Label someLabel;
-
-public override void _EnterTree() {
-    this.WireNodes(); // assigns all nodes with a [Node] attribute
-    // you can also use the NotificationInstanced notification
-    // in a _Notification override
+[Scene]
+public partial class MyClass : Node {
+    [Node]
+    private Label label;
+    [Node]
+    private Sprite2D sprite2d;
+    [Node("Some/Nested/AudioStreamPlayer")] // a node path can optionally be supplied
+    private AudioStreamPlayer audioStreamPlayer;
+    
+    public override void _Notification(int what) {
+        if (what == NotificationSceneInstantiated) {
+            WireNodes(); // this is a generated method
+        }
+    }
 }
 ```
 
-Special characters are stripped when trying to match names, so if you choose to use `_` to denote private variables you don't need to include `_` in the node name.
+I recommend using the `NotificationSceneInstantiated` notification because this will make your node assignments available immediately upon instantiating a scene. However, you can call `WireNodes` whenever you want. Be aware that nodes will not be assigned until this method is called.
 
-## Versioning
+Nodes are matched using the following rules. The first match is assigned to the member.
+1. Get a node at the node path if supplied in the `[Node]` attribute
+1. Get a direct child with `PascalCase` member name: `GetNodeOrNull<Label>("MyLabel")`
+1. Get a unique descendant with `PascalCase` member name: `GetNodeOrNull<Label>("%MyLabel")`
+1. Get a direct child with `snake_case` member name: `GetNodeOrNull<Label>("my_label")`
+1. Get a unique descendant with `snake_case` member name: `GetNodeOrNull<Label>("%my_label)`
+1. Get a direct child with `camelCase` member name: `GetNodeOrNull<Label>("myLabel")`
+1. Get a unique descendant with `camelCase` member name: `GetNodeOrNull<Label>("%myLabel)`
+1. Get a direct child with member name converted to lower case: `GetNodeOrNull<Label>("mylabel")`
+1. Get a unique descendant with member name converted to lower case: `GetNodeOrNull<Label>("%mylabel")`
+
+An error will be printed in the console if nothing was matched.
+
+## Delegate State Machine
+There is a `DelegateStateMachine` which is a simple finite state machine that can be used like so:
+```csharp
+using GodotUtilities.Logic;
+
+private DelegateStateMachine stateMachine = new DelegateStateMachine();
+
+public override void _Ready() {
+    stateMachine.AddStates(StateNormal, EnterStateNormal, LeaveStateNormal);
+    stateMachine.AddStates(StateFlee);
+    stateMachine.AddStates(StateAttack, null, LeaveStateAttack);
+    stateMachine.SetInitialState(StateNormal); // important. The initial state will have its enter function called
+}
+
+public override void _Process(double delta) {
+    stateMachine.Update(); // triggers an update of the current state and calls enter and leave states as necessary
+}
+
+private void EnterStateNormal() {
+    // called when normal state is entered
+}
+
+private void StateNormal() {
+    // frame-by-frame state logic here
+    // when you want to change states:
+    stateMachine.ChangeState(StateAttack);
+}
+
+private void LeaveStateNormal() {
+    // called when normal state is left
+}
+
+// so on...
+```
+
+## Extensions
+There are various extensions available to make your development experience more streamlined. Take a look through the source code to get an idea of what is available to you.
+
+## A Note on Versioning
 
 This project follows semantic versioning. All minor and patch version upgrades will be safe to use in your project. Major version upgrades will contain breaking API changes.
 

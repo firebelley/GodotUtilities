@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 
-namespace GodotSharp.SourceGenerators.SceneTreeExtensions
+namespace GodotUtilities.SourceGenerators.Scene
 {
     internal static class Resources
     {
-        private const string sceneTreeTemplate = "GodotSharp.SourceGenerators.SceneTreeExtensions.SceneTreeTemplate.sbncs";
+        private const string sceneTreeTemplate = "GodotUtilities.SourceGenerators.Scene.SceneTreeTemplate.sbncs";
         public static readonly string SceneTreeTemplate = Assembly.GetExecutingAssembly().GetEmbeddedResource(sceneTreeTemplate);
     }
 }

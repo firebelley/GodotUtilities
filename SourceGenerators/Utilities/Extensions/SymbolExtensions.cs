@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace GodotSharp.SourceGenerators
+namespace GodotUtilities.SourceGenerators
 {
     public static class SymbolExtensions
     {

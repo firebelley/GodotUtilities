@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace GodotSharp.SourceGenerators
+namespace GodotUtilities.SourceGenerators
 {
     public abstract class SourceGeneratorForDeclaredPropertyWithAttribute<TAttribute> : SourceGeneratorForDeclaredMemberWithAttribute<TAttribute, PropertyDeclarationSyntax>
         where TAttribute : Attribute
