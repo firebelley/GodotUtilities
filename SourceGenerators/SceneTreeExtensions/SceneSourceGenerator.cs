@@ -4,7 +4,7 @@ using Scriban;
 namespace GodotSharp.SourceGenerators.SceneTreeExtensions
 {
     [Generator]
-    internal class SceneTreeSourceGenerator : SourceGeneratorForDeclaredTypeWithAttribute<GodotUtilities.SceneTreeAttribute>
+    internal class SceneSourceGenerator : SourceGeneratorForDeclaredTypeWithAttribute<GodotUtilities.SceneAttribute>
     {
         private static Template _sceneTreeTemplate;
         private static Template SceneTreeTemplate => _sceneTreeTemplate ??= Template.Parse(Resources.SceneTreeTemplate);
@@ -28,7 +28,7 @@ namespace GodotSharp.SourceGenerators.SceneTreeExtensions
                 }
             }
 
-            var model = new SceneTreeDataModel(symbol) { Nodes = models };
+            var model = new SceneDataModel(symbol) { Nodes = models };
             var output = SceneTreeTemplate.Render(model, member => member.Name);
 
             return (output, null);

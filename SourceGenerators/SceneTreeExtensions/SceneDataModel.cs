@@ -2,11 +2,11 @@
 
 namespace GodotSharp.SourceGenerators.SceneTreeExtensions
 {
-    internal class SceneTreeDataModel : ClassDataModel
+    internal class SceneDataModel : ClassDataModel
     {
         public List<NodeAttributeDataModel> Nodes { get; set; }
 
-        public SceneTreeDataModel(INamedTypeSymbol symbol) : base(symbol)
+        public SceneDataModel(INamedTypeSymbol symbol) : base(symbol)
         {}
 }
 }
