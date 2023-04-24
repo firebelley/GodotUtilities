@@ -1,8 +1,32 @@
 ﻿{{- func render_assignments(node) ~}}
 {{NSIndent}}{{NSIndent}}    {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.LowerName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.LowerName}}");
+{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} == null)
+{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    if (lowerNameToNode == null)
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    lowerNameToNode = GetChildren().ToDictionary(x => x.Name.ToString().ToLowerInvariant(), x => x);
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    var filename = !string.IsNullOrEmpty(SceneFilePath) ? SceneFilePath : "the scene";
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    var lowerName = nameof({{node.MemberName}}).ToLowerInvariant();
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    if (lowerNameToNode.ContainsKey(lowerName))
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    {{node.MemberName}} = lowerNameToNode[lowerName] as {{node.Type}};
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} != null)
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PushWarning($"Assigned member {nameof({{node.MemberName}})} to node {({{node.MemberName}}).Name} in {filename} as a best-guess.");
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} == null)
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PrintErr($"Could not match member {nameof({{node.MemberName}})} to any Node in {filename}.");
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}    }
 {{~ end -}}
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 using Godot;
 
@@ -11,6 +35,7 @@ using Godot;
 {{NSIndent}}{
 {{NSIndent}}    void WireNodes()
 {{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}    Dictionary<string, Godot.Node> lowerNameToNode = null;
 {{~
 for node in Nodes
     render_assignments node

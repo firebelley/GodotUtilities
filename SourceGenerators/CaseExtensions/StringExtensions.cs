@@ -30,7 +30,7 @@ namespace GodotUtilities.CaseExtensions
 
                     nextSymbolStartsNewWord = true;
                 }
-                else if (!char.IsLetterOrDigit(symbol))
+                else if (!char.IsLetter(symbol))
                 {
                     builder.Append(symbol);
                     disableFrontDelimeter = true;
