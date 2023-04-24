@@ -29,7 +29,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           tag: ${{ github.ref_name }}
-          artifacts: "/**/*/Firebelley.GodotUtilities*.nupkg"
+          artifacts: "**/GodotUtilities/**/*.nupkg"
 
       - name: Publish to Nuget
         run: |
