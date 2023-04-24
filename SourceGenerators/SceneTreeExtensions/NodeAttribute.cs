@@ -1,11 +1,11 @@
-﻿namespace Godot
+﻿namespace GodotUtilities
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class GodotNodeAttribute : Attribute
+    public sealed class NodeAttribute : Attribute
     {
         public string NodePath { get; }
 
-        public GodotNodeAttribute(string nodePath = null)
+        public NodeAttribute(string nodePath = null)
         {
             NodePath = nodePath;
         }

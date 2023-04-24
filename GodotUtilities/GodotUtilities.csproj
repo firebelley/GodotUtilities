@@ -3,37 +3,24 @@
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PreBuildEvent>echo $(SolutionDir)</PreBuildEvent>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <AssemblyName>Firebelley.GodotUtilities</AssemblyName>
-    <RootNamespace>Firebelley.GodotUtilities</RootNamespace>
+    <RootNamespace>GodotUtilities</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>Firebelley</Authors>
-<!--    <RepositoryUrl>https://github.com/Cat-Lips/GodotSharp.SourceGenerators</RepositoryUrl>-->
-<!--    <PackageProjectUrl>https://github.com/Cat-Lips/GodotSharp.SourceGenerators</PackageProjectUrl>-->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <DocumentationFile>bin\Release\GodotUtilities.xml</DocumentationFile>
-    <Version>4.0.0</Version>
+    <DocumentationFile>bin\$(Configuration)\GodotUtilities.xml</DocumentationFile>
+    <Version>4.0.0-$([System.DateTime]::Now.ToString(yyMMdd-HHmm)).$(Configuration)</Version>
   </PropertyGroup>
-<!--  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">-->
-<!--    <DocumentationFile>bin\Release\GodotUtilities.xml</DocumentationFile>-->
-<!--    <PostBuildEvent>nuget.exe pack $(SolutionDir)\GodotUtilities\GodotUtilities.nuspec</PostBuildEvent>-->
-<!--  </PropertyGroup>-->
   <ItemGroup>
-    <PackageReference Include="GodotSharp" Version="4.0.0" />
+    <PackageReference Include="GodotSharp" Version="4.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SourceGenerators\SourceGenerators.csproj" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>GodotSharp.SourceGenerators.dll</IncludeAssets>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(OutputPath)\GodotSharp.SourceGenerators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <ProjectReference Include="..\SourceGenerators\SourceGenerators.csproj"/>
   </ItemGroup>
 </Project>

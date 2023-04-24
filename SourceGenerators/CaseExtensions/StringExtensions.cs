@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace CaseExtensions
+namespace GodotUtilities.CaseExtensions
 {
     public static partial class StringExtensions
     {
