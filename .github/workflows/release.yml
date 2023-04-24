@@ -29,9 +29,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           tag: ${{ github.ref_name }}
-          artifacts: "**/*/*.nupkg"
+          artifacts: "/**/*/Firebelley.GodotUtilities*.nupkg"
 
       - name: Publish to Nuget
         run: |
-          cd .\bin\Release
+          cd .\GodotUtilities\bin\Release
           dotnet nuget push .\Firebelley.GodotUtilities.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
