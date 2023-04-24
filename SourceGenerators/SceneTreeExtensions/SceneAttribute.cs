@@ -1,9 +1,9 @@
 ﻿namespace GodotUtilities
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class SceneTreeAttribute : Attribute
+    public sealed class SceneAttribute : Attribute
     {
-        public SceneTreeAttribute()
+        public SceneAttribute()
         {
         }
     }
