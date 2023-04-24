@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Scriban;
 
-namespace GodotSharp.SourceGenerators.SceneTreeExtensions
+namespace GodotUtilities.SourceGenerators.Scene
 {
     [Generator]
     internal class SceneSourceGenerator : SourceGeneratorForDeclaredTypeWithAttribute<GodotUtilities.SceneAttribute>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using GodotUtilities.CaseExtensions;
 
-namespace GodotSharp.SourceGenerators.SceneTreeExtensions
+namespace GodotUtilities.SourceGenerators.Scene
 {
     internal class NodeAttributeDataModel : MemberDataModel
     {

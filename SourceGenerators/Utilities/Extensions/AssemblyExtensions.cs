@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace GodotSharp.SourceGenerators
+namespace GodotUtilities.SourceGenerators
 {
     public static class AssemblyExtensions
     {

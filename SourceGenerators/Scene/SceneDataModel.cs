@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace GodotSharp.SourceGenerators.SceneTreeExtensions
+namespace GodotUtilities.SourceGenerators.Scene
 {
     internal class SceneDataModel : ClassDataModel
     {

@@ -1,4 +1,4 @@
-﻿namespace GodotSharp.SourceGenerators
+﻿namespace GodotUtilities.SourceGenerators
 {
     public record DiagnosticDetail
     {
