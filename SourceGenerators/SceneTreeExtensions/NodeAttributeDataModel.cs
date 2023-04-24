@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using CaseExtensions;
+using GodotUtilities.CaseExtensions;
 
 namespace GodotSharp.SourceGenerators.SceneTreeExtensions
 {
@@ -7,7 +7,6 @@ namespace GodotSharp.SourceGenerators.SceneTreeExtensions
     {
         public string Path { get; }
         public string PascalName { get; }
-        public string UniqueName { get; }
         public string SnakeName { get; }
         public string LowerName { get; }
         public string MemberName { get; }
@@ -19,7 +18,6 @@ namespace GodotSharp.SourceGenerators.SceneTreeExtensions
             Path = nodePath;
             MemberName = symbol.Name;
             PascalName = MemberName.ToPascalCase();
-            UniqueName = $"%{PascalName}";
             SnakeName = MemberName.ToSnakeCase();
             LowerName = MemberName.ToLowerInvariant();
             CamelName = MemberName.ToCamelCase();

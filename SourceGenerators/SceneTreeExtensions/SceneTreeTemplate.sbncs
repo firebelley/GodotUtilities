@@ -1,5 +1,5 @@
 ﻿{{- func render_assignments(node) ~}}
-{{NSIndent}}    {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.LowerName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.UniqueName}}");
+{{NSIndent}}{{NSIndent}}    {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.LowerName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.LowerName}}");
 {{~ end -}}
 
 using System.ComponentModel;

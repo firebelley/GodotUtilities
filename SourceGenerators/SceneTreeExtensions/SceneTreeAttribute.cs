@@ -1,4 +1,4 @@
-﻿namespace Godot
+﻿namespace GodotUtilities
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class SceneTreeAttribute : Attribute

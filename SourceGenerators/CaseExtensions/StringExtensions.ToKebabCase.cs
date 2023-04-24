@@ -1,6 +1,6 @@
 using System;
 
-namespace CaseExtensions
+namespace GodotUtilities.CaseExtensions
 {
     public static partial class StringExtensions
     {
