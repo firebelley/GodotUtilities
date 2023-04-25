@@ -34,6 +34,6 @@ jobs:
       - name: Publish to Nuget
         run: |
           cd .\SourceGenerators\bin\Release
-          dotnet nuget push .\Firebelley.SourceGenerators.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push .\Firebelley.GodotUtilities.SourceGenerators.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
           cd ..\..\..\GodotUtilities\bin\Release
           dotnet nuget push .\Firebelley.GodotUtilities.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
