@@ -5,7 +5,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>GodotUtilities.SourceGenerators</AssemblyName>
+    <AssemblyName>Firebelley.GodotUtilities.SourceGenerators</AssemblyName>
     <RootNamespace>GodotUtilities.SourceGenerators</RootNamespace>
   </PropertyGroup>
 
@@ -23,11 +23,10 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>GodotUtilities</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>4.0.0</Version>
+    <Version>4.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" Link="Package\docs\README.md" />
-    <None Include="Package\build\$(AssemblyName).targets" Pack="true" PackagePath="build" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers\dotnet\cs" Link="Package\analyzers\dotnet\cs\$(AssemblyName).dll" />
   </ItemGroup>
 
