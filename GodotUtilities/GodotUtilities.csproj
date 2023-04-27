@@ -15,7 +15,7 @@
     <Authors>Firebelley</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DocumentationFile>bin\$(Configuration)\GodotUtilities.xml</DocumentationFile>
-    <Version>4.0.1</Version>
+    <Version>4.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.0.2" />
