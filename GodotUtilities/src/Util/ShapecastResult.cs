@@ -1,5 +1,3 @@
-using Godot;
-
 namespace GodotUtilities.Util;
 
 public class ShapecastResult

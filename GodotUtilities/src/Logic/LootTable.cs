@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Godot;
-
 namespace GodotUtilities.Logic;
+
+using System.Collections.Generic;
 
 public class LootTable<T>
 {

@@ -1,5 +1,3 @@
-using Godot;
-
 namespace GodotUtilities;
 
 public static class Node2DExtension

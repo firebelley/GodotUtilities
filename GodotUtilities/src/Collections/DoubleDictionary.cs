@@ -1,7 +1,7 @@
+namespace GodotUtilities.Collections;
+
 using System.Collections;
 using System.Collections.Generic;
-
-namespace GodotUtilities.Collections;
 
 public class DoubleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 {

@@ -1,7 +1,6 @@
-using Godot;
-using GodotUtilities.Util;
-
 namespace GodotUtilities;
+
+using GodotUtilities.Util;
 
 public static class ResourcePreloaderExtension
 {

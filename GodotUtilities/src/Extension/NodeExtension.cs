@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Godot;
+﻿namespace GodotUtilities;
 
-namespace GodotUtilities;
+using System.Collections.Generic;
 
 public static class NodeExtension
 {
