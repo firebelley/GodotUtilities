@@ -22,26 +22,20 @@ public class ImmediateStateMachine<T>
         _delegates.Add(del, state);
     }
 
-    public void AddLeaveState(T stateToLeave, StateDelegate del)
-    {
+    public void AddLeaveState(T stateToLeave, StateDelegate del) => 
         _leaveStates.Add(stateToLeave, del);
-    }
 
     public void ChangeState(T state)
     {
         if (_leaveStates.ContainsKey(CurrentState))
-        {
             _leaveStates[CurrentState]();
-        }
+
         CurrentState = state;
+
         if (_states.ContainsKey(CurrentState))
-        {
             _states[CurrentState]();
-        }
     }
 
-    public void ChangeState(StateDelegate stateDelegate)
-    {
+    public void ChangeState(StateDelegate stateDelegate) => 
         ChangeState(_delegates[stateDelegate]);
-    }
 }

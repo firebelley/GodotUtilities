@@ -28,15 +28,9 @@ public class DelegateStateMachine : RefCounted
         SetState(stateFlows);
     }
 
-    public State GetCurrentState()
-    {
-        return currentState;
-    }
+    public State GetCurrentState() => currentState;
 
-    public void Update()
-    {
-        currentState?.Invoke();
-    }
+    public void Update() => currentState?.Invoke();
 
     private void SetState(StateFlows stateFlows)
     {
