@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using Godot;
-
 namespace GodotUtilities.Util;
+
+using System.Collections.Generic;
 
 public static class FileSystem
 {

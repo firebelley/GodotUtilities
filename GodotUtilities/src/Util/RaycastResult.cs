@@ -1,7 +1,6 @@
-using Godot;
-using Godot.Collections;
-
 namespace GodotUtilities.Util;
+
+using Godot.Collections;
 
 public class RaycastResult
 {

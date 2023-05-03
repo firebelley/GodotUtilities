@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Godot;
+﻿namespace GodotUtilities.Logic;
 
-namespace GodotUtilities.Logic;
+using System.Collections.Generic;
 
 public class DelegateStateMachine : RefCounted
 {
