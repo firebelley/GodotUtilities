@@ -18,10 +18,10 @@ public static class Physics2DDirectSpaceStateExtensions
     public static RaycastResult Raycast(this PhysicsDirectSpaceState2D state, PhysicsRayQueryParameters2D query)
     {
         var raycastDict = state.IntersectRay(query);
+
         if (raycastDict?.Count > 0)
-        {
             return new RaycastResult(query.From, query.To, raycastDict);
-        }
+
         return null;
     }
 }

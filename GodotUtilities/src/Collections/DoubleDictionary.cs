@@ -64,27 +64,16 @@ public class DoubleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         _valueToKey.Clear();
     }
 
-    public bool Contains(KeyValuePair<TKey, TValue> item)
-    {
-        return _keyToValue.ContainsKey(item.Key) && _valueToKey.ContainsKey(item.Value);
-    }
+    public bool Contains(KeyValuePair<TKey, TValue> item) =>
+        _keyToValue.ContainsKey(item.Key) && _valueToKey.ContainsKey(item.Value);
 
-    public bool ContainsKey(TKey key)
-    {
-        return _keyToValue.ContainsKey(key);
-    }
+    public bool ContainsKey(TKey key) => _keyToValue.ContainsKey(key);
 
-    public bool ContainsKey(TValue value)
-    {
-        return _valueToKey.ContainsKey(value);
-    }
+    public bool ContainsKey(TValue value) => _valueToKey.ContainsKey(value);
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) { }
 
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-    {
-        return _keyToValue.GetEnumerator();
-    }
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyToValue.GetEnumerator();
 
     public bool Remove(TKey key)
     {
@@ -110,10 +99,7 @@ public class DoubleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         return false;
     }
 
-    public bool Remove(KeyValuePair<TKey, TValue> item)
-    {
-        return Remove(item.Key);
-    }
+    public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
 
     public bool TryGetValue(TKey key, out TValue value)
     {
@@ -137,8 +123,5 @@ public class DoubleDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         return false;
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _keyToValue.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => _keyToValue.GetEnumerator();
 }

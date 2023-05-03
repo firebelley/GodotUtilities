@@ -13,13 +13,9 @@ public static class VectorExtension
         return (ALPHA * max) + (BETA * min);
     }
 
-    public static Vector2 RotatedDegrees(this Vector2 v, float degrees)
-    {
-        return v.Rotated(Mathf.DegToRad(degrees));
-    }
+    public static Vector2 RotatedDegrees(this Vector2 v, float degrees) =>
+        v.Rotated(Mathf.DegToRad(degrees));
 
-    public static bool IsWithinDistanceSquared(this Vector2 v1, Vector2 v2, float distance)
-    {
-        return v1.DistanceSquaredTo(v2) <= distance * distance;
-    }
+    public static bool IsWithinDistanceSquared(this Vector2 v1, Vector2 v2, float distance) =>
+        v1.DistanceSquaredTo(v2) <= distance * distance;
 }

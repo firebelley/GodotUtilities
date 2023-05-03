@@ -23,15 +23,11 @@ public static class SceneTreeExtension
     /// <param name="sceneTree"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T GetFirstNodeInGroup<T>(this SceneTree sceneTree) where T : Node
-    {
-        return sceneTree.GetFirstNodeInGroup<T>(typeof(T).Name);
-    }
+    public static T GetFirstNodeInGroup<T>(this SceneTree sceneTree) where T : Node =>
+        sceneTree.GetFirstNodeInGroup<T>(typeof(T).Name);
 
-    public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree, string group) where T : Node
-    {
-        return sceneTree.GetNodesInGroup(group).Cast<T>();
-    }
+    public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree, string group) where T : Node =>
+        sceneTree.GetNodesInGroup(group).Cast<T>();
 
     public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree) where T : Node
     {
@@ -39,8 +35,6 @@ public static class SceneTreeExtension
         return GetNodesInGroup<T>(sceneTree, name);
     }
 
-    public static async Task NextIdle(this SceneTree sceneTree)
-    {
+    public static async Task NextIdle(this SceneTree sceneTree) =>
         await sceneTree.ToSignal(sceneTree, SceneTree.SignalName.ProcessFrame);
-    }
 }

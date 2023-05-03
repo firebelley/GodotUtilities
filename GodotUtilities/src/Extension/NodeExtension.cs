@@ -8,31 +8,20 @@ public static class NodeExtension
     /// Adds the Node to a group with a name equal to the Node's type name.
     /// </summary>
     /// <param name="node"></param>
-    public static void AddToGroup(this Node node)
-    {
+    public static void AddToGroup(this Node node) =>
         node.AddToGroup(node.GetType().Name);
-    }
 
-    public static T GetSibling<T>(this Node node, int idx) where T : Node
-    {
-        return (T)node.GetParent().GetChild(idx);
-    }
+    public static T GetSibling<T>(this Node node, int idx) where T : Node =>
+        (T)node.GetParent().GetChild(idx);
 
-    public static T GetNode<T>(this Node node) where T : Node
-    {
-        return node.GetNode<T>(typeof(T).Name);
-    }
+    public static T GetNode<T>(this Node node) where T : Node =>
+        node.GetNode<T>(typeof(T).Name);
 
-    public static List<T> GetChildren<T>(this Node node) where T : Node
-    {
-        var children = node.GetChildren().Cast<Node>();
-        return children.Select(x => x as T).ToList();
-    }
+    public static List<T> GetChildren<T>(this Node node) where T : Node =>
+        node.GetChildren().Cast<Node>().Select(x => x as T).ToList();
 
-    public static IEnumerable<T> GetChildrenOfType<T>(this Node node) where T : Node
-    {
-        return node.GetChildren().OfType<T>();
-    }
+    public static IEnumerable<T> GetChildrenOfType<T>(this Node node) where T : Node =>
+        node.GetChildren().OfType<T>();
 
     public static T GetFirstNodeOfType<T>(this Node node)
     {
@@ -61,10 +50,8 @@ public static class NodeExtension
         return result;
     }
 
-    public static void AddChildDeferred(this Node node, Node child)
-    {
+    public static void AddChildDeferred(this Node node, Node child) =>
         node.CallDeferred("add_child", child);
-    }
 
     public static T GetNullableNodePath<T>(this Node n, NodePath nodePath) where T : Node
     {
@@ -123,27 +110,21 @@ public static class NodeExtension
         return n.GetChild(count - 1);
     }
 
-    public static void QueueFreeDeferred(this Node n)
-    {
+    public static void QueueFreeDeferred(this Node n) =>
         n.CallDeferred("queue_free");
-    }
 
     public static void QueueFreeAll(this IEnumerable<Node> objects)
     {
         foreach (var obj in objects)
-        {
             obj.QueueFree();
-        }
     }
 
     /// <summary>
     /// Checks if the Node is the current game's scene. Useful for checking whether the scene was run using the "Run Current Scene" button.
     /// </summary>
     /// <returns></returns>
-    public static bool IsCurrentScene(this Node node)
-    {
-        return node.GetTree().CurrentScene.SceneFilePath == node.SceneFilePath;
-    }
+    public static bool IsCurrentScene(this Node node) =>
+        node.GetTree().CurrentScene.SceneFilePath == node.SceneFilePath;
 
     public static List<Node> GetAllDescendants(this Node node)
     {

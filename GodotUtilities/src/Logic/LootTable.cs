@@ -25,15 +25,9 @@ public class LootTable<T>
         random = MathUtil.RNG;
     }
 
-    public void SetSeed(ulong seed)
-    {
-        random.Seed = seed;
-    }
+    public void SetSeed(ulong seed) => random.Seed = seed;
 
-    public void SetRandom(RandomNumberGenerator random)
-    {
-        this.random = random;
-    }
+    public void SetRandom(RandomNumberGenerator random) => this.random = random;
 
     public void AddItem(T obj, int weight)
     {
@@ -59,15 +53,9 @@ public class LootTable<T>
         AddRange(tableData);
     }
 
-    public T PickItem()
-    {
-        return PickItem(table, WeightSum);
-    }
+    public T PickItem() => PickItem(table, WeightSum);
 
-    public TableData PickTableData()
-    {
-        return PickTableData();
-    }
+    public TableData PickTableData() => PickTableData();
 
     /// <summary>
     /// Picks an item from the loot table and returns it if <paramref name="canPickConditionalFn"/> returns <c>true</c>. 
@@ -100,25 +88,13 @@ public class LootTable<T>
         return PickItem(range, weightSum);
     }
 
-    public List<T> GetLootTableItems()
-    {
-        return table.Select(x => x.Obj).ToList();
-    }
+    public List<T> GetLootTableItems() => table.Select(x => x.Obj).ToList();
 
-    public List<TableData> GetLootTableData()
-    {
-        return table;
-    }
+    public List<TableData> GetLootTableData() => table;
 
-    public int GetCount()
-    {
-        return table.Count;
-    }
+    public int GetCount() => table.Count;
 
-    public void CalculateWeightSum()
-    {
-        WeightSum = table.Sum(x => x.Weight);
-    }
+    public void CalculateWeightSum() => WeightSum = table.Sum(x => x.Weight);
 
     private T PickItem(List<TableData> table, int weightSum)
     {

@@ -19,7 +19,7 @@ public static class ResourcePreloaderExtension
             return null;
         }
 
-        if (!(preloader.GetResource(name) is PackedScene resource))
+        if (preloader.GetResource(name) is not PackedScene resource)
         {
             Logger.Error("Resource with name " + name + " was not a " + nameof(PackedScene));
             return null;
@@ -28,8 +28,6 @@ public static class ResourcePreloaderExtension
         return resource.InstantiateOrNull<T>();
     }
 
-    public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader) where T : Node
-    {
-        return preloader.InstanceSceneOrNull<T>(typeof(T).Name);
-    }
+    public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader) where T : Node =>
+        preloader.InstanceSceneOrNull<T>(typeof(T).Name);
 }

@@ -19,40 +19,24 @@ public class StateMachine<T> : RefCounted
         delegates.Add(del, state);
     }
 
-    public void AddLeaveState(T stateToLeave, StateDelegate del)
-    {
+    public void AddLeaveState(T stateToLeave, StateDelegate del) => 
         leaveStates.Add(stateToLeave, del);
-    }
 
-    public void AddEnterState(T enterState, StateDelegate del)
-    {
+    public void AddEnterState(T enterState, StateDelegate del) => 
         enterStates.Add(enterState, del);
-    }
 
-    public void ChangeState(T state)
-    {
-        Callable.From(() => SetState(state)).CallDeferred();
-    }
+    public void ChangeState(T state) => Callable.From(() => 
+    SetState(state)).CallDeferred();
 
-    public void ChangeState(StateDelegate stateDelegate)
-    {
+    public void ChangeState(StateDelegate stateDelegate) => 
         ChangeState(delegates[stateDelegate]);
-    }
 
-    public void SetInitialState(T state)
-    {
-        SetState(state);
-    }
+    public void SetInitialState(T state) => SetState(state);
 
-    public void SetInitialState(StateDelegate del)
-    {
+    public void SetInitialState(StateDelegate del) => 
         SetInitialState(delegates[del]);
-    }
 
-    public T GetCurrentState()
-    {
-        return currentState;
-    }
+    public T GetCurrentState() => currentState;
 
     public void Update()
     {
