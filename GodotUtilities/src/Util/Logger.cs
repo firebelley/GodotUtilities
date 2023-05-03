@@ -1,7 +1,4 @@
-﻿
-using Godot;
-
-namespace GodotUtilities.Util;
+﻿namespace GodotUtilities.Util;
 
 public static class Logger
 {
