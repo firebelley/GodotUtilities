@@ -1,15 +1,14 @@
 using Godot;
 
-namespace GodotUtilities
+namespace GodotUtilities;
+
+public static class TweenExtension
 {
-    public static class TweenExtension
+    public static void KillIfValid(this Tween tween)
     {
-        public static void KillIfValid(this Tween tween)
+        if (tween.IsValid())
         {
-            if (tween.IsValid())
-            {
-                tween.Kill();
-            }
+            tween.Kill();
         }
     }
 }
