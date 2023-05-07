@@ -18,12 +18,12 @@ public partial class MyClass : Node {
     
     public override void _Ready() {
         label = GetNodeOrNull<Label>("Label");
-        sprite2d = GetNodeOrNull<Label>("Sprite2D");
+        sprite2d = GetNodeOrNull<Sprite2D>("Sprite2D");
         // and on...
     }
 }
 ```
-This is a lot of boilerplate to write. This repository includes a source generatorto reduce this boilerplate, based on [this repository](https://github.com/Cat-Lips/GodotSharp.SourceGenerators). Be sure to check out that repository for a more sophisticated set of generators.
+This is a lot of boilerplate to write. This repository includes a source generator to reduce this boilerplate, based on [this repository](https://github.com/Cat-Lips/GodotSharp.SourceGenerators). Be sure to check out that repository for a more sophisticated set of generators.
 
 With the included source generator, you can now write this code like so with the `[Scene]` and `[Node]` attributes:
 ```csharp
