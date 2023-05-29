@@ -32,16 +32,18 @@ namespace GodotUtilities.SourceGenerators.Scene
             return (output, null);
         }
 
-        private List<(ISymbol, NodeAttribute)> GetAllNodeAttributes(INamedTypeSymbol symbol)
+        private List<(ISymbol, NodeAttribute)> GetAllNodeAttributes(INamedTypeSymbol symbol, bool excludePrivate = false)
         {
             var result = new List<(ISymbol, NodeAttribute)>();
 
             if (symbol.BaseType != null)
             {
-                result.AddRange(GetAllNodeAttributes(symbol.BaseType));
+                result.AddRange(GetAllNodeAttributes(symbol.BaseType, true));
             }
 
-            var members = symbol.GetMembers().Select(member => (member, member.GetAttributes().FirstOrDefault(x => x?.AttributeClass?.Name == nameof(GodotUtilities.NodeAttribute))))
+            var members = symbol.GetMembers()
+                .Where(x => !excludePrivate || x.DeclaredAccessibility != Accessibility.Private)
+                .Select(member => (member, member.GetAttributes().FirstOrDefault(x => x?.AttributeClass?.Name == nameof(GodotUtilities.NodeAttribute))))
                 .Where(x => x.Item2 != null)
                 .Select(x => (x.Item1, new GodotUtilities.NodeAttribute((string)x.Item2.ConstructorArguments[0].Value)));
 
