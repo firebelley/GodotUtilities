@@ -15,10 +15,10 @@
     <Authors>Firebelley</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DocumentationFile>bin\$(Configuration)\GodotUtilities.xml</DocumentationFile>
-    <Version>4.0.4</Version>
+    <Version>4.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GodotSharp" Version="4.0.3" />
+    <PackageReference Include="GodotSharp" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SourceGenerators\SourceGenerators.csproj" />
