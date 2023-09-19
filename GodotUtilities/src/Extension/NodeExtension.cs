@@ -17,6 +17,9 @@ public static class NodeExtension
     public static T GetNode<T>(this Node node) where T : Node =>
         node.GetNode<T>(typeof(T).Name);
 
+    public static T GetAutoloadNode<T>(this Node node) where T : Node =>
+        node.GetNode<T>($"/root/{typeof(T).Name}");
+
     public static List<T> GetChildren<T>(this Node node) where T : Node =>
         node.GetChildren().Cast<Node>().Select(x => x as T).ToList();
 
