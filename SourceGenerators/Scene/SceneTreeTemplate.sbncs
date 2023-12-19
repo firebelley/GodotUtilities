@@ -13,7 +13,7 @@
 {{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    {{node.MemberName}} = lowerNameToNode[lowerName] as {{node.Type}};
 {{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} != null)
 {{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PushWarning($"Assigned member {nameof({{node.MemberName}})} to node {({{node.MemberName}}).Name} in {filename} as a best-guess.");
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PushWarning($"Assigned member {nameof({{node.MemberName}})} to node {((Node)({{node.MemberName}})).Name} in {filename} as a best-guess.");
 {{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
 {{NSIndent}}{{NSIndent}}{{NSIndent}}    }
 {{NSIndent}}{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} == null)
