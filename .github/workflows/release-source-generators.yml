@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Get Nuget Version
-        run: echo ("VERSION=" + $env:GITHUB_REF_NAME.replace('v', '').replace('-sg', '') >> $env:GITHUB_ENV
+        run: echo ("VERSION=" + $env:GITHUB_REF_NAME.replace('v', '').replace('-sg', '')) >> $env:GITHUB_ENV
 
       - name: Build Nupkg
         run: dotnet build -c Release
