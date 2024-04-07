@@ -1,0 +1,37 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  export_game:
+    runs-on: windows-latest
+    environment: default
+    name: Release
+    env:
+      nuget_api_key: ${{ secrets.NUGET_API_KEY }}
+
+    steps:
+      - name: Checkout Files
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Get Nuget Version
+        run: echo ("VERSION=" + $env:GITHUB_REF_NAME.replace('v', '')) >> $env:GITHUB_ENV
+
+      - name: Build Nupkg
+        run: dotnet build -c Release
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
+          tag: ${{ github.ref_name }}
+          artifacts: "**/*/*.nupkg"
+
+      - name: Publish Utilities to Nuget
+        run: |
+          cd .\GodotUtilities\bin\Release
+          dotnet nuget push .\Firebelley.GodotUtilities.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
