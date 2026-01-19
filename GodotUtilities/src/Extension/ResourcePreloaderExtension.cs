@@ -11,7 +11,7 @@ public static class ResourcePreloaderExtension
     /// <param name="name"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader, string name) where T : Node
+    public static T InstantiateSceneOrNull<T>(this ResourcePreloader preloader, string name) where T : Node
     {
         if (!preloader.HasResource(name))
         {
@@ -28,6 +28,5 @@ public static class ResourcePreloaderExtension
         return resource.InstantiateOrNull<T>();
     }
 
-    public static T InstanceSceneOrNull<T>(this ResourcePreloader preloader) where T : Node =>
-        preloader.InstanceSceneOrNull<T>(typeof(T).Name);
+    public static T InstantiateSceneOrNull<T>(this ResourcePreloader preloader) where T : Node => preloader.InstantiateSceneOrNull<T>(typeof(T).Name);
 }

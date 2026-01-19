@@ -1,10 +1,11 @@
 namespace GodotUtilities.Util;
 
 using System.Collections.Generic;
+using Godot;
 
 public static class FileSystem
 {
-    public static List<T> InstanceScenesInPath<T>(string dirPath) where T : Node
+    public static List<T> InstantiateScenesInPath<T>(string dirPath) where T : Node
     {
         if (dirPath[^1] != '/')
         {
@@ -12,79 +13,73 @@ public static class FileSystem
         }
 
         var scenes = new List<T>();
+        var files = ResourceLoader.ListDirectory(dirPath);
 
-        using var dir = DirAccess.Open(dirPath);
-        if (dir == null)
+        foreach (var fileName in files)
         {
-            Logger.Error("Could not open directory " + dirPath);
-            return scenes;
-        }
+            if (fileName.EndsWith('/')) continue;
 
-        dir.ListDirBegin();
-        while (true)
-        {
-            var path = dir.GetNext();
-            if (string.IsNullOrEmpty(path))
+            var fullPath = $"{dirPath}{fileName}";
+            if (GD.Load(fullPath) is PackedScene packedScene)
             {
-                break;
-            }
-            if (!path.Contains(".converted.res") && path.Contains(".tscn"))
-            {
-                path = path.Replace(".remap", "");
-                var fullPath = dirPath + path;
-
-                if (GD.Load(fullPath) is PackedScene packedScene)
+                var scene = packedScene.Instantiate();
+                if (scene is T node)
                 {
-                    var scene = packedScene.Instantiate();
-                    if (scene is T node)
-                    {
-                        scenes.Add(node);
-                    }
-                    else
-                    {
-                        scene.QueueFree();
-                    }
+                    scenes.Add(node);
+                }
+                else
+                {
+                    scene.QueueFree();
                 }
             }
         }
-        dir.ListDirEnd();
 
         return scenes;
     }
 
     public static List<T> LoadResourcesInPath<T>(string path) where T : Resource
     {
-        using var dir = DirAccess.Open(path);
+        if (path[^1] != '/')
+        {
+            path += "/";
+        }
+
         var results = new List<T>();
-        if (dir != null)
+        var files = ResourceLoader.ListDirectory(path);
+
+        foreach (var fileName in files)
         {
-            dir.ListDirBegin();
-            var fileName = dir.GetNext();
-            while (fileName != string.Empty)
+            if (fileName.EndsWith('/'))
             {
-                if (!dir.CurrentIsDir())
-                {
-                    if (fileName.EndsWith(".converted.res") || fileName.EndsWith(".tres"))
-                    {
-                        fileName = fileName.Replace(".converted.res", string.Empty);
-                        var fullPath = $"{path}/{fileName}";
-                        var resource = GD.Load(fullPath);
-                        if (resource is not T res)
-                        {
-                            GD.PushWarning($"Could not load resource at {fullPath} with type {typeof(T).Name}");
-                            continue;
-                        }
-                        results.Add(res);
-                    }
-                }
-                fileName = dir.GetNext();
+                continue;
             }
-            dir.ListDirEnd();
+
+            var fullPath = $"{path}/{fileName}";
+            var resource = GD.Load(fullPath);
+            if (resource is not T res)
+            {
+                GD.PushWarning($"Could not load resource at {fullPath} with type {typeof(T).Name}");
+                continue;
+            }
+            results.Add(res);
         }
-        else
-        {
-            GD.PushWarning($"Could load resources in path {path}");
-        }
+
         return results;
+    }
+
+    public static void ForResourcesInDirectory(string path, Action<string, string> fileAction, bool includeSubdirectories = false)
+    {
+        var files = ResourceLoader.ListDirectory(path);
+
+        foreach (var file in files)
+        {
+            if (file.EndsWith('/') && includeSubdirectories)
+            {
+                ForResourcesInDirectory($"{path}/{file}", fileAction, includeSubdirectories);
+                continue;
+            }
+
+            fileAction(file, $"{path}/{file}");
+        }
     }
 }

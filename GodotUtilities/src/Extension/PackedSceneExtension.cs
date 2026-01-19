@@ -2,7 +2,7 @@ namespace GodotUtilities;
 
 public static class PackedSceneExtension
 {
-    public static T InstanceOrFree<T>(this PackedScene scene) where T : class
+    public static T InstantiateOrFree<T>(this PackedScene scene) where T : class
     {
         var node = scene.Instantiate();
         if (node is T t)
@@ -15,14 +15,14 @@ public static class PackedSceneExtension
     }
 
     /// <summary>
-    /// Instances the scene and passes it as an argument to the supplied action. Allows for "fetching" data from a packed scene without immediately using it.
+    /// Instantiates the scene and passes it as an argument to the supplied action. Afterwards, frees the scene. Allows for "fetching" data from an instantiated scene.
     /// </summary>
     /// <param name="scene"></param>
     /// <param name="action"></param>
     /// <typeparam name="T"></typeparam>
     public static void ExtractData<T>(this PackedScene scene, Action<T> action) where T : Node
     {
-        var node = scene.InstanceOrFree<T>();
+        var node = scene.InstantiateOrFree<T>();
         action(node);
         node.QueueFree();
     }

@@ -26,8 +26,7 @@ public static class SceneTreeExtension
     public static T GetFirstNodeInGroup<T>(this SceneTree sceneTree) where T : Node =>
         sceneTree.GetFirstNodeInGroup<T>(typeof(T).Name);
 
-    public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree, string group) where T : Node =>
-        sceneTree.GetNodesInGroup(group).Cast<T>();
+    public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree, string group) where T : Node => sceneTree.GetNodesInGroup(group).Cast<T>();
 
     public static IEnumerable<T> GetNodesInGroup<T>(this SceneTree sceneTree) where T : Node
     {
@@ -35,6 +34,5 @@ public static class SceneTreeExtension
         return GetNodesInGroup<T>(sceneTree, name);
     }
 
-    public static async Task NextIdle(this SceneTree sceneTree) =>
-        await sceneTree.ToSignal(sceneTree, SceneTree.SignalName.ProcessFrame);
+    public static async Task NextIdle(this SceneTree sceneTree) => await sceneTree.ToSignal(sceneTree, SceneTree.SignalName.ProcessFrame);
 }
