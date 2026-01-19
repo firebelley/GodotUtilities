@@ -4,10 +4,14 @@
 
 Built for Godot 4. Use versions <= 2 for Godot 3 compatibility.
 
+Versions >= 6.0.0 use Godot SDK version >= 4.5.1. Meaning GodotUtilities version 6.0.0 and up will only be compatible with Godot versions >= 4.5.1.
+
 Add `Firebelley.GodotUtilities` to your `.csproj`: https://www.nuget.org/packages/Firebelley.GodotUtilities/#readme-body-tab
 
 ## Source Generation
+
 You may find it unwieldy in C# to constantly be assigning member variables to nodes using `GetNode`. Consider:
+
 ```csharp
 using Godot;
 
@@ -15,7 +19,7 @@ public partial class MyClass : Node {
     private Label label;
     private Sprite2D sprite2d;
     private AudioStreamPlayer audioStreamPlayer;
-    
+
     public override void _Ready() {
         label = GetNodeOrNull<Label>("Label");
         sprite2d = GetNodeOrNull<Sprite2D>("Sprite2D");
@@ -23,9 +27,11 @@ public partial class MyClass : Node {
     }
 }
 ```
+
 This is a lot of boilerplate to write. This repository includes a source generator to reduce this boilerplate, based on [this repository](https://github.com/Cat-Lips/GodotSharp.SourceGenerators). Be sure to check out that repository for a more sophisticated set of generators.
 
 With the included source generator, you can now write this code like so with the `[Scene]` and `[Node]` attributes:
+
 ```csharp
 using Godot;
 using GodotUtilities;
@@ -38,7 +44,7 @@ public partial class MyClass : Node {
     private Sprite2D sprite2d;
     [Node("Some/Nested/AudioStreamPlayer")] // a node path can optionally be supplied
     private AudioStreamPlayer audioStreamPlayer;
-    
+
     public override void _Notification(int what) {
         if (what == NotificationSceneInstantiated) {
             WireNodes(); // this is a generated method
@@ -50,6 +56,7 @@ public partial class MyClass : Node {
 I recommend using the `NotificationSceneInstantiated` notification because this will make your node assignments available immediately upon instantiating a scene. However, you can call `WireNodes` whenever you want. Be aware that nodes will not be assigned until this method is called.
 
 Nodes are matched using the following rules. The first match is assigned to the member.
+
 1. Get a node at the node path if supplied in the `[Node]` attribute
 1. Get a direct child with `PascalCase` member name: `GetNodeOrNull<Label>("MyLabel")`
 1. Get a unique descendant with `PascalCase` member name: `GetNodeOrNull<Label>("%MyLabel")`
@@ -63,7 +70,9 @@ Nodes are matched using the following rules. The first match is assigned to the 
 An error will be printed in the console if nothing was matched.
 
 ## Delegate State Machine
+
 There is a `DelegateStateMachine` which is a simple finite state machine that can be used like so:
+
 ```csharp
 using GodotUtilities.Logic;
 
@@ -98,6 +107,7 @@ private void LeaveStateNormal() {
 ```
 
 ## Extensions
+
 There are various extensions available to make your development experience more streamlined. Take a look through the source code to get an idea of what is available to you.
 
 ## A Note on Versioning
