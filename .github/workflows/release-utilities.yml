@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout Files
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -25,7 +25,7 @@ jobs:
         run: dotnet build -c Release
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.18.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
