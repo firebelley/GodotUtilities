@@ -1,0 +1,29 @@
+using System;
+using System.Collections.Generic;
+using Godot;
+
+{{~NSOpen~}}
+{{NSIndent}}partial class {{ClassName}}
+{{NSIndent}}{
+{{~ for signal in Signals ~}}
+{{NSIndent}}    private Dictionary<{{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}}, Callable> _signalCallables{{signal.SignalName}};
+
+{{NSIndent}}    public void ConnectTo{{signal.SignalName}}({{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}} action, uint flags = 0)
+{{NSIndent}}    {
+{{NSIndent}}        _signalCallables{{signal.SignalName}} ??= new();
+{{NSIndent}}        var callable = Callable.From(action);
+{{NSIndent}}        _signalCallables{{signal.SignalName}}[action] = callable;
+{{NSIndent}}        Connect(SignalName.{{signal.SignalName}}, callable, flags);
+{{NSIndent}}    }
+
+{{NSIndent}}    public void DisconnectFrom{{signal.SignalName}}({{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}} action)
+{{NSIndent}}    {
+{{NSIndent}}        if (_signalCallables{{signal.SignalName}}?.TryGetValue(action, out var callable) == true)
+{{NSIndent}}        {
+{{NSIndent}}            Disconnect(SignalName.{{signal.SignalName}}, callable);
+{{NSIndent}}            _signalCallables{{signal.SignalName}}.Remove(action);
+{{NSIndent}}        }
+{{NSIndent}}    }
+{{~ end ~}}
+{{NSIndent}}}
+{{~NSClose~}}
