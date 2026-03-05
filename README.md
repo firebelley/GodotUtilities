@@ -69,6 +69,8 @@ Nodes are matched using the following rules. The first match is assigned to the 
 
 An error will be printed in the console if nothing was matched.
 
+## Signal Method Generation
+
 It also generates helper methods when using `EventHandlers`. This simplifies connecting to and disconnecting from signals, and omits the need to adjust `Callable` if the `EventHandler` signature changes.
 
 ```csharp
