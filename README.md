@@ -53,6 +53,22 @@ public partial class MyClass : Node {
 }
 ```
 
+I recommend using the `NotificationSceneInstantiated` notification because this will make your node assignments available immediately upon instantiating a scene. However, you can call `WireNodes` whenever you want. Be aware that nodes will not be assigned until this method is called.
+
+Nodes are matched using the following rules. The first match is assigned to the member.
+
+1. Get a node at the node path if supplied in the `[Node]` attribute
+1. Get a direct child with `PascalCase` member name: `GetNodeOrNull<Label>("MyLabel")`
+1. Get a unique descendant with `PascalCase` member name: `GetNodeOrNull<Label>("%MyLabel")`
+1. Get a direct child with `snake_case` member name: `GetNodeOrNull<Label>("my_label")`
+1. Get a unique descendant with `snake_case` member name: `GetNodeOrNull<Label>("%my_label)`
+1. Get a direct child with `camelCase` member name: `GetNodeOrNull<Label>("myLabel")`
+1. Get a unique descendant with `camelCase` member name: `GetNodeOrNull<Label>("%myLabel)`
+1. Get a direct child with member name converted to lower case: `GetNodeOrNull<Label>("mylabel")`
+1. Get a unique descendant with member name converted to lower case: `GetNodeOrNull<Label>("%mylabel")`
+
+An error will be printed in the console if nothing was matched.
+
 It also generates helper methods when using `EventHandlers`. This simplifies connecting to and disconnecting from signals, and omits the need to adjust `Callable` if the `EventHandler` signature changes.
 
 ```csharp
@@ -86,22 +102,6 @@ public partial class MyClass : Node
     }
 }
 ```
-
-I recommend using the `NotificationSceneInstantiated` notification because this will make your node assignments available immediately upon instantiating a scene. However, you can call `WireNodes` whenever you want. Be aware that nodes will not be assigned until this method is called.
-
-Nodes are matched using the following rules. The first match is assigned to the member.
-
-1. Get a node at the node path if supplied in the `[Node]` attribute
-1. Get a direct child with `PascalCase` member name: `GetNodeOrNull<Label>("MyLabel")`
-1. Get a unique descendant with `PascalCase` member name: `GetNodeOrNull<Label>("%MyLabel")`
-1. Get a direct child with `snake_case` member name: `GetNodeOrNull<Label>("my_label")`
-1. Get a unique descendant with `snake_case` member name: `GetNodeOrNull<Label>("%my_label)`
-1. Get a direct child with `camelCase` member name: `GetNodeOrNull<Label>("myLabel")`
-1. Get a unique descendant with `camelCase` member name: `GetNodeOrNull<Label>("%myLabel)`
-1. Get a direct child with member name converted to lower case: `GetNodeOrNull<Label>("mylabel")`
-1. Get a unique descendant with member name converted to lower case: `GetNodeOrNull<Label>("%mylabel")`
-
-An error will be printed in the console if nothing was matched.
 
 ## Delegate State Machine
 
