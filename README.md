@@ -53,6 +53,40 @@ public partial class MyClass : Node {
 }
 ```
 
+It also generates helper methods when using `EventHandlers`. This simplifies connecting to and disconnecting from signals, and omits the need to adjust `Callable` if the `EventHandler` signature changes.
+
+```csharp
+using Godot;
+
+public partial class MySignaler : Node
+{
+    [Signal]
+    public delegate void MySignalEventHandler(int someVariable, string someOtherVariable);
+}
+
+public partial class MyClass : Node
+{
+    public void ConnectSignal(MySignaler signaler)
+    {
+        signaler?.Connect(MySignaler.SignalName.MySignal, Callable.From<int, string>(OnSignalReceived));  // Typical connection method
+
+        signaler?.ConnectToMySignal(OnSignalReceived); // Simplified generated connection method
+    }
+
+    private void OnSignalReceived(int someVariable, string someOtherVariable)
+    {
+        // ...   
+    }
+
+    public void DisconnectSignal(MySignaler signaler) // The same pattern applies to disconnecting
+    {
+        signaler?.Disconnect(MySignaler.SignalName.MySignal, Callable.From<int, string>(OnSignalReceived));
+
+        signaler?.DisconnectFromMySignal(OnSignalReceived); 
+    }
+}
+```
+
 I recommend using the `NotificationSceneInstantiated` notification because this will make your node assignments available immediately upon instantiating a scene. However, you can call `WireNodes` whenever you want. Be aware that nodes will not be assigned until this method is called.
 
 Nodes are matched using the following rules. The first match is assigned to the member.
