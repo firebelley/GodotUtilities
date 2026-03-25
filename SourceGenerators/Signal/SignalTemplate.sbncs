@@ -8,9 +8,23 @@ using Godot;
 {{~ for signal in Signals ~}}
 {{NSIndent}}    private Dictionary<{{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}}, Callable> _signalCallables{{signal.SignalName}};
 
+{{NSIndent}}    private void _PurgeStaleCallables{{signal.SignalName}}()
+{{NSIndent}}    {
+{{NSIndent}}        if (_signalCallables{{signal.SignalName}} == null) return;
+{{NSIndent}}        var toRemove = new List<{{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}}>(0);
+{{NSIndent}}        foreach (var kvp in _signalCallables{{signal.SignalName}})
+{{NSIndent}}        {
+{{NSIndent}}            if (kvp.Key.Target is GodotObject obj && !GodotObject.IsInstanceValid(obj))
+{{NSIndent}}                toRemove.Add(kvp.Key);
+{{NSIndent}}        }
+{{NSIndent}}        foreach (var key in toRemove)
+{{NSIndent}}            _signalCallables{{signal.SignalName}}.Remove(key);
+{{NSIndent}}    }
+
 {{NSIndent}}    public void ConnectTo{{signal.SignalName}}({{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}} action, uint flags = 0)
 {{NSIndent}}    {
 {{NSIndent}}        _signalCallables{{signal.SignalName}} ??= new();
+{{NSIndent}}        _PurgeStaleCallables{{signal.SignalName}}();
 {{NSIndent}}        var callable = Callable.From(action);
 {{NSIndent}}        _signalCallables{{signal.SignalName}}[action] = callable;
 {{NSIndent}}        Connect(SignalName.{{signal.SignalName}}, callable, flags);
@@ -18,6 +32,7 @@ using Godot;
 
 {{NSIndent}}    public void DisconnectFrom{{signal.SignalName}}({{if signal.HasParameters}}Action<{{signal.ActionTypeParams}}>{{else}}Action{{end}} action)
 {{NSIndent}}    {
+{{NSIndent}}        _PurgeStaleCallables{{signal.SignalName}}();
 {{NSIndent}}        if (_signalCallables{{signal.SignalName}}?.TryGetValue(action, out var callable) == true)
 {{NSIndent}}        {
 {{NSIndent}}            Disconnect(SignalName.{{signal.SignalName}}, callable);
