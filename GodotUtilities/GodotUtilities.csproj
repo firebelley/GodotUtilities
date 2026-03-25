@@ -15,10 +15,10 @@
     <Authors>Firebelley</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DocumentationFile>bin\$(Configuration)\GodotUtilities.xml</DocumentationFile>
-    <Version>6.1.0</Version>
+    <Version>6.1.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.5.1" />
-    <PackageReference Include="Firebelley.GodotUtilities.SourceGenerators" Version="5.1.0" />
+    <PackageReference Include="Firebelley.GodotUtilities.SourceGenerators" Version="5.1.1" />
   </ItemGroup>
 </Project>
