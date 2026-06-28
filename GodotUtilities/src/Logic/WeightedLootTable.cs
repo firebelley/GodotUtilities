@@ -1,13 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Godot;
+using GodotUtilities;
 
-namespace GodotUtilities.Logic;
+namespace Game.Util;
 
 public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
 {
-    public class LootItem
+    public record LootItem
     {
-        public T Item { get; }
-        public int Weight { get; }
+        public T Item { get; init; }
+        public int Weight { get; init; }
 
         public LootItem(T item, int weight)
         {
@@ -23,10 +27,9 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
     private int totalWeight = 0;
 
     public float TotalWeight => totalWeight;
-
     public int ItemCount => items.Count;
-
     public bool IsEmpty => items.Count == 0;
+    public List<LootItem> Items => [.. items];
 
     public void SetRandom(RandomNumberGenerator newRng)
     {
@@ -213,5 +216,39 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
     public bool Contains(T item)
     {
         return items.Any(lootItem => EqualityComparer<T>.Default.Equals(lootItem.Item, item));
+    }
+
+    public void SetItemWeight(T item, int weight)
+    {
+        int newWeight = Math.Max(1, weight);
+        for (int i = 0; i < items.Count; i++)
+        {
+            var lootItem = items[i];
+            if (!EqualityComparer<T>.Default.Equals(lootItem.Item, item))
+            {
+                continue;
+            }
+
+            totalWeight -= lootItem.Weight;
+            items[i] = lootItem with { Weight = newWeight };
+            totalWeight += newWeight;
+        }
+    }
+
+    public void ModifyItemWeight(T item, int change)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            var lootItem = items[i];
+            if (!EqualityComparer<T>.Default.Equals(lootItem.Item, item))
+            {
+                continue;
+            }
+
+            int newWeight = Math.Max(1, lootItem.Weight + change);
+            totalWeight -= lootItem.Weight;
+            items[i] = lootItem with { Weight = newWeight };
+            totalWeight += newWeight;
+        }
     }
 }

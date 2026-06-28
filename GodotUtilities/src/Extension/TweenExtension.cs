@@ -33,4 +33,29 @@ public static class TweenExtension
     {
         return tween.TweenCallback(Callable.From(callback));
     }
+
+    public static MethodTweener TweenCustom<[MustBeVariant] T>(this Tween tween, Action<T> action, T start, T end, float time)
+    {
+        return tween.TweenMethod(Callable.From(action), Variant.From(start), Variant.From(end), time);
+    }
+
+    public static PropertyTweener TweenControlOffsetTransform(this Tween tween, Control control, Vector2 offsetPosition, float time)
+    {
+        return tween.TweenProperty(control, (string)Control.PropertyName.OffsetTransformPosition, offsetPosition, time);
+    }
+
+    public static PropertyTweener TweenControlOffsetTransformPositionRatio(this Tween tween, Control control, Vector2 ratio, float time)
+    {
+        return tween.TweenProperty(control, (string)Control.PropertyName.OffsetTransformPositionRatio, ratio, time);
+    }
+
+    public static PropertyTweener TweenControlOffsetRotation(this Tween tween, Control control, float rotationDegrees, float time)
+    {
+        return tween.TweenProperty(control, (string)Control.PropertyName.OffsetTransformRotation, Mathf.DegToRad(rotationDegrees), time);
+    }
+
+    public static PropertyTweener TweenControlOffsetScale(this Tween tween, Control control, Vector2 scale, float time)
+    {
+        return tween.TweenProperty(control, (string)Control.PropertyName.OffsetTransformScale, scale, time);
+    }
 }
