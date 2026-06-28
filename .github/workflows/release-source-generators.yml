@@ -10,6 +10,7 @@ jobs:
     name: Release Source Generators
     permissions:
       id-token: write
+      contents: write
 
     steps:
       - name: Checkout Files
