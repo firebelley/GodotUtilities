@@ -341,3 +341,5 @@ nuget.exe
 */obj/
 *.log
 .idea
+
+.*/
