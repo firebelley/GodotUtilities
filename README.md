@@ -146,6 +146,19 @@ private void LeaveStateNormal() {
 
 There are various extensions available to make your development experience more streamlined. Take a look through the source code to get an idea of what is available to you.
 
+For example, `TweenExtensions`:
+
+```cs
+var myTween = CreateTween();
+
+// Standard way
+myTween.TweenProperty(myNode2d, (string)Node2D.PropertyName.Position, Vector2.Zero, 1f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransType.Back);
+
+// GodotUtilities way
+myTween.TweenPosition(myNode2d, Vector2.Zero, 1f).Out().Back();
+```
+
+
 ## A Note on Versioning
 
 This project follows semantic versioning. All minor and patch version upgrades will be safe to use in your project. Major version upgrades will contain breaking API changes.
