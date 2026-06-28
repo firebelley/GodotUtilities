@@ -1,31 +1,13 @@
-﻿{{- func render_assignments(node) ~}}
-{{NSIndent}}{{NSIndent}}    {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.LowerName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.LowerName}}");
+{{- func render_member(node) ~}}
+{{NSIndent}}{{NSIndent}}    {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.CamelName}}");
 {{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} == null)
 {{NSIndent}}{{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    if (lowerNameToNode == null)
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    lowerNameToNode = GetChildren().ToDictionary(x => x.Name.ToString().ToLowerInvariant(), x => x);
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    var filename = !string.IsNullOrEmpty(SceneFilePath) ? SceneFilePath : "the scene";
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    var lowerName = nameof({{node.MemberName}}).ToLowerInvariant();
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    if (lowerNameToNode.ContainsKey(lowerName))
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    {{node.MemberName}} = lowerNameToNode[lowerName] as {{node.Type}};
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} != null)
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PushWarning($"Assigned member {nameof({{node.MemberName}})} to node {((Node)({{node.MemberName}})).Name} in {filename} as a best-guess.");
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    if ({{node.MemberName}} == null)
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PrintErr($"Could not match member {nameof({{node.MemberName}})} to any Node in {filename}.");
-{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    fallbacks.Add((nameof({{node.MemberName}}), () => {{node.MemberName}}, found => {{node.MemberName}} = found as {{node.Type}}, new[] { "{{node.PascalName}}", "{{node.SnakeName}}", "{{node.CamelName}}" }));
 {{NSIndent}}{{NSIndent}}    }
 {{~ end -}}
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 using Godot;
@@ -35,12 +17,43 @@ using Godot;
 {{NSIndent}}{
 {{NSIndent}}    void WireNodes()
 {{NSIndent}}    {
-{{NSIndent}}{{NSIndent}}    Dictionary<string, Godot.Node> lowerNameToNode = null;
+{{NSIndent}}{{NSIndent}}    // Each member is first resolved by its exact node path / unique name, then any that are
+{{NSIndent}}{{NSIndent}}    // still unbound are matched in a single pass against the children by normalized name.
+{{NSIndent}}{{NSIndent}}    var fallbacks = new List<(string Name, Func<Godot.Node> Get, Action<Godot.Node> Set, string[] CanonicalNames)>();
 {{~
 for node in Nodes
-    render_assignments node
+    render_member node
 end
 ~}}
+{{NSIndent}}{{NSIndent}}    if (fallbacks.Count == 0)
+{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    return;
+{{NSIndent}}{{NSIndent}}    }
+
+{{NSIndent}}{{NSIndent}}    var childrenByName = GetChildren()
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    .GroupBy(child => Normalize(child.Name.ToString()))
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    .ToDictionary(group => group.Key, group => group.First());
+{{NSIndent}}{{NSIndent}}    var filename = !string.IsNullOrEmpty(SceneFilePath) ? SceneFilePath : "the scene";
+
+{{NSIndent}}{{NSIndent}}    foreach (var binding in fallbacks)
+{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    if (childrenByName.TryGetValue(Normalize(binding.Name), out var node))
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    binding.Set(node);
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    var resolved = binding.Get();
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    if (resolved == null)
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PrintErr($"Could not match member {binding.Name} to any Node in {filename}.");
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    else if (Array.IndexOf(binding.CanonicalNames, resolved.Name.ToString()) < 0)
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    {
+{{NSIndent}}{{NSIndent}}{{NSIndent}}{{NSIndent}}    GD.PushWarning($"Assigned member {binding.Name} to node {resolved.Name} in {filename} as a best-guess.");
+{{NSIndent}}{{NSIndent}}{{NSIndent}}    }
+{{NSIndent}}{{NSIndent}}    }
+
+{{NSIndent}}{{NSIndent}}    static string Normalize(string name) => name.Replace("_", string.Empty).ToLowerInvariant();
 {{NSIndent}}    }
 {{NSIndent}}}
 {{~NSClose~}}

@@ -7,13 +7,13 @@ jobs:
   export_game:
     runs-on: windows-latest
     environment: default
-    name: Release
-    env:
-      nuget_api_key: ${{ secrets.NUGET_API_KEY }}
+    name: Release Source Generators
+    permissions:
+      id-token: write
 
     steps:
       - name: Checkout Files
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -24,14 +24,20 @@ jobs:
         run: dotnet build -c Release
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.21.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           tag: ${{ github.ref_name }}
           artifacts: "**/*/*.nupkg"
 
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Publish Source Generators to Nuget
         run: |
           cd .\SourceGenerators\bin\Release
-          dotnet nuget push .\Firebelley.GodotUtilities.SourceGenerators.${{ env.VERSION }}.nupkg --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push .\Firebelley.GodotUtilities.SourceGenerators.${{ env.VERSION }}.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
