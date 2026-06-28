@@ -64,10 +64,8 @@ Nodes are matched using the following rules. The first match is assigned to the 
 1. Get a unique descendant with `snake_case` member name: `GetNodeOrNull<Label>("%my_label)`
 1. Get a direct child with `camelCase` member name: `GetNodeOrNull<Label>("myLabel")`
 1. Get a unique descendant with `camelCase` member name: `GetNodeOrNull<Label>("%myLabel)`
-1. Get a direct child with member name converted to lower case: `GetNodeOrNull<Label>("mylabel")`
-1. Get a unique descendant with member name converted to lower case: `GetNodeOrNull<Label>("%mylabel")`
 
-An error will be printed in the console if nothing was matched.
+As a fallback, a fuzzy match will be attempted. An error will be printed in the console if nothing was matched.
 
 ## Signal Method Generation
 
