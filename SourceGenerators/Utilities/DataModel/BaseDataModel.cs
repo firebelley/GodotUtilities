@@ -14,5 +14,15 @@ namespace GodotUtilities.SourceGenerators
             ClassName = @class.ClassDef();
             (NSOpen, NSClose, NSIndent) = symbol.GetNamespaceDeclaration();
         }
+
+        public string RenderPartialClass(string usings, string classMembers)
+        {
+            var classLines = $"partial class {ClassName}\n{{\n{classMembers}\n}}"
+                .Replace("\r\n", "\n")
+                .Split('\n')
+                .Select(line => line.Length > 0 ? NSIndent + line : line);
+
+            return $"{usings.Replace("\r\n", "\n")}\n\n{NSOpen}{string.Join("\n", classLines)}\n{NSClose}";
+        }
     }
 }

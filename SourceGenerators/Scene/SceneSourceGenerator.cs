@@ -1,14 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
-using Scriban;
 
 namespace GodotUtilities.SourceGenerators.Scene
 {
     [Generator]
     internal class SceneSourceGenerator : SourceGeneratorForDeclaredTypeWithAttribute<GodotUtilities.SceneAttribute>
     {
-        private static Template _sceneTreeTemplate;
-        private static Template SceneTreeTemplate => _sceneTreeTemplate ??= Template.Parse(Resources.SceneTreeTemplate);
-
         protected override (string GeneratedCode, DiagnosticDetail Error) GenerateCode(Compilation compilation, SyntaxNode node, INamedTypeSymbol symbol, AttributeData attribute)
         {
             List<NodeAttributeDataModel> models = new();
@@ -27,9 +23,72 @@ namespace GodotUtilities.SourceGenerators.Scene
             }
 
             var model = new SceneDataModel(symbol) { Nodes = models };
-            var output = SceneTreeTemplate.Render(model, member => member.Name);
+            var output = Render(model);
 
             return (output, null);
+        }
+
+        private static string Render(SceneDataModel model)
+        {
+            var members = string.Join("\n", model.Nodes.Select(RenderMember));
+
+            return model.RenderPartialClass(
+                """
+                using System;
+                using System.Collections.Generic;
+                using System.Linq;
+
+                using Godot;
+                """,
+                $$"""
+                    void WireNodes()
+                    {
+                        // Each member is first resolved by its exact node path / unique name, then any that are
+                        // still unbound are matched in a single pass against the children by normalized name.
+                        var fallbacks = new List<(string Name, Func<Godot.Node> Get, Action<Godot.Node> Set, string[] CanonicalNames)>();
+                {{members}}
+                        if (fallbacks.Count == 0)
+                        {
+                            return;
+                        }
+
+                        var childrenByName = GetChildren()
+                            .GroupBy(child => Normalize(child.Name.ToString()))
+                            .ToDictionary(group => group.Key, group => group.First());
+                        var filename = !string.IsNullOrEmpty(SceneFilePath) ? SceneFilePath : "the scene";
+
+                        foreach (var binding in fallbacks)
+                        {
+                            if (childrenByName.TryGetValue(Normalize(binding.Name), out var node))
+                            {
+                                binding.Set(node);
+                            }
+
+                            var resolved = binding.Get();
+                            if (resolved == null)
+                            {
+                                GD.PrintErr($"Could not match member {binding.Name} to any Node in {filename}.");
+                            }
+                            else if (Array.IndexOf(binding.CanonicalNames, resolved.Name.ToString()) < 0)
+                            {
+                                GD.PushWarning($"Assigned member {binding.Name} to node {resolved.Name} in {filename} as a best-guess.");
+                            }
+                        }
+
+                        static string Normalize(string name) => name.Replace("_", string.Empty).ToLowerInvariant();
+                    }
+                """);
+        }
+
+        private static string RenderMember(NodeAttributeDataModel node)
+        {
+            return $$"""
+                        {{node.MemberName}} = GetNodeOrNull<{{node.Type}}>("{{node.Path ?? node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.PascalName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.SnakeName}}") ?? GetNodeOrNull<{{node.Type}}>("{{node.CamelName}}") ?? GetNodeOrNull<{{node.Type}}>("%{{node.CamelName}}");
+                        if ({{node.MemberName}} == null)
+                        {
+                            fallbacks.Add((nameof({{node.MemberName}}), () => {{node.MemberName}}, found => {{node.MemberName}} = found as {{node.Type}}, new[] { "{{node.PascalName}}", "{{node.SnakeName}}", "{{node.CamelName}}" }));
+                        }
+                """;
         }
 
         private List<(ISymbol, NodeAttribute)> GetAllNodeAttributes(INamedTypeSymbol symbol, bool excludePrivate = false)

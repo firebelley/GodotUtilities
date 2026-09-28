@@ -2,16 +2,12 @@ using System.Collections.Immutable;
 using GodotSharp.SourceGenerators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Scriban;
 
 namespace GodotUtilities.SourceGenerators.Signal
 {
     [Generator]
     internal class SignalSourceGenerator : IIncrementalGenerator
     {
-        private static Template _signalTemplate;
-        private static Template SignalTemplate => _signalTemplate ??= Template.Parse(Resources.SignalTemplate);
-
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(IsSyntaxTarget, GetSyntaxTarget);
@@ -88,7 +84,7 @@ namespace GodotUtilities.SourceGenerators.Signal
                         .ToList();
 
                     var dataModel = new SignalDataModel(containingType) { Signals = signals };
-                    var output = SignalTemplate.Render(dataModel, member => member.Name);
+                    var output = Render(dataModel);
 
                     var filename = $"{string.Join("_", $"{containingType}".Split(Path.GetInvalidFileNameChars()))}.Signals.g.cs";
                     context.AddSource(filename, output);
@@ -99,6 +95,58 @@ namespace GodotUtilities.SourceGenerators.Signal
                 Log.Error(e);
                 throw;
             }
+        }
+
+        private static string Render(SignalDataModel model)
+        {
+            return model.RenderPartialClass(
+                """
+                using System;
+                using System.Collections.Generic;
+                using Godot;
+                """,
+                string.Join("\n", model.Signals.Select(RenderSignal)));
+        }
+
+        private static string RenderSignal(SignalDelegateDataModel signal)
+        {
+            var actionType = signal.HasParameters ? $"Action<{signal.ActionTypeParams}>" : "Action";
+
+            return $$"""
+                    private Dictionary<{{actionType}}, Callable> _signalCallables{{signal.SignalName}};
+
+                    private void _PurgeStaleCallables{{signal.SignalName}}()
+                    {
+                        if (_signalCallables{{signal.SignalName}} == null) return;
+                        var toRemove = new List<{{actionType}}>(0);
+                        foreach (var kvp in _signalCallables{{signal.SignalName}})
+                        {
+                            if (kvp.Key.Target is GodotObject obj && !GodotObject.IsInstanceValid(obj))
+                                toRemove.Add(kvp.Key);
+                        }
+                        foreach (var key in toRemove)
+                            _signalCallables{{signal.SignalName}}.Remove(key);
+                    }
+
+                    public void ConnectTo{{signal.SignalName}}({{actionType}} action, uint flags = 0)
+                    {
+                        _signalCallables{{signal.SignalName}} ??= new();
+                        _PurgeStaleCallables{{signal.SignalName}}();
+                        var callable = Callable.From(action);
+                        _signalCallables{{signal.SignalName}}[action] = callable;
+                        Connect(SignalName.{{signal.SignalName}}, callable, flags);
+                    }
+
+                    public void DisconnectFrom{{signal.SignalName}}({{actionType}} action)
+                    {
+                        _PurgeStaleCallables{{signal.SignalName}}();
+                        if (_signalCallables{{signal.SignalName}}?.TryGetValue(action, out var callable) == true)
+                        {
+                            Disconnect(SignalName.{{signal.SignalName}}, callable);
+                            _signalCallables{{signal.SignalName}}.Remove(action);
+                        }
+                    }
+                """;
         }
     }
 }
