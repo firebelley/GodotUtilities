@@ -22,7 +22,7 @@ jobs:
         run: echo ("VERSION=" + $env:GITHUB_REF_NAME.replace('v', '').replace('-sg', '')) >> $env:GITHUB_ENV
 
       - name: Build Nupkg
-        run: dotnet build -c Release
+        run: dotnet build SourceGenerators/SourceGenerators.csproj -c Release
 
       - name: Create Release
         uses: ncipollo/release-action@v1.21.0
