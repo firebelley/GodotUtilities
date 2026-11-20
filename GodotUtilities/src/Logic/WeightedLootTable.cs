@@ -68,13 +68,13 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
     {
         if (IsEmpty) return default;
 
-        int randomValue = rng.RandiRange(0, totalWeight);
+        int randomValue = rng.RandiRange(0, totalWeight - 1);
         int currentWeight = 0;
 
         foreach (var item in items)
         {
             currentWeight += item.Weight;
-            if (randomValue <= currentWeight) return item.Item;
+            if (randomValue < currentWeight) return item.Item;
         }
 
         return items[^1].Item;
@@ -86,13 +86,13 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
         if (eligibleItems.Count == 0) return default;
 
         int totalEligibleWeight = eligibleItems.Sum(item => item.Weight);
-        int randomValue = rng.RandiRange(0, totalEligibleWeight);
+        int randomValue = rng.RandiRange(0, totalEligibleWeight - 1);
         int currentWeight = 0;
 
         foreach (var item in eligibleItems)
         {
             currentWeight += item.Weight;
-            if (randomValue <= currentWeight) return item.Item;
+            if (randomValue < currentWeight) return item.Item;
         }
 
         return eligibleItems[^1].Item;
@@ -120,13 +120,13 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
 
             for (int i = 0; i < count && availableItems.Count > 0; i++)
             {
-                int randomValue = rng.RandiRange(0, availableWeight);
+                int randomValue = rng.RandiRange(0, availableWeight - 1);
                 int currentWeight = 0;
 
                 for (int j = 0; j < availableItems.Count; j++)
                 {
                     currentWeight += availableItems[j].Weight;
-                    if (randomValue <= currentWeight)
+                    if (randomValue < currentWeight)
                     {
                         result.Add(availableItems[j].Item);
                         availableWeight -= availableItems[j].Weight;
@@ -155,13 +155,13 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
 
             for (int i = 0; i < count; i++)
             {
-                int randomValue = rng.RandiRange(0, totalEligibleWeight);
+                int randomValue = rng.RandiRange(0, totalEligibleWeight - 1);
                 int currentWeight = 0;
 
                 foreach (var item in eligibleItems)
                 {
                     currentWeight += item.Weight;
-                    if (randomValue <= currentWeight)
+                    if (randomValue < currentWeight)
                     {
                         result.Add(item.Item);
                         break;
@@ -176,13 +176,13 @@ public class WeightedLootTable<T>(RandomNumberGenerator rng = null)
 
             for (int i = 0; i < count && availableItems.Count > 0; i++)
             {
-                int randomValue = rng.RandiRange(0, availableWeight);
+                int randomValue = rng.RandiRange(0, availableWeight - 1);
                 int currentWeight = 0;
 
                 for (int j = 0; j < availableItems.Count; j++)
                 {
                     currentWeight += availableItems[j].Weight;
-                    if (randomValue <= currentWeight)
+                    if (randomValue < currentWeight)
                     {
                         result.Add(availableItems[j].Item);
                         availableWeight -= availableItems[j].Weight;
